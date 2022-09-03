@@ -1,15 +1,15 @@
 import * as React from "react";
 import area from "@turf/area";
 
-function ControlPanel(props: { polygons: any }) {
-  let polygonArea = 0;
-  for (const polygon of props.polygons) {
-    polygonArea += area(polygon);
-  }
+function ControlPanel(props: { polygons?: any }) {
+  // let polygonArea = 0;
+  // for (const polygon of props.polygons) {
+  //   polygonArea += area(polygon);
+  // }
 
   return (
     <div className="control-panel">
-      <h3>Draw Polygon</h3>
+      {/* <h3>Draw Polygon</h3>
       {polygonArea > 0 && (
         <p>
           {Math.round(polygonArea * 100) / 100} <br />
@@ -23,7 +23,7 @@ function ControlPanel(props: { polygons: any }) {
         >
           View Code ↗
         </a>
-      </div>
+      </div> */}
     </div>
   );
 }
