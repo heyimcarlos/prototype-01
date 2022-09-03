@@ -7,20 +7,22 @@ type DrawControlProps = ConstructorParameters<typeof MapboxDraw>[0] & {
   onCreate?: (evt: { features: object[] }) => void;
   onUpdate?: (evt: { features: object[]; action: string }) => void;
   onDelete?: (evt: { features: object[] }) => void;
+  onClick: (evt: { features: object[] }) => void;
 };
 
 const DrawControl = (props: DrawControlProps) => {
   useControl<MapboxDraw>(
     () => new MapboxDraw(props),
     ({ map }) => {
-      map.on("draw.create", props.onCreate);
-      map.on("draw.update", props.onUpdate);
-      map.on("draw.delete", props.onDelete);
+      map.on("click", props.onClick);
+      // map.on("draw.create", props.onCreate);
+      // map.on("draw.update", props.onUpdate);
+      // map.on("draw.delete", props.onDelete);
     },
     ({ map }) => {
-      map.on("draw.create", props.onCreate);
-      map.on("draw.update", props.onUpdate);
-      map.on("draw.delete", props.onDelete);
+      // map.on("draw.create", props.onCreate);
+      // map.on("draw.update", props.onUpdate);
+      // map.on("draw.delete", props.onDelete);
     },
     { position: props.position }
   );

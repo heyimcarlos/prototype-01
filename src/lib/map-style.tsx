@@ -36,7 +36,6 @@ export default {
   ...MAP_STYLE,
   sources: {
     ...MAP_STYLE.sources,
-    ["sf-neighborhoods"]: sfNeighborhoods,
   },
   layers: [...MAP_STYLE.layers, fillLayer, lineLayer],
 };

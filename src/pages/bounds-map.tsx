@@ -18,6 +18,7 @@ export default function BoundsMap() {
   const [showPopup, setShowPopup] = React.useState(false);
 
   const onClick = (event: MapLayerMouseEvent) => {
+    console.log(event, "event");
     const feature = event.features![0];
     console.log("feature", feature);
     setShowPopup(true);
@@ -46,7 +47,7 @@ export default function BoundsMap() {
         }}
         style={{ height: 800, width: "100%" }}
         mapStyle={MAP_STYLE as MapboxStyle}
-        interactiveLayerIds={["sf-neighborhoods-fill"]}
+        // interactiveLayerIds={["sf-neighborhoods-fill"]}
         onClick={onClick}
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
