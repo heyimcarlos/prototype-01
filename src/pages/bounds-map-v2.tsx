@@ -15,6 +15,7 @@ const TOKEN = env.NEXT_PUBLIC_MAPBOX_TOKEN; // Set your mapbox token here
 
 export default function BoundsMapV2() {
   const mapRef = useRef<MapRef>(null);
+  const divRef = useRef<HTMLDivElement>(null);
 
   const handleClickMap = (event: MapLayerMouseEvent) => {
     console.log("Map Event =", event.features);
@@ -45,6 +46,40 @@ export default function BoundsMapV2() {
     console.log("Marker Event =", event);
   };
 
+  const handleMoveMouse = (e: MapLayerMouseEvent) => {
+    const ref = mapRef.current;
+    if (!ref) return;
+    // console.log(e.originalEvent, "e.originalEvent");
+    const features = ref.queryRenderedFeatures(e.point);
+    const feature = features[0];
+
+    // Limit the number of properties we're displaying for
+    // legibility and performance
+    // const displayProperties = [
+    // console.log(features);
+
+    // const displayFeatures = features.filter((feat) => {
+    //   // const displayFeat = {};
+    //   // displayProperties.forEach((prop) => {
+    //   //   displayFeat[prop] = feat[prop];
+    //   // });
+    //   // console.log("feat", feat);
+    //   return feat.sourceLayer === "place_label";
+    // });
+
+    if (feature && feature.sourceLayer === "place_label") {
+      console.log(feature, "feature");
+    }
+    // if (!displayFeatures.length) return;
+
+    // if (displayFeatures.length > 0) {
+    //   console.log(displayFeatures);
+    // }
+    // Write object as string with an indent of two spaces.
+    const div = document.getElementById("div");
+    div.innerHTML = JSON.stringify(feature, null, 2);
+  };
+
   // @TODO: better error handling
   // if (!mapRef.current) return null;
 
@@ -60,43 +95,23 @@ export default function BoundsMapV2() {
         }}
         style={{ height: 800, width: "100%" }}
         mapStyle={MAP_STYLE as MapboxStyle}
-        interactiveLayerIds={["sf-neighborhoods-fill"]}
-        onMouseMove={(e) => {
-          const ref = mapRef.current!;
-          // if (!ref) return;
-          const features = ref.queryRenderedFeatures(e.point);
-          console.log("features =", features);
-
-          // Limit the number of properties we're displaying for
-          // legibility and performance
-          const displayProperties = [
-            "type",
-            "properties",
-            "id",
-            "layer",
-            "source",
-            "sourceLayer",
-            "state",
-          ];
-
-          const displayFeatures = features.map((feat) => {
-            const displayFeat = {};
-            displayProperties.forEach((prop) => {
-              displayFeat[prop] = feat[prop];
-            });
-            return displayFeat;
-          });
-          console.log(displayFeatures);
-          // Write object as string with an indent of two spaces.
-          // document.getElementById("features").innerHTML = JSON.stringify(
-          //   displayFeatures,
-          //   null,
-          //   2
-          // );
-        }}
+        // interactiveLayerIds={["sf-neighborhoods-fill"]}
+        // onMouseMove={handleMoveMouse}
         mapboxAccessToken={TOKEN}
-        onClick={(e) => {}}
+        onClick={handleMoveMouse}
       >
+        <div
+          id="div"
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            overflow: "auto",
+            background: "rgba(255,255,255,0.8)",
+          }}
+          ref={divRef}
+        />
         <Marker
           // onClick={(e) => console.log("Marker Event", e)}
           // onClick={handleClickMap}
