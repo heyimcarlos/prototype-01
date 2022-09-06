@@ -19,7 +19,7 @@ export default function BoundsMap() {
 
   const onClick = (event: MapLayerMouseEvent) => {
     const feature = event.features![0];
-    console.log("feature", feature);
+    console.log("Map Event =", event);
     setShowPopup(true);
     if (feature) {
       // calculate the bounding box of the feature
@@ -50,16 +50,14 @@ export default function BoundsMap() {
         onClick={onClick}
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
-        {showPopup && (
-          <Popup
-            anchor="bottom"
-            onClose={() => setShowPopup(false)}
-            longitude={-69.94115}
-            latitude={18.45707}
-          >
-            You are here!
-          </Popup>
-        )}
+        <Marker
+          longitude={-100}
+          latitude={40}
+          anchor="bottom"
+          onClick={(e) => console.log("Marker Event =", e)}
+        >
+          <img src="./pin.png" />
+        </Marker>
       </Map>
       <ControlPanel />
     </>
