@@ -49,10 +49,25 @@ export default function BoundsMapV2() {
   const handleMoveMouse = (e: MapLayerMouseEvent) => {
     const ref = mapRef.current;
     if (!ref) return;
+    if (!e.features) return;
     // console.log(e.originalEvent, "e.originalEvent");
+    console.log("e.features[0] =", e.features[0]);
+    const layerFeature = e.features[0];
     const features = ref.queryRenderedFeatures(e.point);
     const feature = features[0];
 
+    if (feature) {
+      // calculate the bounding box of the feature
+      const [minLng, minLat, maxLng, maxLat] = bbox(feature);
+      // console.log("bbox(feature) =", bbox(feature));
+      mapRef.current!.fitBounds(
+        [
+          [minLng, minLat],
+          [maxLng, maxLat],
+        ],
+        { padding: 40, duration: 1000 }
+      );
+    }
     // Limit the number of properties we're displaying for
     // legibility and performance
     // const displayProperties = [
@@ -76,8 +91,8 @@ export default function BoundsMapV2() {
     //   console.log(displayFeatures);
     // }
     // Write object as string with an indent of two spaces.
-    const div = document.getElementById("div");
-    div.innerHTML = JSON.stringify(feature, null, 2);
+    // const div = document.getElementById("div");
+    // div.innerHTML = JSON.stringify(feature, null, 2);
   };
 
   // @TODO: better error handling
