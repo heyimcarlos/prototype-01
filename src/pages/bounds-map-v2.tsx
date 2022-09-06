@@ -37,12 +37,16 @@ export default function BoundsMapV2() {
 
   const handleClickMarker = (event: mapboxgl.MapboxEvent<MouseEvent>) => {
     const map = document.getElementById("mapv2");
+    // mapRef.current.quer
     // map?.dispatchEvent(map.click());
     // const feature = map?.click();
     // console.log("feature =", feature);
     // handleClickMap()
     console.log("Marker Event =", event);
   };
+
+  // @TODO: better error handling
+  // if (!mapRef.current) return null;
 
   return (
     <>
@@ -57,13 +61,46 @@ export default function BoundsMapV2() {
         style={{ height: 800, width: "100%" }}
         mapStyle={MAP_STYLE as MapboxStyle}
         interactiveLayerIds={["sf-neighborhoods-fill"]}
+        onMouseMove={(e) => {
+          const ref = mapRef.current!;
+          // if (!ref) return;
+          const features = ref.queryRenderedFeatures(e.point);
+          console.log("features =", features);
+
+          // Limit the number of properties we're displaying for
+          // legibility and performance
+          const displayProperties = [
+            "type",
+            "properties",
+            "id",
+            "layer",
+            "source",
+            "sourceLayer",
+            "state",
+          ];
+
+          const displayFeatures = features.map((feat) => {
+            const displayFeat = {};
+            displayProperties.forEach((prop) => {
+              displayFeat[prop] = feat[prop];
+            });
+            return displayFeat;
+          });
+          console.log(displayFeatures);
+          // Write object as string with an indent of two spaces.
+          // document.getElementById("features").innerHTML = JSON.stringify(
+          //   displayFeatures,
+          //   null,
+          //   2
+          // );
+        }}
         mapboxAccessToken={TOKEN}
-        onClick={handleClickMap}
+        onClick={(e) => {}}
       >
         <Marker
           // onClick={(e) => console.log("Marker Event", e)}
           // onClick={handleClickMap}
-          onClick={handleClickMarker}
+          // onClick={handleClickMarker}
           longitude={-122.48291244506868}
           latitude={37.721364814423865}
           anchor="bottom"
