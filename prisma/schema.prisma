@@ -55,6 +55,7 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    listing       Listing[]
 }
 
 model VerificationToken {
@@ -63,4 +64,46 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Place {
+    id           String        @id @default(cuid())
+    name         String
+    slug         String        @unique
+    borderCoords Coordinates[]
+    brderCoords  Json          @db.Json
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @updatedAt
+    listing      Listing[]
+}
+
+model Coordinates {
+    id        String    @id @default(cuid())
+    latitude  Float
+    longitude Float
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    place     Place     @relation(fields: [placeId], references: [id])
+    placeId   String
+    listing   Listing[]
+}
+
+model Listing {
+    id            String      @id @default(cuid())
+    name          String
+    slug          String      @unique
+    description   String
+    price         Int
+    currency      String
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
+    place         Place       @relation(fields: [placeId], references: [id])
+    placeId       String
+    coordinates   Coordinates @relation(fields: [coordinatesId], references: [id])
+    coordinatesId String
+    user          User        @relation(fields: [userId], references: [id])
+    userId        String
+    // ListingImage     ListingImage[]
+    // ListingReview    ListingReview[]
+    // ListingAmenities ListingAmenities[]
 }

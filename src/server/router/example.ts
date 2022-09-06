@@ -1,17 +1,31 @@
 import { createRouter } from "./context";
 import { z } from "zod";
+import { inferMutationOutput } from "@/utils/trpc";
+import * as trpc from "@trpc/server";
 
 export const exampleRouter = createRouter()
-  .query("hello", {
-    input: z
-      .object({
-        text: z.string().nullish(),
-      })
-      .nullish(),
-    resolve({ input }) {
-      return {
-        greeting: `Hello ${input?.text ?? "world"}`,
-      };
+  .mutation("getPlace", {
+    input: z.object({
+      slug: z.string(),
+    }),
+    async resolve({ ctx, input }) {
+      const place = await ctx.prisma.place.findFirst({
+        where: {
+          slug: input.slug,
+        },
+        include: {
+          borderCoords: true,
+          listing: true,
+        },
+      });
+
+      if (!place) {
+        throw new trpc.TRPCError({
+          code: "NOT_FOUND",
+          message: "place-not-found",
+        });
+      }
+      return place;
     },
   })
   .query("getAll", {
@@ -19,3 +33,5 @@ export const exampleRouter = createRouter()
       return await ctx.prisma.example.findMany();
     },
   });
+
+export type GetPlaceOutput = inferMutationOutput<"example.getPlace">;
