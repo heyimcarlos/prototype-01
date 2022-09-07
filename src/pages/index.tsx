@@ -9,7 +9,7 @@ type TechnologyCardProps = {
 };
 
 const Home: NextPage = () => {
-  const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
+  // const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
 
   return (
     <>
@@ -46,19 +46,15 @@ const Home: NextPage = () => {
             documentation="https://trpc.io/"
           />
         </div>
-        <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
+        {/* <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
           {hello.data ? <p>{hello.data.greeting}</p> : <p>Loading..</p>}
-        </div>
+        </div> */}
       </main>
     </>
   );
 };
 
-const TechnologyCard = ({
-  name,
-  description,
-  documentation,
-}: TechnologyCardProps) => {
+const TechnologyCard = ({ name, description, documentation }: TechnologyCardProps) => {
   return (
     <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105">
       <h2 className="text-lg text-gray-700">{name}</h2>

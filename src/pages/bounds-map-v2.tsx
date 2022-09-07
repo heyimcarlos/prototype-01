@@ -47,7 +47,6 @@ export default function BoundsMapV2() {
   };
 
   const handleMoveMouse = (e: MapLayerMouseEvent) => {
-    clo;
     const ref = mapRef.current;
     if (!ref) return;
     if (!e.features) return;

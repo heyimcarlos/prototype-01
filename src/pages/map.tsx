@@ -207,7 +207,7 @@ const MapPage = () => {
           }
 
           mapRef.current.easeTo({
-            center: feature.geometry.coordinates,
+            // center: feature.geometry.coordinates,
             zoom,
             duration: 500,
           });
@@ -233,7 +233,7 @@ const MapPage = () => {
         // interactive
         onClick={onClick}
         // touchPitch
-        interactiveLayerIds={[fillLay.id, clusterLayer.id]}
+        interactiveLayerIds={[fillLay.id, clusterLayer.id as string]}
         style={{ width: "100%", height: "100vh" }}
         mapStyle="mapbox://styles/mapbox/dark-v9"
         // onSourceData={(e) => console.log("e", e)}
