@@ -1,14 +1,15 @@
 import Head from "next/head";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import Map, { Source, Layer, MapRef, MapLayerMouseEvent, FillLayer, LineLayer } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
+import { FeatureCollection } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { GetPlaceOutput } from "@/server/router/example.js";
+import { Coordinates, Listing, Place } from "@prisma/client";
 
-//@INFO: do we even need a feature collection, or can we just use a feature?
-//@INFO: Analyze the whole feature collection thing, and see how is it used on a long feature collection.
-const transformToFeatureCollection = (place: GetPlaceOutput) => {
+export const transformToFeatureCollection = (
+  place: Place & { borderCoords: Coordinates[]; listing: Listing[] }
+): FeatureCollection => {
   const coordsArr = place?.borderCoords.map((coords) => [coords.latitude, coords.longitude]);
 
   return {
@@ -60,29 +61,31 @@ const slugify = (str: string) => {
 };
 
 const MapPage = () => {
-  const [feature, setFeature] = useState<any>();
   const mapRef = useRef<MapRef>(null);
-
-  const mutation = trpc.useMutation(["example.getPlace"], {
-    onSuccess: (data) => {
-      const geojson = transformToFeatureCollection(data);
-      console.log("geojson", geojson);
-      setFeature(geojson);
-    },
-  });
+  const mutation = trpc.useMutation(["example.getPlaceAsGeoJson"], {});
 
   const onClick = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
     const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
     const feature = queryRenderedFeatures[0];
+
+    // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       const slug = slugify(feature.properties.name);
       mutation.mutate({ slug });
     }
 
-    //@TODO: Implement an easeIn animation to the feature.
+    // @INFO: flyTo animates! the map very well.
+    // [x] - @TODO: Implement an easeIn animation to the feature.
+    mapRef.current.flyTo({
+      center: event.lngLat,
+      animate: true,
+      duration: 1400,
+      essential: true,
+      zoom: 15.5,
+    });
 
-    // @INFO: Below is the code when a feature source layer is not a place and the feature does not have a name.
+    // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
   };
 
   return (
@@ -102,13 +105,12 @@ const MapPage = () => {
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
-        {feature && (
-          <Source id="xyc" type="geojson" data={feature}>
+        {mutation.data && (
+          <Source id="xyc" type="geojson" data={mutation.data}>
             <Layer {...fillLayer} />
             <Layer {...lineLayer} />
           </Source>
         )}
-        <div className="bg-blue border-1 h-50"></div>
       </Map>
     </div>
   );
