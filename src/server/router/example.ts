@@ -2,9 +2,10 @@ import { createRouter } from "./context";
 import { z } from "zod";
 import { inferMutationOutput } from "@/utils/trpc";
 import * as trpc from "@trpc/server";
+import { transformToFeatureCollection } from "@/pages/test-map";
 
 export const exampleRouter = createRouter()
-  .mutation("getPlace", {
+  .mutation("getPlaceAsGeoJson", {
     input: z.object({
       slug: z.string(),
     }),
@@ -22,10 +23,14 @@ export const exampleRouter = createRouter()
       if (!place) {
         throw new trpc.TRPCError({
           code: "NOT_FOUND",
-          message: "place-not-found",
+          message: "place-not-found-motherfucker",
         });
       }
-      return place;
+
+      const geojsonPlace = transformToFeatureCollection(place);
+
+      return geojsonPlace;
+      // return 1;
     },
   })
   .query("getAll", {
@@ -34,4 +39,4 @@ export const exampleRouter = createRouter()
     },
   });
 
-export type GetPlaceOutput = inferMutationOutput<"example.getPlace">;
+export type GetPlaceAsGeoJson = inferMutationOutput<"example.getPlaceAsGeoJson">;
