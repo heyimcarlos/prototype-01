@@ -47,18 +47,15 @@ export default function BoundsMapV2() {
   };
 
   const handleMoveMouse = (e: MapLayerMouseEvent) => {
+    clo;
     const ref = mapRef.current;
     if (!ref) return;
     if (!e.features) return;
-    // console.log(e.originalEvent, "e.originalEvent");
-    console.log("e.features[0] =", e.features[0]);
     const layerFeature = e.features[0];
-    const features = ref.queryRenderedFeatures(e.point);
-    const feature = features[0];
 
-    if (feature) {
+    if (layerFeature) {
       // calculate the bounding box of the feature
-      const [minLng, minLat, maxLng, maxLat] = bbox(feature);
+      const [minLng, minLat, maxLng, maxLat] = bbox(layerFeature);
       // console.log("bbox(feature) =", bbox(feature));
       mapRef.current!.fitBounds(
         [
@@ -82,9 +79,9 @@ export default function BoundsMapV2() {
     //   return feat.sourceLayer === "place_label";
     // });
 
-    if (feature && feature.sourceLayer === "place_label") {
-      console.log(feature, "feature");
-    }
+    // if (feature && feature.sourceLayer === "place_label") {
+    //   console.log(feature, "feature");
+    // }
     // if (!displayFeatures.length) return;
 
     // if (displayFeatures.length > 0) {
@@ -113,7 +110,7 @@ export default function BoundsMapV2() {
         // interactiveLayerIds={["sf-neighborhoods-fill"]}
         // onMouseMove={handleMoveMouse}
         mapboxAccessToken={TOKEN}
-        onClick={handleMoveMouse}
+        onClick={handleClickMap}
       >
         <div
           id="div"
