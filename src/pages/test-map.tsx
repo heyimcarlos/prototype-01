@@ -8,6 +8,7 @@ import Map, {
   FillLayer,
   LineLayer,
   LayerProps,
+  Marker,
 } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
@@ -18,7 +19,7 @@ import { GetPlaceOutput } from "@/server/router/example.js";
 import { JSONArray } from "superjson/dist/types.js";
 
 // Place & { borderCoords: Coordinates[]; listing: Listing[] }
-export const transformToFeatureCollection = (place: GetPlaceOutput) => {
+export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {
   const bounds = place.bounds as JSONArray;
   const coordsArr = bounds.map((bound) => bound as Position);
 
@@ -86,33 +87,35 @@ const lineLayer: LineLayer = {
   },
 };
 
-export const clusterLayer: LayerProps = {
-  id: "clusters",
-  type: "circle",
-  filter: ["has", "point_count"],
-  paint: {
-    "circle-color": ["step", ["get", "point_count"], "#51bbd6", 100, "#f1f075", 750, "#f28cb1"],
-    "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
-  },
-};
+const circleColor = "rgb(6, 182, 212)";
 
-export const clusterCountLayer: LayerProps = {
-  id: "cluster-count",
-  type: "symbol",
-  filter: ["has", "point_count"],
-  layout: {
-    "text-field": "{point_count_abbreviated}",
-    "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-    "text-size": 12,
-  },
-};
+// export const clusterLayer: LayerProps = {
+//   id: "clusters",
+//   type: "circle",
+//   filter: ["has", "point_count"],
+//   paint: {
+//     "circle-color": ["step", ["get", "point_count"], circleColor, 100, "#f1f075", 750, "#f28cb1"],
+//     "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+//   },
+// };
+
+// export const clusterCountLayer: LayerProps = {
+//   id: "cluster-count",
+//   type: "symbol",
+//   filter: ["has", "point_count"],
+//   layout: {
+//     "text-field": "{point_count_abbreviated}",
+//     "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+//     "text-size": 14,
+//   },
+// };
 
 export const unclusteredPointLayer: LayerProps = {
   id: "unclustered-point",
   type: "circle",
   filter: ["!", ["has", "point_count"]],
   paint: {
-    "circle-color": "#11b4da",
+    "circle-color": circleColor,
     "circle-radius": 10,
     "circle-stroke-width": 1,
     "circle-stroke-color": "#fff",
@@ -128,9 +131,18 @@ const slugify = (str: string) => {
 };
 
 const MapPage = () => {
+  const [show, setShow] = useState(true);
   const mapRef = useRef<MapRef>(null);
   const [featureCollection, setFeatureCollection] = useState<FeatureCollection>();
-  const mutation = trpc.useMutation(["example.getPlace"], {});
+  const mutation = trpc.useMutation(["example.getPlace"], {
+    onSuccess: (data) => {
+      const featureCollection = transformPlaceToFeatureCollection(data);
+      const feature = featureCollection.features[0];
+      if (feature) fitBounds(feature);
+      setFeatureCollection(featureCollection);
+    },
+  });
+  const { data } = trpc.useQuery(["example.initial"], {});
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
     if (!mapRef.current) return;
@@ -149,6 +161,7 @@ const MapPage = () => {
         // easing: (t) => t,
       }
     );
+    setShow(!show);
   };
 
   const onClick = (event: MapLayerMouseEvent) => {
@@ -156,24 +169,11 @@ const MapPage = () => {
     const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
     const feature = queryRenderedFeatures[0];
     // @TODO: we should be getting the cluster_id from the feature
-    // console.log(feature?.properties.cluster_id);
-    // console.log(event.features[0].properties.cluster_id, "event");
 
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       const slug = slugify(feature.properties.name);
-      mutation.mutate(
-        { slug },
-        {
-          onSuccess: (data) => {
-            const featureCollection = transformToFeatureCollection(data);
-            const feature = featureCollection.features[0];
-            if (feature) fitBounds(feature);
-            setFeatureCollection(featureCollection);
-            console.log("featureCollection", featureCollection);
-          },
-        }
-      );
+      mutation.mutate({ slug });
     }
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
@@ -189,14 +189,40 @@ const MapPage = () => {
         initialViewState={{
           longitude: -69.94115,
           latitude: 18.45707,
-          zoom: 15,
+          zoom: 14,
+        }}
+        onZoomEnd={(event) => {
+          // @INFO: temporary implementation, this is sketchy
+          if (15 > event.viewState.zoom && !show) setShow(true);
+          if (15 < event.viewState.zoom && show) setShow(false);
         }}
         onClick={onClick}
         style={{ width: "100%", height: "100vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
-        interactiveLayerIds={[clusterLayer.id as string]}
       >
+        {data?.map(
+          (place) =>
+            show && (
+              <Marker
+                onClick={() => {
+                  // const feature = turf.lineString(place.bounds, { fillLayer, lineLayer });
+                  // fitBounds(feature);
+                  mutation.mutate({ slug: place.slug });
+                }}
+                anchor="bottom"
+                key={`marker-${place.id}`}
+                longitude={place.center.longitude}
+                latitude={place.center.latitude}
+                offset={[0, -10]}
+              >
+                <div className="bg-cyan-500 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
+                  <span className="text-sm">{place.listing.length}</span>
+                </div>
+              </Marker>
+            )
+        )}
+
         {featureCollection && (
           <Source type="geojson" data={featureCollection}>
             <Layer {...lineLayer} />
@@ -211,8 +237,8 @@ const MapPage = () => {
             clusterMaxZoom={14}
             clusterRadius={500}
           >
-            <Layer {...clusterLayer} />
-            <Layer {...clusterCountLayer} />
+            {/* <Layer {...clusterLayer} /> */}
+            {/* <Layer {...clusterCountLayer} /> */}
             <Layer {...unclusteredPointLayer} />
           </Source>
         )}

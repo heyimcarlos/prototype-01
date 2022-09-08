@@ -62,9 +62,18 @@ export const exampleRouter = createRouter()
       return place;
     },
   })
-  .query("getAll", {
+  .query("initial", {
     async resolve({ ctx }) {
-      return await ctx.prisma.example.findMany();
+      return await ctx.prisma.place.findMany({
+        include: {
+          center: true,
+          listing: {
+            include: {
+              location: true,
+            },
+          },
+        },
+      });
     },
   });
 
