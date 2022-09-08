@@ -1,18 +1,28 @@
 import Head from "next/head";
-import React, { useRef } from "react";
-import Map, { Source, Layer, MapRef, MapLayerMouseEvent, FillLayer, LineLayer } from "react-map-gl";
+import React, { useRef, useState } from "react";
+import Map, {
+  Source,
+  Layer,
+  MapRef,
+  MapLayerMouseEvent,
+  FillLayer,
+  LineLayer,
+  LayerProps,
+} from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
-import { FeatureCollection } from "geojson";
+import { FeatureCollection, Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Coordinates, Listing, Place } from "@prisma/client";
+import bbox from "@turf/bbox";
+import { GetPlaceOutput } from "@/server/router/example.js";
+import { JSONArray } from "superjson/dist/types.js";
 
-export const transformToFeatureCollection = (
-  place: Place & { borderCoords: Coordinates[]; listing: Listing[] }
-): FeatureCollection => {
-  const coordsArr = place?.borderCoords.map((coords) => [coords.latitude, coords.longitude]);
+// Place & { borderCoords: Coordinates[]; listing: Listing[] }
+export const transformToFeatureCollection = (place: GetPlaceOutput) => {
+  const bounds = place.bounds as JSONArray;
+  const coordsArr = bounds.map((bound) => bound as Position);
 
-  return {
+  const featureCollection: FeatureCollection = {
     type: "FeatureCollection",
     features: [
       {
@@ -29,12 +39,36 @@ export const transformToFeatureCollection = (
       },
     ],
   };
+
+  featureCollection.features.push(...transformListingsToFeatureCollection(place.listing));
+
+  return featureCollection;
+};
+
+const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"]) => {
+  const features = listings.map((listing): Feature => {
+    return {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        //@TODO: I think the order is incorrect here
+        coordinates: [listing.location.longitude, listing.location.latitude, 0],
+      },
+      id: listing.id,
+      properties: {
+        id: listing.id,
+        name: listing.name,
+      },
+    };
+  });
+
+  return features;
 };
 
 const fillLayer: FillLayer = {
   id: "sdq-neighbourhoods-fill",
   type: "fill",
-  source: "xyc",
+  // source: "xyc",
   paint: {
     "fill-outline-color": "#0040c8",
     "fill-color": "grey",
@@ -52,6 +86,39 @@ const lineLayer: LineLayer = {
   },
 };
 
+export const clusterLayer: LayerProps = {
+  id: "clusters",
+  type: "circle",
+  filter: ["has", "point_count"],
+  paint: {
+    "circle-color": ["step", ["get", "point_count"], "#51bbd6", 100, "#f1f075", 750, "#f28cb1"],
+    "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+  },
+};
+
+export const clusterCountLayer: LayerProps = {
+  id: "cluster-count",
+  type: "symbol",
+  filter: ["has", "point_count"],
+  layout: {
+    "text-field": "{point_count_abbreviated}",
+    "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+    "text-size": 12,
+  },
+};
+
+export const unclusteredPointLayer: LayerProps = {
+  id: "unclustered-point",
+  type: "circle",
+  filter: ["!", ["has", "point_count"]],
+  paint: {
+    "circle-color": "#11b4da",
+    "circle-radius": 10,
+    "circle-stroke-width": 1,
+    "circle-stroke-color": "#fff",
+  },
+};
+
 const slugify = (str: string) => {
   return str
     .toLowerCase()
@@ -62,28 +129,52 @@ const slugify = (str: string) => {
 
 const MapPage = () => {
   const mapRef = useRef<MapRef>(null);
-  const mutation = trpc.useMutation(["example.getPlaceAsGeoJson"], {});
+  const [featureCollection, setFeatureCollection] = useState<FeatureCollection>();
+  const mutation = trpc.useMutation(["example.getPlace"], {});
+
+  const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
+    if (!mapRef.current) return;
+    const [minLng, minLat, maxLng, maxLat] = bbox(feature);
+    mapRef.current.fitBounds(
+      [
+        [minLng, minLat],
+        [maxLng, maxLat],
+      ],
+      {
+        padding: 40,
+        animate: true,
+        duration: 1400,
+        essential: true,
+        // @INFO: we utilize easing to modify the animation easing process.
+        // easing: (t) => t,
+      }
+    );
+  };
 
   const onClick = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
     const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
     const feature = queryRenderedFeatures[0];
+    // @TODO: we should be getting the cluster_id from the feature
+    // console.log(feature?.properties.cluster_id);
+    // console.log(event.features[0].properties.cluster_id, "event");
 
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       const slug = slugify(feature.properties.name);
-      mutation.mutate({ slug });
+      mutation.mutate(
+        { slug },
+        {
+          onSuccess: (data) => {
+            const featureCollection = transformToFeatureCollection(data);
+            const feature = featureCollection.features[0];
+            if (feature) fitBounds(feature);
+            setFeatureCollection(featureCollection);
+            console.log("featureCollection", featureCollection);
+          },
+        }
+      );
     }
-
-    // @INFO: flyTo animates! the map very well.
-    // [x] - @TODO: Implement an easeIn animation to the feature.
-    mapRef.current.flyTo({
-      center: event.lngLat,
-      animate: true,
-      duration: 1400,
-      essential: true,
-      zoom: 15.5,
-    });
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
   };
@@ -104,11 +195,25 @@ const MapPage = () => {
         style={{ width: "100%", height: "100vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
+        interactiveLayerIds={[clusterLayer.id as string]}
       >
-        {mutation.data && (
-          <Source id="xyc" type="geojson" data={mutation.data}>
-            <Layer {...fillLayer} />
+        {featureCollection && (
+          <Source type="geojson" data={featureCollection}>
             <Layer {...lineLayer} />
+            <Layer {...fillLayer} />
+          </Source>
+        )}
+        {featureCollection && (
+          <Source
+            type="geojson"
+            data={featureCollection}
+            cluster
+            clusterMaxZoom={14}
+            clusterRadius={500}
+          >
+            <Layer {...clusterLayer} />
+            <Layer {...clusterCountLayer} />
+            <Layer {...unclusteredPointLayer} />
           </Source>
         )}
       </Map>
