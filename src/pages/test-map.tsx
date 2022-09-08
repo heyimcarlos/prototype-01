@@ -18,7 +18,6 @@ import bbox from "@turf/bbox";
 import { GetPlaceOutput } from "@/server/router/example.js";
 import { JSONArray } from "superjson/dist/types.js";
 
-// Place & { borderCoords: Coordinates[]; listing: Listing[] }
 export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {
   const bounds = place.bounds as JSONArray;
   const coordsArr = bounds.map((bound) => bound as Position);
@@ -69,7 +68,6 @@ const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"
 const fillLayer: FillLayer = {
   id: "sdq-neighbourhoods-fill",
   type: "fill",
-  // source: "xyc",
   paint: {
     "fill-outline-color": "#0040c8",
     "fill-color": "grey",
@@ -174,6 +172,13 @@ const MapPage = () => {
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       const slug = slugify(feature.properties.name);
       mutation.mutate({ slug });
+    } else {
+      const test = mapRef.current.getCenter();
+      mapRef.current.flyTo({
+        center: [test.lng, test.lat],
+        zoom: 14,
+        duration: 1000,
+      });
     }
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
@@ -185,6 +190,7 @@ const MapPage = () => {
         <title>ntornos map</title>
       </Head>
       <Map
+        id="mapa"
         ref={mapRef}
         initialViewState={{
           longitude: -69.94115,
@@ -206,8 +212,6 @@ const MapPage = () => {
             show && (
               <Marker
                 onClick={() => {
-                  // const feature = turf.lineString(place.bounds, { fillLayer, lineLayer });
-                  // fitBounds(feature);
                   mutation.mutate({ slug: place.slug });
                 }}
                 anchor="bottom"
@@ -223,7 +227,7 @@ const MapPage = () => {
             )
         )}
 
-        {featureCollection && (
+        {featureCollection && !show && (
           <Source type="geojson" data={featureCollection}>
             <Layer {...lineLayer} />
             <Layer {...fillLayer} />
