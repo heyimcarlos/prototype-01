@@ -173,12 +173,13 @@ const MapPage = () => {
       const slug = slugify(feature.properties.name);
       mutation.mutate({ slug });
     } else {
-      const test = mapRef.current.getCenter();
-      mapRef.current.flyTo({
-        center: [test.lng, test.lat],
-        zoom: 14,
-        duration: 1000,
-      });
+      // @INFO: @mtjosue This code breaks the map fitBounds setup.
+      //   const test = mapRef.current.getCenter();
+      //   mapRef.current.flyTo({
+      //     center: [test.lng, test.lat],
+      //     zoom: 14,
+      //     duration: 1000,
+      //   });
     }
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
