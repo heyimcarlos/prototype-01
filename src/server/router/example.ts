@@ -2,7 +2,7 @@ import { createRouter } from "./context";
 import { z } from "zod";
 import { inferMutationOutput } from "@/utils/trpc";
 import * as trpc from "@trpc/server";
-import { transformToFeatureCollection } from "@/pages/test-map";
+// import { transformToFeatureCollection } from "@/pages/test-map";
 
 export const exampleRouter = createRouter()
   .mutation("getPlaceAsGeoJson", {
@@ -15,7 +15,7 @@ export const exampleRouter = createRouter()
           slug: input.slug,
         },
         include: {
-          borderCoords: true,
+          // borderCoords: true,
           listing: true,
         },
       });
@@ -27,7 +27,7 @@ export const exampleRouter = createRouter()
         });
       }
 
-      console.log("listings", place.listing);
+      // console.log("listings", place.listing);
       // const geojsonPlace = transformToFeatureCollection(place);
 
       // return geojsonPlace;
@@ -43,7 +43,12 @@ export const exampleRouter = createRouter()
           slug: input.slug,
         },
         include: {
-          borderCoords: true,
+          center: true,
+          listing: {
+            include: {
+              location: true,
+            },
+          },
         },
       });
 

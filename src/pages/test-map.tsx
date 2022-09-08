@@ -13,14 +13,14 @@ import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
 import { FeatureCollection, Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Coordinates, Listing, Place } from "@prisma/client";
 import bbox from "@turf/bbox";
 import { GetPlaceOutput } from "@/server/router/example.js";
-import { AnyLayer } from "mapbox-gl";
+import { JSONArray } from "superjson/dist/types.js";
 
 // Place & { borderCoords: Coordinates[]; listing: Listing[] }
 export const transformToFeatureCollection = (place: GetPlaceOutput) => {
-  const coordsArr = place?.borderCoords.map((coords) => [coords.latitude, coords.longitude]);
+  const bounds = place.bounds as JSONArray;
+  const coordsArr = bounds.map((bound) => bound as Position);
 
   const featureCollection: FeatureCollection = {
     type: "FeatureCollection",
@@ -40,31 +40,30 @@ export const transformToFeatureCollection = (place: GetPlaceOutput) => {
     ],
   };
 
+  featureCollection.features.push(...transformListingsToFeatureCollection(place.listing));
+
   return featureCollection;
 };
 
-// const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"]) => {
-//   const features = listings.map((listing): Feature => {
-//     return {
-//       type: "Feature",
-//       geometry: {
-//         type: "Point",
-//         coordinates: [listing.coordinates.latitude, listing.coordinates.longitude, 0],
-//       },
-//       id: listing.id,
-//       properties: {
-//         id: listing.id,
-//         name: listing.name,
-//       },
-//     };
-//   });
+const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"]) => {
+  const features = listings.map((listing): Feature => {
+    return {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        //@TODO: I think the order is incorrect here
+        coordinates: [listing.location.longitude, listing.location.latitude, 0],
+      },
+      id: listing.id,
+      properties: {
+        id: listing.id,
+        name: listing.name,
+      },
+    };
+  });
 
-//   return {
-//     type: "FeatureCollection",
-//     features,
-//   };
-//   // featureCollection.features.push(...(features as Feature<Geometry, GeoJsonProperties>[]));
-// };
+  return features;
+};
 
 const fillLayer: FillLayer = {
   id: "sdq-neighbourhoods-fill",
@@ -84,6 +83,39 @@ const lineLayer: LineLayer = {
     "line-opacity": 0.25,
     "line-width": 0.25,
     "line-color": "blue",
+  },
+};
+
+export const clusterLayer: LayerProps = {
+  id: "clusters",
+  type: "circle",
+  filter: ["has", "point_count"],
+  paint: {
+    "circle-color": ["step", ["get", "point_count"], "#51bbd6", 100, "#f1f075", 750, "#f28cb1"],
+    "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+  },
+};
+
+export const clusterCountLayer: LayerProps = {
+  id: "cluster-count",
+  type: "symbol",
+  filter: ["has", "point_count"],
+  layout: {
+    "text-field": "{point_count_abbreviated}",
+    "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+    "text-size": 12,
+  },
+};
+
+export const unclusteredPointLayer: LayerProps = {
+  id: "unclustered-point",
+  type: "circle",
+  filter: ["!", ["has", "point_count"]],
+  paint: {
+    "circle-color": "#11b4da",
+    "circle-radius": 10,
+    "circle-stroke-width": 1,
+    "circle-stroke-color": "#fff",
   },
 };
 
@@ -123,10 +155,12 @@ const MapPage = () => {
     if (!mapRef.current) return;
     const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
     const feature = queryRenderedFeatures[0];
+    // @TODO: we should be getting the cluster_id from the feature
+    // console.log(feature?.properties.cluster_id);
+    // console.log(event.features[0].properties.cluster_id, "event");
 
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
-      console.log(feature, event.lngLat);
       const slug = slugify(feature.properties.name);
       mutation.mutate(
         { slug },
@@ -136,6 +170,7 @@ const MapPage = () => {
             const feature = featureCollection.features[0];
             if (feature) fitBounds(feature);
             setFeatureCollection(featureCollection);
+            console.log("featureCollection", featureCollection);
           },
         }
       );
@@ -160,11 +195,25 @@ const MapPage = () => {
         style={{ width: "100%", height: "100vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
+        interactiveLayerIds={[clusterLayer.id as string]}
       >
         {featureCollection && (
-          <Source id={"xyc"} type="geojson" data={featureCollection}>
+          <Source type="geojson" data={featureCollection}>
             <Layer {...lineLayer} />
             <Layer {...fillLayer} />
+          </Source>
+        )}
+        {featureCollection && (
+          <Source
+            type="geojson"
+            data={featureCollection}
+            cluster
+            clusterMaxZoom={14}
+            clusterRadius={500}
+          >
+            <Layer {...clusterLayer} />
+            <Layer {...clusterCountLayer} />
+            <Layer {...unclusteredPointLayer} />
           </Source>
         )}
       </Map>

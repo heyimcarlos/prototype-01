@@ -5,15 +5,13 @@ import DrawControl from "@/components/DrawControl";
 import ControlPanel from "@/components/ControlPanel";
 import { env } from "@/env/client.mjs";
 
-const TOKEN = ""; // Set your mapbox token here
-
 export default function App() {
   const [features, setFeatures] = useState({});
   console.log(features);
 
-  const onUpdate = useCallback((e) => {
+  const onUpdate = useCallback((e: { features: { id: number | string }[] }) => {
     setFeatures((currFeatures) => {
-      const newFeatures = { ...currFeatures };
+      const newFeatures: { [key: string]: { id: number | string } } = { ...currFeatures };
       for (const f of e.features) {
         newFeatures[f.id] = f;
       }
@@ -21,9 +19,9 @@ export default function App() {
     });
   }, []);
 
-  const onDelete = useCallback((e) => {
+  const onDelete = useCallback((e: { features: { id: number | string }[] }) => {
     setFeatures((currFeatures) => {
-      const newFeatures = { ...currFeatures };
+      const newFeatures: { [key: string]: { id: number | string } } = { ...currFeatures };
       for (const f of e.features) {
         delete newFeatures[f.id];
       }

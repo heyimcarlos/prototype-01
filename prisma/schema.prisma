@@ -90,20 +90,20 @@ model Coordinate {
 }
 
 model Listing {
-    id            String     @id @default(cuid())
-    name          String
-    slug          String     @unique
-    description   String
-    price         Int
-    currency      String
-    createdAt     DateTime   @default(now())
-    updatedAt     DateTime   @updatedAt
-    place         Place      @relation(fields: [placeId], references: [id])
-    placeId       String
-    coordinates   Coordinate @relation(fields: [coordinatesId], references: [id])
-    coordinatesId String
-    user          User       @relation(fields: [userId], references: [id])
-    userId        String
+    id          String     @id @default(cuid())
+    name        String
+    slug        String     @unique
+    description String
+    price       Int
+    currency    String
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    place       Place      @relation(fields: [placeId], references: [id])
+    placeId     String
+    location    Coordinate @relation(fields: [locationId], references: [id])
+    locationId  String
+    user        User       @relation(fields: [userId], references: [id])
+    userId      String
     // ListingImage     ListingImage[]
     // ListingReview    ListingReview[]
     // ListingAmenities ListingAmenities[]
