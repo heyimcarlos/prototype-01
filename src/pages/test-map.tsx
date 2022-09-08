@@ -9,10 +9,17 @@ import Map, {
   LineLayer,
   LayerProps,
   Marker,
+  LngLat,
 } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
-import { FeatureCollection, Feature, Geometry, GeoJsonProperties, Position } from "geojson";
+import {
+  FeatureCollection,
+  Feature,
+  Geometry,
+  GeoJsonProperties,
+  Position,
+} from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
 import bbox from "@turf/bbox";
 import { GetPlaceOutput } from "@/server/router/example.js";
@@ -41,12 +48,16 @@ export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {
     ],
   };
 
-  featureCollection.features.push(...transformListingsToFeatureCollection(place.listing));
+  featureCollection.features.push(
+    ...transformListingsToFeatureCollection(place.listing)
+  );
 
   return featureCollection;
 };
 
-const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"]) => {
+const transformListingsToFeatureCollection = (
+  listings: GetPlaceOutput["listing"]
+) => {
   const features = listings.map((listing): Feature => {
     return {
       type: "Feature",
@@ -133,7 +144,8 @@ const slugify = (str: string) => {
 const MapPage = () => {
   const [show, setShow] = useState(true);
   const mapRef = useRef<MapRef>(null);
-  const [featureCollection, setFeatureCollection] = useState<FeatureCollection>();
+  const [featureCollection, setFeatureCollection] =
+    useState<FeatureCollection>();
   const mutation = trpc.useMutation(["example.getPlace"], {
     onSuccess: (data) => {
       const featureCollection = transformPlaceToFeatureCollection(data);
@@ -166,7 +178,10 @@ const MapPage = () => {
 
   const onClick = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
-    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
+    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(
+      event.point,
+      {}
+    );
     const feature = queryRenderedFeatures[0];
     // @TODO: we should be getting the cluster_id from the feature
 
@@ -174,6 +189,13 @@ const MapPage = () => {
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       const slug = slugify(feature.properties.name);
       mutation.mutate({ slug });
+    } else {
+      const test = mapRef.current.getCenter();
+      mapRef.current.flyTo({
+        center: [test.lng, test.lat],
+        zoom: 14,
+        duration: 1000,
+      });
     }
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
@@ -185,6 +207,7 @@ const MapPage = () => {
         <title>ntornos map</title>
       </Head>
       <Map
+        id="mapa"
         ref={mapRef}
         initialViewState={{
           longitude: -69.94115,
@@ -223,7 +246,7 @@ const MapPage = () => {
             )
         )}
 
-        {featureCollection && (
+        {featureCollection && !show && (
           <Source type="geojson" data={featureCollection}>
             <Layer {...lineLayer} />
             <Layer {...fillLayer} />
