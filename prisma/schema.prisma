@@ -67,41 +67,42 @@ model VerificationToken {
 }
 
 model Place {
-    id           String        @id @default(cuid())
-    name         String
-    slug         String        @unique
-    borderCoords Coordinates[]
-    brderCoords  Json          @db.Json
-    createdAt    DateTime      @default(now())
-    updatedAt    DateTime      @updatedAt
-    listing      Listing[]
+    id          String     @id @default(cuid())
+    name        String
+    slug        String     @unique
+    brderCoords Json       @db.Json
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    center      Coordinate @relation(fields: [centerId], references: [id])
+    centerId    String     @unique
+    listing     Listing[]
+    bounds      Json       @db.Json
 }
 
-model Coordinates {
+model Coordinate {
     id        String    @id @default(cuid())
     latitude  Float
     longitude Float
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
-    place     Place     @relation(fields: [placeId], references: [id])
-    placeId   String
+    place     Place?
     listing   Listing[]
 }
 
 model Listing {
-    id            String      @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String
-    slug          String      @unique
+    slug          String     @unique
     description   String
     price         Int
     currency      String
-    createdAt     DateTime    @default(now())
-    updatedAt     DateTime    @updatedAt
-    place         Place       @relation(fields: [placeId], references: [id])
+    createdAt     DateTime   @default(now())
+    updatedAt     DateTime   @updatedAt
+    place         Place      @relation(fields: [placeId], references: [id])
     placeId       String
-    coordinates   Coordinates @relation(fields: [coordinatesId], references: [id])
+    coordinates   Coordinate @relation(fields: [coordinatesId], references: [id])
     coordinatesId String
-    user          User        @relation(fields: [userId], references: [id])
+    user          User       @relation(fields: [userId], references: [id])
     userId        String
     // ListingImage     ListingImage[]
     // ListingReview    ListingReview[]

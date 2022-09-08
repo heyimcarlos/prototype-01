@@ -1,18 +1,28 @@
 import Head from "next/head";
-import React, { useRef } from "react";
-import Map, { Source, Layer, MapRef, MapLayerMouseEvent, FillLayer, LineLayer } from "react-map-gl";
+import React, { useRef, useState } from "react";
+import Map, {
+  Source,
+  Layer,
+  MapRef,
+  MapLayerMouseEvent,
+  FillLayer,
+  LineLayer,
+  LayerProps,
+} from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
-import { FeatureCollection } from "geojson";
+import { FeatureCollection, Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Coordinates, Listing, Place } from "@prisma/client";
+import bbox from "@turf/bbox";
+import { GetPlaceOutput } from "@/server/router/example.js";
+import { AnyLayer } from "mapbox-gl";
 
-export const transformToFeatureCollection = (
-  place: Place & { borderCoords: Coordinates[]; listing: Listing[] }
-): FeatureCollection => {
+// Place & { borderCoords: Coordinates[]; listing: Listing[] }
+export const transformToFeatureCollection = (place: GetPlaceOutput) => {
   const coordsArr = place?.borderCoords.map((coords) => [coords.latitude, coords.longitude]);
 
-  return {
+  const featureCollection: FeatureCollection = {
     type: "FeatureCollection",
     features: [
       {
@@ -29,12 +39,37 @@ export const transformToFeatureCollection = (
       },
     ],
   };
+
+  return featureCollection;
 };
+
+// const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"]) => {
+//   const features = listings.map((listing): Feature => {
+//     return {
+//       type: "Feature",
+//       geometry: {
+//         type: "Point",
+//         coordinates: [listing.coordinates.latitude, listing.coordinates.longitude, 0],
+//       },
+//       id: listing.id,
+//       properties: {
+//         id: listing.id,
+//         name: listing.name,
+//       },
+//     };
+//   });
+
+//   return {
+//     type: "FeatureCollection",
+//     features,
+//   };
+//   // featureCollection.features.push(...(features as Feature<Geometry, GeoJsonProperties>[]));
+// };
 
 const fillLayer: FillLayer = {
   id: "sdq-neighbourhoods-fill",
   type: "fill",
-  source: "xyc",
+  // source: "xyc",
   paint: {
     "fill-outline-color": "#0040c8",
     "fill-color": "grey",
@@ -62,7 +97,27 @@ const slugify = (str: string) => {
 
 const MapPage = () => {
   const mapRef = useRef<MapRef>(null);
-  const mutation = trpc.useMutation(["example.getPlaceAsGeoJson"], {});
+  const [featureCollection, setFeatureCollection] = useState<FeatureCollection>();
+  const mutation = trpc.useMutation(["example.getPlace"], {});
+
+  const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
+    if (!mapRef.current) return;
+    const [minLng, minLat, maxLng, maxLat] = bbox(feature);
+    mapRef.current.fitBounds(
+      [
+        [minLng, minLat],
+        [maxLng, maxLat],
+      ],
+      {
+        padding: 40,
+        animate: true,
+        duration: 1400,
+        essential: true,
+        // @INFO: we utilize easing to modify the animation easing process.
+        // easing: (t) => t,
+      }
+    );
+  };
 
   const onClick = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
@@ -71,19 +126,20 @@ const MapPage = () => {
 
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
+      console.log(feature, event.lngLat);
       const slug = slugify(feature.properties.name);
-      mutation.mutate({ slug });
+      mutation.mutate(
+        { slug },
+        {
+          onSuccess: (data) => {
+            const featureCollection = transformToFeatureCollection(data);
+            const feature = featureCollection.features[0];
+            if (feature) fitBounds(feature);
+            setFeatureCollection(featureCollection);
+          },
+        }
+      );
     }
-
-    // @INFO: flyTo animates! the map very well.
-    // [x] - @TODO: Implement an easeIn animation to the feature.
-    mapRef.current.flyTo({
-      center: event.lngLat,
-      animate: true,
-      duration: 1400,
-      essential: true,
-      zoom: 15.5,
-    });
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
   };
@@ -105,10 +161,10 @@ const MapPage = () => {
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
-        {mutation.data && (
-          <Source id="xyc" type="geojson" data={mutation.data}>
-            <Layer {...fillLayer} />
+        {featureCollection && (
+          <Source id={"xyc"} type="geojson" data={featureCollection}>
             <Layer {...lineLayer} />
+            <Layer {...fillLayer} />
           </Source>
         )}
       </Map>
