@@ -9,23 +9,15 @@ import Map, {
   LineLayer,
   LayerProps,
   Marker,
-  LngLat,
 } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
-import {
-  FeatureCollection,
-  Feature,
-  Geometry,
-  GeoJsonProperties,
-  Position,
-} from "geojson";
+import { FeatureCollection, Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
 import bbox from "@turf/bbox";
 import { GetPlaceOutput } from "@/server/router/example.js";
 import { JSONArray } from "superjson/dist/types.js";
 
-// Place & { borderCoords: Coordinates[]; listing: Listing[] }
 export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {
   const bounds = place.bounds as JSONArray;
   const coordsArr = bounds.map((bound) => bound as Position);
@@ -48,16 +40,12 @@ export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {
     ],
   };
 
-  featureCollection.features.push(
-    ...transformListingsToFeatureCollection(place.listing)
-  );
+  featureCollection.features.push(...transformListingsToFeatureCollection(place.listing));
 
   return featureCollection;
 };
 
-const transformListingsToFeatureCollection = (
-  listings: GetPlaceOutput["listing"]
-) => {
+const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"]) => {
   const features = listings.map((listing): Feature => {
     return {
       type: "Feature",
@@ -80,7 +68,6 @@ const transformListingsToFeatureCollection = (
 const fillLayer: FillLayer = {
   id: "sdq-neighbourhoods-fill",
   type: "fill",
-  // source: "xyc",
   paint: {
     "fill-outline-color": "#0040c8",
     "fill-color": "grey",
@@ -144,8 +131,7 @@ const slugify = (str: string) => {
 const MapPage = () => {
   const [show, setShow] = useState(true);
   const mapRef = useRef<MapRef>(null);
-  const [featureCollection, setFeatureCollection] =
-    useState<FeatureCollection>();
+  const [featureCollection, setFeatureCollection] = useState<FeatureCollection>();
   const mutation = trpc.useMutation(["example.getPlace"], {
     onSuccess: (data) => {
       const featureCollection = transformPlaceToFeatureCollection(data);
@@ -178,10 +164,7 @@ const MapPage = () => {
 
   const onClick = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
-    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(
-      event.point,
-      {}
-    );
+    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
     const feature = queryRenderedFeatures[0];
     // @TODO: we should be getting the cluster_id from the feature
 
@@ -229,8 +212,6 @@ const MapPage = () => {
             show && (
               <Marker
                 onClick={() => {
-                  // const feature = turf.lineString(place.bounds, { fillLayer, lineLayer });
-                  // fitBounds(feature);
                   mutation.mutate({ slug: place.slug });
                 }}
                 anchor="bottom"
