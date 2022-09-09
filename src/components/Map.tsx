@@ -17,6 +17,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import bbox from "@turf/bbox";
 import { GetPlaceOutput } from "@/server/router/example.js";
 import { JSONArray } from "superjson/dist/types.js";
+import * as turf from "@turf/turf";
 
 export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {
   const bounds = place.bounds as JSONArray;
@@ -40,9 +41,27 @@ export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {
     ],
   };
 
-  featureCollection.features.push(...transformListingsToFeatureCollection(place.listing));
+  // featureCollection.features.push(turf.mask(featureCollection.features[0]));
+
+  // featureCollection.features.push(...transformListingsToFeatureCollection(place.listing));
 
   return featureCollection;
+};
+
+const transformPlaceToFeature = (place: GetPlaceOutput) => {
+  const feature: Feature = {
+    type: "Feature",
+    geometry: {
+      type: "Polygon",
+      coordinates: [place.bounds] as Position[][],
+    },
+    id: place.id,
+    properties: {
+      id: place.id,
+      neighborhood: place.name,
+    },
+  };
+  return feature;
 };
 
 const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"]) => {
@@ -65,61 +84,6 @@ const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"
   return features;
 };
 
-const fillLayer: FillLayer = {
-  id: "sdq-neighbourhoods-fill",
-  type: "fill",
-  paint: {
-    "fill-outline-color": "#0040c8",
-    "fill-color": "grey",
-    "fill-opacity": 0.25,
-  },
-};
-
-const lineLayer: LineLayer = {
-  id: "sdq-neighbourhoods-outline",
-  type: "line",
-  paint: {
-    "line-opacity": 0.25,
-    "line-width": 0.25,
-    "line-color": "blue",
-  },
-};
-
-const circleColor = "rgb(6, 182, 212)";
-
-// export const clusterLayer: LayerProps = {
-//   id: "clusters",
-//   type: "circle",
-//   filter: ["has", "point_count"],
-//   paint: {
-//     "circle-color": ["step", ["get", "point_count"], circleColor, 100, "#f1f075", 750, "#f28cb1"],
-//     "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
-//   },
-// };
-
-// export const clusterCountLayer: LayerProps = {
-//   id: "cluster-count",
-//   type: "symbol",
-//   filter: ["has", "point_count"],
-//   layout: {
-//     "text-field": "{point_count_abbreviated}",
-//     "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-//     "text-size": 14,
-//   },
-// };
-
-export const unclusteredPointLayer: LayerProps = {
-  id: "unclustered-point",
-  type: "circle",
-  filter: ["!", ["has", "point_count"]],
-  paint: {
-    "circle-color": circleColor,
-    "circle-radius": 10,
-    "circle-stroke-width": 1,
-    "circle-stroke-color": "#fff",
-  },
-};
-
 const slugify = (str: string) => {
   return str
     .toLowerCase()
@@ -128,16 +92,21 @@ const slugify = (str: string) => {
     .replace(/-+/g, "-");
 };
 
+const transformIntToMoney = (int: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    maximumFractionDigits: 0,
+    currency: "USD",
+  }).format(int);
+};
+
 const MapPage = () => {
   const [show, setShow] = useState(true);
   const mapRef = useRef<MapRef>(null);
-  const [featureCollection, setFeatureCollection] = useState<FeatureCollection>();
   const mutation = trpc.useMutation(["example.getPlace"], {
     onSuccess: (data) => {
-      const featureCollection = transformPlaceToFeatureCollection(data);
-      const feature = featureCollection.features[0];
-      if (feature) fitBounds(feature);
-      setFeatureCollection(featureCollection);
+      const placeAsFeature = transformPlaceToFeature(data);
+      if (placeAsFeature) fitBounds(placeAsFeature);
     },
   });
   const { data } = trpc.useQuery(["example.initial"], {});
@@ -204,12 +173,12 @@ const MapPage = () => {
           if (15 < event.viewState.zoom && show) setShow(false);
         }}
         onClick={onClick}
-        // style={{ width: "100%", height: "100%" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
         {data?.map(
           (place) =>
+            // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
             show && (
               <Marker
                 onClick={() => {
@@ -228,28 +197,54 @@ const MapPage = () => {
             )
         )}
 
-        {featureCollection && !show && (
-          <Source type="geojson" data={featureCollection}>
-            <Layer {...lineLayer} />
-            <Layer {...fillLayer} />
-          </Source>
-        )}
-        {featureCollection && (
+        {mutation.data?.listing.length &&
+          mutation.data.listing.map(
+            (listing) =>
+              !show && (
+                <Marker
+                  latitude={listing.location.latitude}
+                  longitude={listing.location.longitude}
+                  key={`listing-${listing.id}`}
+                >
+                  <div className="bg-green-400 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center">
+                    <span className="text-sm">{transformIntToMoney(listing.price)}</span>
+                  </div>
+                </Marker>
+              )
+          )}
+
+        {mutation.data?.bounds && (
           <Source
+            id="polygons-source"
             type="geojson"
-            data={featureCollection}
-            cluster
-            clusterMaxZoom={14}
-            clusterRadius={500}
+            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
           >
-            {/* <Layer {...clusterLayer} /> */}
-            {/* <Layer {...clusterCountLayer} /> */}
-            <Layer {...unclusteredPointLayer} />
+            <Layer
+              minzoom={15}
+              id="polygons"
+              type="fill"
+              source="polygons-source"
+              paint={{ "fill-color": "gray", "fill-opacity": 0.5 }}
+            />
           </Source>
         )}
       </Map>
     </div>
   );
 };
+
+// {featureCollection && (
+//   <Source
+//     type="geojson"
+//     data={featureCollection}
+//     cluster
+//     clusterMaxZoom={14}
+//     clusterRadius={500}
+//   >
+//     {/* <Layer {...clusterLayer} /> */}
+//     {/* <Layer {...clusterCountLayer} /> */}
+//     <Layer {...unclusteredPointLayer} />
+//   </Source>
+// )}
 
 export default MapPage;

@@ -4,12 +4,13 @@ import Head from "next/head";
 import Map from "@/components/Map";
 import { Popover, Transition, Switch } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-
-// type TechnologyCardProps = {
-//   name: string;
-//   description: string;
-//   documentation: string;
-// };
+// import {
+//   Autocomplete,
+//   AutocompleteProps,
+//   DistanceMatrixService,
+//   useJsApiLoader,
+// } from "@react-google-maps/api";
+import { env } from "@/env/client.mjs";
 
 const inputArray = [
   {
@@ -67,6 +68,14 @@ const Toggle = () => {
 };
 
 const Home: NextPage = () => {
+  // const [matrixResult, setMatrixResult] = useState<any>(null);
+  // const { isLoaded } = useJsApiLoader({
+  //   googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  //   libraries: ["places"],
+  // });
+
+  // if (!isLoaded) return <div>Loading...</div>;
+
   return (
     <>
       <Head>
@@ -76,18 +85,56 @@ const Home: NextPage = () => {
       </Head>
       {/* container mx-auto flex flex-col items-center justify-center min-h-screen p-4 */}
       <main className="w-full h-[calc(100vh-48px)]">
-        <div className="h-12 border-2 border-solid flex items-center">
-          <input placeholder="Search Place" className="rounded border border-solid mx-2 p-1" />
-          <button className="border p-1 mx-2 rounded">Search</button>
-          <Sidebar />
-        </div>
-        <Map />
+        <>
+          <div className="h-12 border-2 border-solid flex items-center">
+            <input placeholder="Search Place" className="rounded border border-solid mx-2 p-1" />
+            <button className="border p-1 mx-2 rounded">Search</button>
+            <Sidebar />
+          </div>
+          <Map />
+          {/* <DistanceMatrixService
+            onLoad={(distanceMatrixService) => console.log(distanceMatrixService)}
+            callback={(res) => res?.rows.length}
+            options={{
+              destinations: [
+                {
+                  // location: { lat: 18.4654119, lng: -69.9624781 },
+                  placeId: "ChIJR7-M6_1hpY4RA2xBS7WgIrU",
+                },
+              ],
+
+              origins: [
+                {
+                  // location: { lat: 18.4568568, lng: -69.9405513 },
+                  placeId: "ChIJ-xmaYwVipY4RLO6L7WwuY2k",
+                },
+              ],
+              travelMode: google.maps.TravelMode.DRIVING,
+            }}
+          /> */}
+        </>
       </main>
     </>
   );
 };
 
 const Sidebar = () => {
+  // const [value, setValue] = useState("");
+  // const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete>();
+  // const [destination, setDestination] = useState<google.maps.Place>();
+
+  // const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
+  //   console.log("autocomplete: ", autocomplete);
+  //   setAutocomplete(autocomplete);
+  // };
+
+  // const onPlaceChanged = () => {
+  //   console.log("onPlaceChanged: ");
+  //   const b = autocomplete?.getPlace();
+  //   console.log("b: ", b);
+  //   setDestination({ placeId: b?.place_id, location: b?.geometry?.location });
+  // };
+  // console.log(destination && destination);
   return (
     <Popover className="relative">
       {({ open }) => (
@@ -123,19 +170,26 @@ const Sidebar = () => {
                 <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-6 sm:p-6">
                   {inputArray.map((item) => (
                     <div key={item.name}>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor={item.name}
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         {item.label}
                       </label>
+                      {/* <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}> */}
                       <div className="mt-1 flex items-center justify-between">
                         <input
-                          type="email"
-                          name="email"
+                          // value={value}
+                          // onChange={(e) => setValue(e.target.value)}
+                          type="text"
+                          name={item.name}
                           id="email"
                           className="block w-full w-8/12 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           placeholder={item.placeholder}
                         />
                         <Toggle />
                       </div>
+                      {/* </Autocomplete> */}
                     </div>
                   ))}
                 </div>
