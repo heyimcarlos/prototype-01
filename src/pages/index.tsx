@@ -1,71 +1,13 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Map from "@/components/Map";
-import { Popover, Transition, Switch } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
 // import {
 //   Autocomplete,
 //   AutocompleteProps,
 //   DistanceMatrixService,
 //   useJsApiLoader,
 // } from "@react-google-maps/api";
-import { env } from "@/env/client.mjs";
-
-const inputArray = [
-  {
-    name: "work",
-    placeholder: "Enter your work name",
-    label: "Work",
-  },
-  {
-    name: "bank",
-    placeholder: "Enter your bank name",
-    label: "Bank",
-  },
-  {
-    name: "market",
-    placeholder: "Enter your market name",
-    label: "Market",
-  },
-  {
-    name: "park",
-    placeholder: "Enter your park name",
-    label: "Park",
-  },
-  {
-    name: "gas station",
-    placeholder: "Enter your gas station name",
-    label: "Gas station",
-  },
-];
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
-const Toggle = () => {
-  const [enabled, setEnabled] = useState(false);
-  return (
-    <Switch
-      checked={enabled}
-      onChange={setEnabled}
-      className={classNames(
-        enabled ? "bg-indigo-600" : "bg-gray-200",
-        "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-      )}
-    >
-      <span className="sr-only">Use setting</span>
-      <span
-        aria-hidden="true"
-        className={classNames(
-          enabled ? "translate-x-5" : "translate-x-0",
-          "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-        )}
-      />
-    </Switch>
-  );
-};
 
 const Home: NextPage = () => {
   // const [matrixResult, setMatrixResult] = useState<any>(null);
@@ -87,9 +29,11 @@ const Home: NextPage = () => {
       <main className="w-full h-[calc(100vh-48px)]">
         <>
           <div className="h-12 border-2 border-solid flex items-center">
-            <input placeholder="Search Place" className="rounded border border-solid mx-2 p-1" />
+            <input
+              placeholder="Search Place"
+              className="rounded border border-solid mx-2 p-1"
+            />
             <button className="border p-1 mx-2 rounded">Search</button>
-            <Sidebar />
           </div>
           <Map />
           {/* <DistanceMatrixService
@@ -115,90 +59,6 @@ const Home: NextPage = () => {
         </>
       </main>
     </>
-  );
-};
-
-const Sidebar = () => {
-  // const [value, setValue] = useState("");
-  // const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete>();
-  // const [destination, setDestination] = useState<google.maps.Place>();
-
-  // const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
-  //   console.log("autocomplete: ", autocomplete);
-  //   setAutocomplete(autocomplete);
-  // };
-
-  // const onPlaceChanged = () => {
-  //   console.log("onPlaceChanged: ");
-  //   const b = autocomplete?.getPlace();
-  //   console.log("b: ", b);
-  //   setDestination({ placeId: b?.place_id, location: b?.geometry?.location });
-  // };
-  // console.log(destination && destination);
-  return (
-    <Popover className="relative">
-      {({ open }) => (
-        <>
-          <Popover.Button
-            className={classNames(
-              open ? "text-gray-900" : "text-gray-500",
-              "group border p-1 inline-flex items-center rounded-md bg-white text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            )}
-          >
-            <span>Preferences</span>
-            <ChevronDownIcon
-              className={classNames(
-                open ? "text-gray-600" : "text-gray-400",
-                "ml-2 h-5 w-5 group-hover:text-gray-500"
-              )}
-              aria-hidden="true"
-            />
-          </Popover.Button>
-
-          <Transition
-            as={Fragment}
-            enter="transition ease-out duration-200"
-            enterFrom="opacity-0 translate-y-1"
-            enterTo="opacity-100 translate-y-0"
-            leave="transition ease-in duration-150"
-            leaveFrom="opacity-100 translate-y-0"
-            leaveTo="opacity-0 translate-y-1"
-          >
-            <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-screen max-w-xs -translate-x-1/2 transform px-2 sm:px-0">
-              {/* @INFO: Card */}
-              <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-6 sm:p-6">
-                  {inputArray.map((item) => (
-                    <div key={item.name}>
-                      <label
-                        htmlFor={item.name}
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        {item.label}
-                      </label>
-                      {/* <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}> */}
-                      <div className="mt-1 flex items-center justify-between">
-                        <input
-                          // value={value}
-                          // onChange={(e) => setValue(e.target.value)}
-                          type="text"
-                          name={item.name}
-                          id="email"
-                          className="block w-full w-8/12 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          placeholder={item.placeholder}
-                        />
-                        <Toggle />
-                      </div>
-                      {/* </Autocomplete> */}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Popover.Panel>
-          </Transition>
-        </>
-      )}
-    </Popover>
   );
 };
 

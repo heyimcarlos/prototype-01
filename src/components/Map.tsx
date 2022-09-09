@@ -1,9 +1,21 @@
 import Head from "next/head";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import Map, { Source, Layer, MapRef, MapLayerMouseEvent, Marker } from "react-map-gl";
+import Map, {
+  Source,
+  Layer,
+  MapRef,
+  MapLayerMouseEvent,
+  Marker,
+} from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
-import { FeatureCollection, Feature, Geometry, GeoJsonProperties, Position } from "geojson";
+import {
+  FeatureCollection,
+  Feature,
+  Geometry,
+  GeoJsonProperties,
+  Position,
+} from "geojson";
 import bbox from "@turf/bbox";
 import { GetPlaceOutput } from "@/server/router/example.js";
 import { JSONArray } from "superjson/dist/types.js";
@@ -12,6 +24,10 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 import { Popover, Switch, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
+import PreferenceForm from "@/components/PreferenceForm";
+import PreferenceInput from "@/components/PreferenceInput";
+import _ from "lodash";
 
 interface MapboxDirectionsResponse {
   code: string;
@@ -50,31 +66,39 @@ const inputArray = [
     placeholder: "Enter your work name",
     label: "Work",
   },
-  {
-    name: "bank",
-    placeholder: "Enter your bank name",
-    label: "Bank",
-  },
-  {
-    name: "market",
-    placeholder: "Enter your market name",
-    label: "Market",
-  },
-  {
-    name: "park",
-    placeholder: "Enter your park name",
-    label: "Park",
-  },
-  {
-    name: "gas station",
-    placeholder: "Enter your gas station name",
-    label: "Gas station",
-  },
+  // {
+  //   name: "bank",
+  //   placeholder: "Enter your bank name",
+  //   label: "Bank",
+  // },
+  // {
+  //   name: "market",
+  //   placeholder: "Enter your market name",
+  //   label: "Market",
+  // },
+  // {
+  //   name: "park",
+  //   placeholder: "Enter your park name",
+  //   label: "Park",
+  // },
+  // {
+  //   name: "gas station",
+  //   placeholder: "Enter your gas station name",
+  //   label: "Gas station",
+  // },
 ];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
+
+const Divider = () => (
+  <div className="relative my-2 py-2">
+    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+      <div className="w-full border-t border-gray-300" />
+    </div>
+  </div>
+);
 
 const Toggle = () => {
   const [enabled, setEnabled] = useState(false);
@@ -98,23 +122,62 @@ const Toggle = () => {
     </Switch>
   );
 };
+type GOOGLE_LIBRARIES =
+  | "drawing"
+  | "geometry"
+  | "localContext"
+  | "places"
+  | "visualization";
+const GOOGLE_MAP_LIBRARIES = ["places"] as GOOGLE_LIBRARIES[];
 
-const MapTopbar = () => {
-  // const [value, setValue] = useState("");
-  // const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete>();
-  // const [destination, setDestination] = useState<google.maps.Place>();
+type d = typeof GOOGLE_MAP_LIBRARIES[number];
+const MapTopbar = ({
+  setPreferences,
+}: {
+  setPreferences: React.Dispatch<
+    React.SetStateAction<{ lat: number; lng: number }[]>
+  >;
+}) => {
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    libraries: GOOGLE_MAP_LIBRARIES,
+  });
 
-  // const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
-  //   console.log("autocomplete: ", autocomplete);
-  //   setAutocomplete(autocomplete);
-  // };
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete>();
 
-  // const onPlaceChanged = () => {
-  //   console.log("onPlaceChanged: ");
-  //   const b = autocomplete?.getPlace();
-  //   console.log("b: ", b);
-  //   setDestination({ placeId: b?.place_id, location: b?.geometry?.location });
-  // };
+  const [preferenceOptions, setPreferenceOptions] = useState<string[]>([
+    "work",
+    "pharmacy",
+    "market",
+  ]);
+
+  const [inputs, setInputs] = useState<
+    { name: string; label: string; placeholder: string }[]
+  >([]);
+
+  if (!isLoaded) return <div>Loading...</div>;
+
+  const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
+    // console.log("autocomplete: ", autocomplete);
+    setAutocomplete(autocomplete);
+  };
+
+  const onPlaceChanged = () => {
+    // console.log("onPlaceChanged: ");
+    if (autocomplete) {
+      const b = autocomplete?.getPlace();
+      // console.log("b: ", b);
+      // setDestination({ location: b?.geometry?.location });
+      setPreferences((val) => [
+        {
+          lat: b.geometry?.location?.lat(),
+          lng: b.geometry?.location?.lng(),
+        },
+      ]);
+    }
+  };
+
   // console.log(destination && destination);
   return (
     <Popover className="relative">
@@ -145,34 +208,53 @@ const MapTopbar = () => {
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-1"
           >
-            <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-screen max-w-xs -translate-x-1/2 transform px-2 sm:px-0">
+            <Popover.Panel className="absolute left-40 z-10 mt-3 w-screen max-w-xs -translate-x-1/2 transform px-2 sm:px-0">
               {/* @INFO: Card */}
               <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-6 sm:p-6">
-                  {inputArray.map((item) => (
-                    <div key={item.name}>
-                      <label
-                        htmlFor={item.name}
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        {item.label}
-                      </label>
-                      {/* <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}> */}
-                      <div className="mt-1 flex items-center justify-between">
-                        <input
-                          // value={value}
-                          // onChange={(e) => setValue(e.target.value)}
-                          type="text"
-                          name={item.name}
-                          id="email"
-                          className="block w-full w-8/12 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          placeholder={item.placeholder}
-                        />
-                        <Toggle />
-                      </div>
-                      {/* </Autocomplete> */}
+                  <PreferenceForm>
+                    {inputs.length > 0 && (
+                      <>
+                        {inputs.map((input, idx) => (
+                          <div key={`preferenceInput-${idx}`} className="mb-2">
+                            <Autocomplete
+                              onLoad={onLoad}
+                              onPlaceChanged={onPlaceChanged}
+                            >
+                              <PreferenceInput input={input} />
+                            </Autocomplete>
+                          </div>
+                        ))}
+                        <Divider />
+                      </>
+                    )}
+                    {/* Available inputs */}
+                    <div className="mt-0">
+                      {preferenceOptions.map((a, idx) => (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setInputs((val) => [
+                              ...val,
+                              {
+                                label: _.capitalize(a),
+                                name: a,
+                                placeholder: `Enter your ${a} address`,
+                              },
+                            ]);
+                            console.log(a);
+                            setPreferenceOptions((value) =>
+                              value.filter((value) => value !== a)
+                            );
+                          }}
+                          className="rounded-full bg-green-400 cursor-pointer mx-1 py-1 px-2"
+                          key={`preferenceOption-${idx}`}
+                        >
+                          {a}
+                        </button>
+                      ))}
                     </div>
-                  ))}
+                  </PreferenceForm>
                 </div>
               </div>
             </Popover.Panel>
@@ -228,7 +310,9 @@ const transformPlaceToFeature = (place: GetPlaceOutput) => {
   return feature;
 };
 
-const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"]) => {
+const transformListingsToFeatureCollection = (
+  listings: GetPlaceOutput["listing"]
+) => {
   const features = listings.map((listing): Feature => {
     return {
       type: "Feature",
@@ -266,6 +350,13 @@ const transformIntToMoney = (int: number) => {
 
 const MapPage = () => {
   const [show, setShow] = useState(true);
+  //
+  const [preferences, setPreferences] = useState<
+    { lat: number; lng: number }[]
+  >([]);
+  const [selectedListing, setSelectedListing] = useState();
+  //
+
   const [directions, setDirections] = useState<Feature>();
   const mapRef = useRef<MapRef>(null);
   const mutation = trpc.useMutation(["example.getPlace"], {
@@ -274,7 +365,13 @@ const MapPage = () => {
       if (placeAsFeature) fitBounds(placeAsFeature);
     },
   });
-  const { data } = trpc.useQuery(["example.initial"], {});
+  const { data } = trpc.useQuery(["example.initial"], {
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
+  console.log("preferences: ", preferences);
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
     if (!mapRef.current) return;
@@ -289,21 +386,23 @@ const MapPage = () => {
         animate: true,
         duration: 1400,
         essential: true,
-        // @INFO: we utilize easing to modify the animation easing process.
-        // easing: (t) => t,
+        // @INFO: we utilize easig to modify the animation easing process.
+        // easing: (t) => t
       }
-    );
-    setShow(!show);
+    ),
+      setShow(!show);
   };
 
   // @INFO: this is a hacky way to get directions from mapbox directions api
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    const pointOne = selectedListing;
+    const pointTwo = `${preferences?.[0]?.lng},${preferences?.[0]?.lat}`;
+    console.log(pointOne, "one");
+    console.log(pointTwo, "two");
+    if (typeof window !== "undefined" && pointOne && pointTwo) {
       const fetchDirections = async () => {
         // https://api.mapbox.com/directions/v5/mapbox/cycling/-84.518641,39.134270;-84.512023,39.102779?geometries=geojson&access_token=pk.eyJ1IjoicmVuemlrc2hhdyIsImEiOiJjbDdtMXJ1enAxbmtsM3Vwb3R6MmdpbWR0In0.XRzLldbwy7Zcw2qYnwoy3w
         const apiUrl = "https://api.mapbox.com/directions/v5/mapbox/driving";
-        const pointOne = "-69.93860006737556,18.45774256874768";
-        const pointTwo = "-69.94397336219362,18.45452665089533";
         const accessToken = env.NEXT_PUBLIC_MAPBOX_TOKEN;
         const res = await fetch(
           `${apiUrl}/${pointOne};${pointTwo}?geometries=geojson&access_token=${accessToken}`
@@ -311,18 +410,23 @@ const MapPage = () => {
         const data: MapboxDirectionsResponse = await res.json();
         console.log("data", data);
         if (!data.routes[0]) return;
-        const lineFeature = turf.lineString(data.routes[0].geometry.coordinates);
+        const lineFeature = turf.lineString(
+          data.routes[0].geometry.coordinates
+        );
         console.log("lineFeature", lineFeature);
         setDirections(lineFeature);
       };
       fetchDirections();
       // mapRef.current.addControl(directions, "top-left");
     }
-  }, []);
+  }, [preferences, selectedListing]);
 
   const onClick = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
-    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
+    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(
+      event.point,
+      {}
+    );
     const feature = queryRenderedFeatures[0];
     // @TODO: we should be getting the cluster_id from the feature
 
@@ -349,7 +453,6 @@ const MapPage = () => {
       <Head>
         <title>ntornos map</title>
       </Head>
-      <MapTopbar />
       <Map
         id="mapa"
         ref={mapRef}
@@ -367,6 +470,10 @@ const MapPage = () => {
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
+        <div className="m-2">
+          <MapTopbar setPreferences={setPreferences} />
+        </div>
+
         {data?.map(
           (place) =>
             // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
@@ -393,12 +500,19 @@ const MapPage = () => {
             (listing) =>
               !show && (
                 <Marker
+                  // onClick={(e) =>
+                  //   setSelectedListing(
+                  //     `${listing.location.longitude},${listing.location.latitude}`
+                  //   )
+                  // }
                   latitude={listing.location.latitude}
                   longitude={listing.location.longitude}
                   key={`listing-${listing.id}`}
                 >
                   <div className="bg-green-400 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center">
-                    <span className="text-sm">{transformIntToMoney(listing.price)}</span>
+                    <span className="text-sm">
+                      {transformIntToMoney(listing.price)}
+                    </span>
                   </div>
                 </Marker>
               )
@@ -426,7 +540,9 @@ const MapPage = () => {
           <Source
             id="polygons-source"
             type="geojson"
-            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
+            data={turf.mask(
+              turf.polygon([mutation.data.bounds] as Position[][])
+            )}
           >
             <Layer
               minzoom={15}
