@@ -1,23 +1,46 @@
 import Head from "next/head";
-import React, { useRef, useState } from "react";
-import Map, {
-  Source,
-  Layer,
-  MapRef,
-  MapLayerMouseEvent,
-  FillLayer,
-  LineLayer,
-  LayerProps,
-  Marker,
-} from "react-map-gl";
+import React, { useEffect, useRef, useState } from "react";
+import Map, { Source, Layer, MapRef, MapLayerMouseEvent, Marker } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
 import { FeatureCollection, Feature, Geometry, GeoJsonProperties, Position } from "geojson";
-import "mapbox-gl/dist/mapbox-gl.css";
 import bbox from "@turf/bbox";
 import { GetPlaceOutput } from "@/server/router/example.js";
 import { JSONArray } from "superjson/dist/types.js";
 import * as turf from "@turf/turf";
+import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
+
+interface MapboxDirectionsResponse {
+  code: string;
+  uuid: string;
+  waypoints: {
+    distance: number;
+    name: string;
+    location: number[];
+  }[];
+  routes: {
+    distance: number;
+    duration: number;
+    geometry: {
+      coordinates: number[][];
+      type: string;
+    };
+    legs: {
+      admins: {
+        iso_3166_1: string;
+        iso_3166_1_alpha3: string;
+      }[];
+      distance: number;
+      duration: number;
+      steps: [];
+      summary: string;
+      weight: number;
+    }[];
+    weight: number;
+    weight_name: string;
+  }[];
+}
 
 export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {
   const bounds = place.bounds as JSONArray;
@@ -102,6 +125,7 @@ const transformIntToMoney = (int: number) => {
 
 const MapPage = () => {
   const [show, setShow] = useState(true);
+  const [directions, setDirections] = useState<Feature>();
   const mapRef = useRef<MapRef>(null);
   const mutation = trpc.useMutation(["example.getPlace"], {
     onSuccess: (data) => {
@@ -131,6 +155,30 @@ const MapPage = () => {
     setShow(!show);
   };
 
+  // @INFO: this is a hacky way to get directions from mapbox directions api
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const fetchDirections = async () => {
+        // https://api.mapbox.com/directions/v5/mapbox/cycling/-84.518641,39.134270;-84.512023,39.102779?geometries=geojson&access_token=pk.eyJ1IjoicmVuemlrc2hhdyIsImEiOiJjbDdtMXJ1enAxbmtsM3Vwb3R6MmdpbWR0In0.XRzLldbwy7Zcw2qYnwoy3w
+        const apiUrl = "https://api.mapbox.com/directions/v5/mapbox/driving";
+        const pointOne = "-69.93860006737556,18.45774256874768";
+        const pointTwo = "-69.94397336219362,18.45452665089533";
+        const accessToken = env.NEXT_PUBLIC_MAPBOX_TOKEN;
+        const res = await fetch(
+          `${apiUrl}/${pointOne};${pointTwo}?geometries=geojson&access_token=${accessToken}`
+        );
+        const data: MapboxDirectionsResponse = await res.json();
+        console.log("data", data);
+        if (!data.routes[0]) return;
+        const lineFeature = turf.lineString(data.routes[0].geometry.coordinates);
+        console.log("lineFeature", lineFeature);
+        setDirections(lineFeature);
+      };
+      fetchDirections();
+      // mapRef.current.addControl(directions, "top-left");
+    }
+  }, []);
+
   const onClick = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
     const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
@@ -140,6 +188,7 @@ const MapPage = () => {
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       const slug = slugify(feature.properties.name);
+
       mutation.mutate({ slug });
     } else {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
@@ -212,6 +261,24 @@ const MapPage = () => {
                 </Marker>
               )
           )}
+        {directions && (
+          <Source id="line-source" type="geojson" data={directions}>
+            <Layer
+              // minzoom={15}
+              id="lineLayer"
+              type="line"
+              source="line-source"
+              layout={{
+                "line-join": "round",
+                "line-cap": "round",
+              }}
+              paint={{
+                "line-color": "rgba(3, 170, 238, 0.5)",
+                "line-width": 5,
+              }}
+            />
+          </Source>
+        )}
 
         {mutation.data?.bounds && (
           <Source
@@ -232,19 +299,5 @@ const MapPage = () => {
     </div>
   );
 };
-
-// {featureCollection && (
-//   <Source
-//     type="geojson"
-//     data={featureCollection}
-//     cluster
-//     clusterMaxZoom={14}
-//     clusterRadius={500}
-//   >
-//     {/* <Layer {...clusterLayer} /> */}
-//     {/* <Layer {...clusterCountLayer} /> */}
-//     <Layer {...unclusteredPointLayer} />
-//   </Source>
-// )}
 
 export default MapPage;
