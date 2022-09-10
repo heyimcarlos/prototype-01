@@ -1,11 +1,9 @@
+import _ from "lodash";
 import React from "react";
 
 type Props = {
-  input: {
-    name: string;
-    placeholder: string;
-    label: string;
-  };
+  name: string;
+  value: string;
 };
 
 const PreferenceInput = (props: Props) => {
@@ -31,22 +29,20 @@ const PreferenceInput = (props: Props) => {
   //   };
   return (
     <div>
-      <label
-        htmlFor={props.input.name}
-        className="block text-sm font-medium text-gray-700"
-      >
-        {props.input.label}
+      <label htmlFor={props.name} className="block text-sm font-medium text-gray-700">
+        {_.capitalize(props.name)}
       </label>
       {/* <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}> */}
       <div className="mt-1 flex items-center justify-between">
         <input
-          //   value={value}
-          //   onChange={(e) => setValue(e.target.value)}
+          defaultValue={props.value}
+          // value={props.value}
+          // onChange={(e) => setValue(e.target.value)}
           type="text"
-          name={props.input.name}
+          name={props.name}
           id="email"
-          className="block w-full w-8/12 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          placeholder={props.input.placeholder}
+          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          placeholder={`Enter your ${props.name} address`}
         />
         {/* <Toggle /> */}
       </div>
