@@ -1,7 +1,8 @@
 import { Fragment } from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
-import Map from "@/components/Map";
+import Map, { Preference, PreferenceObject } from "@/components/Map";
+import { useLocalStorage } from "usehooks-ts";
 // import {
 //   Autocomplete,
 //   AutocompleteProps,
@@ -18,6 +19,11 @@ const Home: NextPage = () => {
 
   // if (!isLoaded) return <div>Loading...</div>;
 
+  const [pref, setPref] = useLocalStorage<{ [key in Preference]?: PreferenceObject }>(
+    "preferences",
+    {}
+  );
+
   return (
     <>
       <Head>
@@ -29,13 +35,10 @@ const Home: NextPage = () => {
       <main className="w-full h-[calc(100vh-48px)]">
         <>
           <div className="h-12 border-2 border-solid flex items-center">
-            <input
-              placeholder="Search Place"
-              className="rounded border border-solid mx-2 p-1"
-            />
+            <input placeholder="Search Place" className="rounded border border-solid mx-2 p-1" />
             <button className="border p-1 mx-2 rounded">Search</button>
           </div>
-          <Map />
+          <Map setPref={setPref} pref={pref} />
           {/* <DistanceMatrixService
             onLoad={(distanceMatrixService) => console.log(distanceMatrixService)}
             callback={(res) => res?.rows.length}
