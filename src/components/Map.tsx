@@ -1,9 +1,21 @@
 import Head from "next/head";
 import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import MapboxMap, { Source, Layer, MapRef, MapLayerMouseEvent, Marker } from "react-map-gl";
+import MapboxMap, {
+  Source,
+  Layer,
+  MapRef,
+  MapLayerMouseEvent,
+  Marker,
+} from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
-import { FeatureCollection, Feature, Geometry, GeoJsonProperties, Position } from "geojson";
+import {
+  FeatureCollection,
+  Feature,
+  Geometry,
+  GeoJsonProperties,
+  Position,
+} from "geojson";
 import bbox from "@turf/bbox";
 import { GetPlaceOutput } from "@/server/router/example.js";
 import { JSONArray } from "superjson/dist/types.js";
@@ -18,36 +30,36 @@ import { useRouter } from "next/router.js";
 import { useReadLocalStorage } from "usehooks-ts";
 import { router } from "@trpc/server";
 
-interface MapboxDirectionsResponse {
-  code: string;
-  uuid: string;
-  waypoints: {
-    distance: number;
-    name: string;
-    location: number[];
-  }[];
-  routes: {
-    distance: number;
-    duration: number;
-    geometry: {
-      coordinates: number[][];
-      type: string;
-    };
-    legs: {
-      admins: {
-        iso_3166_1: string;
-        iso_3166_1_alpha3: string;
-      }[];
-      distance: number;
-      duration: number;
-      steps: [];
-      summary: string;
-      weight: number;
-    }[];
-    weight: number;
-    weight_name: string;
-  }[];
-}
+// interface MapboxDirectionsResponse {
+//   code: string;
+//   uuid: string;
+//   waypoints: {
+//     distance: number;
+//     name: string;
+//     location: number[];
+//   }[];
+//   routes: {
+//     distance: number;
+//     duration: number;
+//     geometry: {
+//       coordinates: number[][];
+//       type: string;
+//     };
+//     legs: {
+//       admins: {
+//         iso_3166_1: string;
+//         iso_3166_1_alpha3: string;
+//       }[];
+//       distance: number;
+//       duration: number;
+//       steps: [];
+//       summary: string;
+//       weight: number;
+//     }[];
+//     weight: number;
+//     weight_name: string;
+//   }[];
+// }
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -61,30 +73,35 @@ const Divider = () => (
   </div>
 );
 
-const Toggle = () => {
-  const [enabled, setEnabled] = useState(false);
-  return (
-    <Switch
-      checked={enabled}
-      onChange={setEnabled}
-      className={classNames(
-        enabled ? "bg-indigo-600" : "bg-gray-200",
-        "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-      )}
-    >
-      <span className="sr-only">Use setting</span>
-      <span
-        aria-hidden="true"
-        className={classNames(
-          enabled ? "translate-x-5" : "translate-x-0",
-          "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-        )}
-      />
-    </Switch>
-  );
-};
+// const Toggle = () => {
+//   const [enabled, setEnabled] = useState(false);
+//   return (
+//     <Switch
+//       checked={enabled}
+//       onChange={setEnabled}
+//       className={classNames(
+//         enabled ? "bg-indigo-600" : "bg-gray-200",
+//         "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+//       )}
+//     >
+//       <span className="sr-only">Use setting</span>
+//       <span
+//         aria-hidden="true"
+//         className={classNames(
+//           enabled ? "translate-x-5" : "translate-x-0",
+//           "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+//         )}
+//       />
+//     </Switch>
+//   );
+// };
 
-type GOOGLE_LIBRARIES = "drawing" | "geometry" | "localContext" | "places" | "visualization";
+type GOOGLE_LIBRARIES =
+  | "drawing"
+  | "geometry"
+  | "localContext"
+  | "places"
+  | "visualization";
 const GOOGLE_MAP_LIBRARIES = ["places"] as GOOGLE_LIBRARIES[];
 const availablePreferences = ["work", "pharmacy", "market"] as const;
 
@@ -94,31 +111,54 @@ const MapTopbar = () => {
     libraries: GOOGLE_MAP_LIBRARIES,
   });
 
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete>();
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete>();
   // 1. have a avaialble preferences tuple that defined all available preferences
   // 2. have a state that holds the active preferences
   // 3. have a function that toggles the active preferences
-  const [activePrefs, setActivePrefs] = useState<typeof availablePreferences[number][]>([]);
-
-  // useEffect(() => {}, []);
+  const [activePrefs, setActivePrefs] = useState<
+    typeof availablePreferences[number][]
+  >([]);
 
   // 4. have a function that returns the active preferences
   // @INFO: Refactor this
-  const [actPrefs, setActPrefs] = useState(() => {
-    const values = availablePreferences.map((option) => {
-      const localStorageItem = localStorage.getItem(option);
-      if (localStorageItem) {
-        setActivePrefs((prev) => [...prev, option]);
+  // const [actPrefs, setActPrefs] = useState(() => {
+  //   const values = availablePreferences.map((option) => {
+  //     const localStorageItem = localStorage.getItem(option);
+  //     if (localStorageItem) {
+  //       setActivePrefs((prev) => [...prev, option]);
+  //     }
+  //   });
+  // });
+
+  //Things are console.loging twice or even three times?
+  //Dont know why this is happening.
+  useEffect(() => {
+    availablePreferences.map((option) => {
+      // console.log("option =", option);
+
+      if (!activePrefs.includes(option)) {
+        // console.log(
+        //   "!activePrefs.includes(option) =",
+        //   activePrefs.includes(option)
+        // );
+
+        const localStorageItem = localStorage.getItem(option);
+        if (localStorageItem) {
+          setActivePrefs([option, ...activePrefs]);
+        }
+
+        // console.log("activePrefs =", activePrefs);
       }
     });
-  });
+  }, [activePrefs]);
 
   const inactivePrefs = useMemo(() => {
     return availablePreferences.filter((pref) => !activePrefs?.includes(pref));
   }, [activePrefs]);
   // active preferences should be reading from the localStorage to determine which preferences are active
 
-  const router = useRouter();
+  // const router = useRouter();
 
   if (!isLoaded) return <div>Loading...</div>;
 
@@ -127,7 +167,7 @@ const MapTopbar = () => {
   };
 
   const onPlaceChanged = (name: string) => {
-    console.log(name, "name");
+    console.log("name", name);
     if (autocomplete) {
       const place = autocomplete?.getPlace();
       if (place?.name) {
@@ -139,6 +179,7 @@ const MapTopbar = () => {
             lng: place?.geometry?.location?.lng(),
           })
         );
+        setAutocomplete(undefined);
       }
     }
   };
@@ -188,7 +229,10 @@ const MapTopbar = () => {
                   {activePrefs.length > 0 && (
                     <>
                       {activePrefs.map((pref, idx) => (
-                        <div key={`preferenceInput-${idx}`} className="mb-2 flex items-center">
+                        <div
+                          key={`preferenceInput-${idx}`}
+                          className="mb-2 flex items-center"
+                        >
                           <Autocomplete
                             className="w-full"
                             onLoad={onLoad}
@@ -198,12 +242,19 @@ const MapTopbar = () => {
                               name={pref}
                               value={
                                 typeof window !== "undefined"
-                                  ? JSON.parse(localStorage.getItem(pref))?.address || ""
+                                  ? JSON.parse(localStorage.getItem(pref))
+                                      ?.address || ""
                                   : ""
                               }
                             />
                           </Autocomplete>
-                          <div className="" onClick={() => removePref(pref)}>
+                          <div
+                            className=""
+                            onClick={() => {
+                              // matrixQuery();
+                              removePref(pref);
+                            }}
+                          >
                             <XMarkIcon className="text-gray-500 mt-6 h-8 w-8 group-hover:text-gray-500" />
                           </div>
                         </div>
@@ -215,7 +266,9 @@ const MapTopbar = () => {
                     {/* Map through non-active preferences, in this case the preferences that do not exist inside of active preferences */}
                     {inactivePrefs.map((pref, idx) => (
                       <button
-                        onClick={() => setActivePrefs((prev) => [...prev, pref])}
+                        onClick={() =>
+                          setActivePrefs((prev) => [...prev, pref])
+                        }
                         className="rounded-full bg-green-400 cursor-pointer mx-1 py-1 px-2"
                         key={`preferenceOption-${idx}`}
                       >
@@ -278,7 +331,9 @@ const transformPlaceToFeature = (place: GetPlaceOutput) => {
   return feature;
 };
 
-const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"]) => {
+const transformListingsToFeatureCollection = (
+  listings: GetPlaceOutput["listing"]
+) => {
   const features = listings.map((listing): Feature => {
     return {
       type: "Feature",
@@ -365,7 +420,8 @@ const Map = () => {
         animate: true,
         duration: 1400,
         essential: true,
-        // @INFO: we utilize easig to modify the animation easing process.
+        // zoom: 16,
+        // @INFO: we utilize easing to modify the animation easing process.
         // easing: (t) => t
       }
     ),
@@ -373,13 +429,18 @@ const Map = () => {
   };
 
   const matrixQuery = trpc.useQuery(
-    ["example.matrix", { origin: selectedListing, destinations: preferences as string[] }],
+    [
+      "example.matrix",
+      { origin: selectedListing, destinations: preferences as string[] },
+    ],
     {
       onSuccess: (data) => {
         // const directions = turf.lineStrings(data.map((route) => route.routes[0].geometry));
         // const lineFeature = turf.lineString(data[0].routes[0].geometry.coordinates);
         const d = turf.featureCollection(
-          data.map((route) => turf.lineString(route.routes[0].geometry.coordinates))
+          data.map((route) =>
+            turf.lineString(route.routes[0].geometry.coordinates)
+          )
         );
 
         // console.log("directions", directions.features[0]);
@@ -421,10 +482,16 @@ const Map = () => {
   //     // mapRef.current.addControl(directions, "top-left");
   //   }
   // }, [preferences, selectedListing]);
+  const [isListingClick, setIsListingClick] = useState(false);
+  const [showRoutes, setShowRoutes] = useState(false);
 
-  const onClick = (event: MapLayerMouseEvent) => {
+  const onClickMap = (event: MapLayerMouseEvent) => {
+    console.log("Map Clicked");
     if (!mapRef.current) return;
-    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
+    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(
+      event.point,
+      {}
+    );
     const feature = queryRenderedFeatures[0];
     // @TODO: we should be getting the cluster_id from the feature
 
@@ -433,14 +500,16 @@ const Map = () => {
       const slug = slugify(feature.properties.name);
 
       mutation.mutate({ slug });
-    } else {
+    } else if (!isListingClick) {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
-      //   const test = mapRef.current.getCenter();
-      //   mapRef.current.flyTo({
-      //     center: [test.lng, test.lat],
-      //     zoom: 14,
-      //     duration: 1000,
-      //   });
+      console.log("hi!");
+      const test = mapRef.current.getCenter();
+      mapRef.current.flyTo({
+        center: [test.lng, test.lat],
+        zoom: 14,
+        duration: 1000,
+      });
+      setShowRoutes(false);
     }
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
@@ -464,7 +533,11 @@ const Map = () => {
           if (15 > event.viewState.zoom && !show) setShow(true);
           if (15 < event.viewState.zoom && show) setShow(false);
         }}
-        onClick={onClick}
+        onClick={(e) => {
+          setIsListingClick(false);
+          console.log("isListingClick", isListingClick);
+          onClickMap(e);
+        }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
@@ -498,20 +571,28 @@ const Map = () => {
             (listing) =>
               !show && (
                 <Marker
-                  onClick={(e) =>
-                    setSelectedListing(`${listing.location.longitude},${listing.location.latitude}`)
-                  }
+                  onClick={(e) => {
+                    // matrixQuery;
+                    console.log("Listing Clicked");
+                    setIsListingClick(true);
+                    setShowRoutes(true);
+                    setSelectedListing(
+                      `${listing.location.longitude},${listing.location.latitude}`
+                    );
+                  }}
                   latitude={listing.location.latitude}
                   longitude={listing.location.longitude}
                   key={`listing-${listing.id}`}
                 >
                   <div className="bg-green-400 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center">
-                    <span className="text-sm">{transformIntToMoney(listing.price)}</span>
+                    <span className="text-sm">
+                      {transformIntToMoney(listing.price)}
+                    </span>
                   </div>
                 </Marker>
               )
           )}
-        {directions && (
+        {directions && showRoutes && (
           <Source id="line-source" type="geojson" data={directions}>
             <Layer
               // minzoom={15}
@@ -534,7 +615,9 @@ const Map = () => {
           <Source
             id="polygons-source"
             type="geojson"
-            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
+            data={turf.mask(
+              turf.polygon([mutation.data.bounds] as Position[][])
+            )}
           >
             <Layer
               minzoom={15}
