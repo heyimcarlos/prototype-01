@@ -3,6 +3,8 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Map, { Preference, PreferenceObject } from "@/components/Map";
 import { useLocalStorage } from "usehooks-ts";
+import { useJsApiLoader } from "@react-google-maps/api";
+import { env } from "@/env/client.mjs";
 // import {
 //   Autocomplete,
 //   AutocompleteProps,
@@ -12,17 +14,16 @@ import { useLocalStorage } from "usehooks-ts";
 
 const Home: NextPage = () => {
   // const [matrixResult, setMatrixResult] = useState<any>(null);
-  // const { isLoaded } = useJsApiLoader({
-  //   googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-  //   libraries: ["places"],
-  // });
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
+  });
 
-  // if (!isLoaded) return <div>Loading...</div>;
+  const [pref, setPref] = useLocalStorage<{
+    [key in Preference]?: PreferenceObject;
+  }>("preferences", {});
 
-  const [pref, setPref] = useLocalStorage<{ [key in Preference]?: PreferenceObject }>(
-    "preferences",
-    {}
-  );
+  if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <>
@@ -35,7 +36,10 @@ const Home: NextPage = () => {
       <main className="w-full h-[calc(100vh-48px)]">
         <>
           <div className="h-12 border-2 border-solid flex items-center">
-            <input placeholder="Search Place" className="rounded border border-solid mx-2 p-1" />
+            <input
+              placeholder="Search Place"
+              className="rounded border border-solid mx-2 p-1"
+            />
             <button className="border p-1 mx-2 rounded">Search</button>
           </div>
           <Map setPref={setPref} pref={pref} />
