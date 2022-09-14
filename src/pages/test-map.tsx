@@ -15,7 +15,7 @@ import { trpc } from "@/utils/trpc";
 import { FeatureCollection, Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
 import bbox from "@turf/bbox";
-import { GetPlaceOutput } from "@/server/router/example.js";
+import { GetPlaceOutput } from "@/server/router/map.js";
 import { JSONArray } from "superjson/dist/types.js";
 
 export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {

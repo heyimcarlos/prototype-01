@@ -1,4 +1,5 @@
 import { env } from "./src/env/server.mjs";
+import { withSuperjson } from "next-superjson";
 
 /**
  * Don't be scared of the generics here.
@@ -9,7 +10,7 @@ import { env } from "./src/env/server.mjs";
  * @constraint {{import('next').NextConfig}}
  */
 function defineNextConfig(config) {
-  return config;
+  return withSuperjson()(config);
 }
 
 export default defineNextConfig({

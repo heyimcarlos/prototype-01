@@ -1,152 +1,62 @@
-import Head from "next/head";
-import React, { useEffect, useRef, useState } from "react";
-import MapboxMap, {
-  Source,
-  Layer,
-  MapRef,
-  MapLayerMouseEvent,
-  Marker,
-} from "react-map-gl";
+import React, { useMemo, useRef, useState } from "react";
+import MapboxMap, { Source, Layer, MapRef, MapLayerMouseEvent, Marker } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
-import {
-  FeatureCollection,
-  Feature,
-  Geometry,
-  GeoJsonProperties,
-  Position,
-} from "geojson";
+import { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
-import { GetPlaceOutput } from "@/server/router/example.js";
-import { JSONArray } from "superjson/dist/types.js";
 import * as turf from "@turf/turf";
+import { BriefcaseIcon, ShoppingCartIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
+import { Coordinate, Listing, Place } from "@prisma/client";
+import { transformPlaceToFeature } from "@/lib/transformPlace";
+import { PreferenceObj } from "@/pages/index";
+import slugify from "@/lib/slugify";
+import { transformIntToMoney } from "@/lib/transformInt";
+
 import "mapbox-gl/dist/mapbox-gl.css";
-import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
-import MapTopBar from "@/components/MapTopBar";
-import {
-  BellIcon,
-  BriefcaseIcon,
-  CakeIcon,
-  CheckIcon,
-} from "@heroicons/react/20/solid";
 
-type GOOGLE_LIBRARIES =
-  | "drawing"
-  | "geometry"
-  | "localContext"
-  | "places"
-  | "visualization";
-
-export const GOOGLE_MAP_LIBRARIES = ["places"] as GOOGLE_LIBRARIES[];
-
-export const availablePreferences = ["work", "pharmacy", "market"] as const;
-
-export type Preference = typeof availablePreferences[number];
-
-export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {
-  const bounds = place.bounds as JSONArray;
-  const coordsArr = bounds.map((bound) => bound as Position);
-
-  const featureCollection: FeatureCollection = {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        geometry: {
-          type: "Polygon",
-          coordinates: [coordsArr],
-        },
-        id: place.id,
-        properties: {
-          id: place.id,
-          neighborhood: place.name,
-        },
-      },
-    ],
-  };
-
-  return featureCollection;
+type MapProps = {
+  pref: PreferenceObj;
+  listings: (Place & {
+    center: Coordinate;
+    listing: (Listing & {
+      location: Coordinate;
+    })[];
+  })[];
 };
 
-const transformPlaceToFeature = (place: GetPlaceOutput) => {
-  const feature: Feature = {
-    type: "Feature",
-    geometry: {
-      type: "Polygon",
-      coordinates: [place.bounds] as Position[][],
-    },
-    id: place.id,
-    properties: {
-      id: place.id,
-      neighborhood: place.name,
-    },
-  };
-  return feature;
-};
-
-const slugify = (str: string) => {
-  return str
-    .toLowerCase()
-    .replace(/[^a-z0-9 -]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-};
-
-const transformIntToMoney = (int: number) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    maximumFractionDigits: 0,
-    currency: "USD",
-  }).format(int);
-};
-
-// 1. have a useEffect that manages the sync between preferences in local storage and the active preferences in local state
-// 2. set the preferences locally, and then sync them to local storage
-// 3. Use a localStorage hook, that detects changes to local storage and updates the state
-type SetValue<T> = React.Dispatch<React.SetStateAction<T>>;
-export type PreferenceObject = { address: string; lat: number; lng: number };
-export type MapProps = {
-  setPref: SetValue<{
-    work?: PreferenceObject;
-    pharmacy?: PreferenceObject;
-    market?: PreferenceObject;
-  }>;
-  pref: {
-    work?: PreferenceObject;
-    pharmacy?: PreferenceObject;
-    market?: PreferenceObject;
-  };
-};
-
-const Map = ({ setPref, pref }: MapProps) => {
+const Map = ({ pref, listings }: MapProps) => {
   const [show, setShow] = useState(true);
-
-  const [isListingClick, setIsListingClick] = useState(false);
-
-  // @INFO: Selected listing state// @INFO: Selected listing state
   const [selectedListing, setSelectedListing] = useState("");
-
   const [showRoutes, setShowRoutes] = useState(false);
-
-  const [directions, setDirections] = useState<FeatureCollection>();
-
   const [curListingId, setCurListingId] = useState("");
 
   const mapRef = useRef<MapRef>(null);
 
-  const mutation = trpc.useMutation(["example.getPlace"], {
+  const mutation = trpc.useMutation(["map.place"], {
     onSuccess: (data) => {
       const placeAsFeature = transformPlaceToFeature(data);
       if (placeAsFeature) fitBounds(placeAsFeature);
     },
   });
 
-  const { data } = trpc.useQuery(["example.initial"], {
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    retry: false,
-  });
+  const destinationsCoords = useMemo(() => {
+    const destArr = [];
+    for (const key in pref) {
+      destArr.push({ ...pref[key as keyof typeof pref], key });
+    }
+    return destArr;
+  }, [pref]);
+
+  const { data: matrix } = trpc.useQuery(
+    ["map.matrix", { origin: selectedListing, destinations: pref }],
+    {
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !!selectedListing && !!pref,
+    }
+  );
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
     if (!mapRef.current) return;
@@ -166,45 +76,14 @@ const Map = ({ setPref, pref }: MapProps) => {
     setShow(false);
   };
 
-  const matrixQuery = trpc.useQuery(
-    ["example.matrix", { origin: selectedListing, dest: pref }],
-    {
-      onSuccess: (data) => {
-        console.log("data", data);
-        const d = turf.featureCollection(
-          data.map((route) =>
-            turf.lineString(route.routes[0].geometry.coordinates)
-          )
-        );
-
-        setDirections(d);
-      },
-      onError: (err) => {
-        if (err.message === "destination-not-provided") {
-          setDirections(undefined);
-        }
-      },
-      refetchOnReconnect: false,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      retry: false,
-      enabled: !!selectedListing && !!pref,
-    }
-  );
-
   const onClickMap = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
-    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(
-      event.point,
-      {}
-    );
+    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
     const feature = queryRenderedFeatures[0];
-    // @TODO: we should be getting the cluster_id from the feature
 
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       const slug = slugify(feature.properties.name);
-
       mutation.mutate({ slug });
     } else {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
@@ -213,9 +92,10 @@ const Map = ({ setPref, pref }: MapProps) => {
         center: [test.lng, test.lat],
         zoom: 14,
         duration: 1000,
+        animate: true,
+        easing: (t) => t,
       });
       setShowRoutes(false);
-      // setListingSelected("");
     }
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
@@ -226,27 +106,8 @@ const Map = ({ setPref, pref }: MapProps) => {
     return colors[idx];
   };
 
-  // console.log("listings", mutation?.data?.listing);
-  // console.log("directions", directions);
-  console.log("preferences", pref);
-
-  const getDestArr = (prefs) => {
-    const destArr = [];
-    for (const key in pref) {
-      destArr.push(prefs[key]);
-    }
-    return destArr;
-  };
-
-  const destArr = getDestArr(pref);
-
-  console.log("destArr", destArr);
-
   return (
     <div className="h-full w-full">
-      <Head>
-        <title>ntornos map</title>
-      </Head>
       <MapboxMap
         id="mapa"
         ref={mapRef}
@@ -257,8 +118,6 @@ const Map = ({ setPref, pref }: MapProps) => {
         }}
         // onZoomEnd={(e) => onZoomEnd(e)}
         onClick={(e) => {
-          setIsListingClick(false);
-          console.log(isListingClick);
           setShow(true);
           setSelectedListing("");
           setCurListingId("");
@@ -267,10 +126,8 @@ const Map = ({ setPref, pref }: MapProps) => {
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
-        <div className="m-2">
-          <MapTopBar setPref={setPref} pref={pref} />
-        </div>
-        {data?.map(
+        {/* INFO: Sector main cluster */}
+        {listings?.map(
           (place) =>
             // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
             show && (
@@ -290,6 +147,8 @@ const Map = ({ setPref, pref }: MapProps) => {
               </Marker>
             )
         )}
+
+        {/* @INFO: Within bounds listings */}
         {mutation.data?.listing.length &&
           mutation.data.listing.map(
             (listing) =>
@@ -297,16 +156,12 @@ const Map = ({ setPref, pref }: MapProps) => {
                 <Marker
                   onClick={(e) => {
                     e.originalEvent.stopPropagation();
-                    setIsListingClick(true);
                     setShowRoutes(true);
                     setSelectedListing(
                       `${listing.location.longitude},${listing.location.latitude}`
                     );
                     setCurListingId(listing.id);
                   }}
-                  // style={{
-                  //   display: selectedListing === listing.id ? "none" : "block",
-                  // }}
                   latitude={listing.location.latitude}
                   longitude={listing.location.longitude}
                   key={`listing-${listing.id}`}
@@ -314,58 +169,42 @@ const Map = ({ setPref, pref }: MapProps) => {
                   <div
                     className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
                     style={{
-                      opacity: curListingId
-                        ? curListingId === listing.id
-                          ? 1
-                          : 0.4
-                        : 1,
-                      // opacity: 0.5,
+                      opacity: curListingId ? (curListingId === listing.id ? 1 : 0.4) : 1,
                     }}
                   >
-                    <span className="text-sm">
-                      {transformIntToMoney(listing.price)}
-                    </span>
+                    <span className="text-sm">{transformIntToMoney(listing.price)}</span>
                   </div>
                 </Marker>
               )
           )}
-        {/* ---------------------------------------------------------------------------- */}
 
-        {destArr.length > 0 &&
+        {/* @INFO: Destination lineStrings being rendered here */}
+        {destinationsCoords.length > 0 &&
           showRoutes &&
-          destArr.map((dest, idx) => {
-            console.log(dest.lng);
+          destinationsCoords.map((dest, idx) => {
             return (
               <Marker key={idx} longitude={dest.lng} latitude={dest.lat}>
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                  {/* <CheckIcon
-                    className="h-6 w-6 text-blue-600"
-                    aria-hidden="true"
-                  /> */}
-                  <BriefcaseIcon />
+                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white">
+                  {dest.key === "work" && <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />}
+
+                  {dest.key === "pharmacy" && (
+                    <ShoppingBagIcon className=" h-8 w-8" aria-hidden="true" />
+                  )}
+
+                  {dest.key === "market" && (
+                    <ShoppingCartIcon className=" h-8 w-8" aria-hidden="true" />
+                  )}
                 </div>
               </Marker>
             );
           })}
 
-        {/* <Marker
-          //  key={idx}
-          longitude={-69.9527804}
-          latitude={18.4509765}
-        >
-          <div className="bg-white cursor-pointer py-1 px-2 rounded-full flex justify-center items-center">
-            <BellIcon />
-          </div>
-        </Marker> */}
-
-        {/* ---------------------------------------------------------------------------- */}
+        {/* @INFO: Bounds being rendered here */}
         {mutation.data?.bounds && (
           <Source
             id="polygons-source"
             type="geojson"
-            data={turf.mask(
-              turf.polygon([mutation.data.bounds] as Position[][])
-            )}
+            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
           >
             <Layer
               minzoom={14.1}
@@ -376,13 +215,15 @@ const Map = ({ setPref, pref }: MapProps) => {
             />
           </Source>
         )}
-        {directions &&
+
+        {/* @INFO: Routes being rendered here */}
+        {matrix &&
           showRoutes &&
-          directions.features.map((feat, idx) => {
+          matrix.features?.map((feat, idx) => {
             return (
               <Source key={idx} type="geojson" data={feat}>
                 <Layer
-                  id={`linelayer${idx}`}
+                  id={`linelayer-${idx}`}
                   type="line"
                   source="line-source"
                   layout={{

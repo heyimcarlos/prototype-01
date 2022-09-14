@@ -1,36 +1,25 @@
 import { Popover, Transition } from "@headlessui/react";
-import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
-import {
-  availablePreferences,
-  GOOGLE_MAP_LIBRARIES,
-  MapProps,
-  Preference,
-} from "./Map";
-import { env } from "../env/client.mjs";
+import { Autocomplete } from "@react-google-maps/api";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import PreferenceInput from "./PreferenceInput";
 import Divider from "./Divider";
+import { availablePreferences, PreferenceKey, PreferenceObj } from "@/pages";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
+type MapTopbarProps = {
+  pref: PreferenceObj;
+  setPref: React.Dispatch<React.SetStateAction<PreferenceObj>>;
+};
 
-const MapTopBar = ({ setPref, pref }: MapProps) => {
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    libraries: GOOGLE_MAP_LIBRARIES,
-  });
-
-  const [autocomplete, setAutocomplete] =
-    useState<google.maps.places.Autocomplete>();
-  const [activePrefs, setActivePrefs] = useState<
-    typeof availablePreferences[number][]
-  >([]);
+const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete>();
+  const [activePrefs, setActivePrefs] = useState<typeof availablePreferences[number][]>([]);
 
   useEffect(() => {
     const currentPrefKeys = Object.keys(pref) as (keyof typeof pref)[];
-    console.log(currentPrefKeys, "currentPrefKeys");
     setActivePrefs(currentPrefKeys);
   }, [pref]);
 
@@ -38,13 +27,11 @@ const MapTopBar = ({ setPref, pref }: MapProps) => {
     return availablePreferences.filter((pref) => !activePrefs?.includes(pref));
   }, [activePrefs]);
 
-  if (!isLoaded) return <div>Loading...</div>;
-
   const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
     setAutocomplete(autocomplete);
   };
 
-  const onPlaceChanged = (name: Preference) => {
+  const onPlaceChanged = (name: PreferenceKey) => {
     if (autocomplete) {
       const place = autocomplete?.getPlace();
       if (place?.name) {
@@ -105,10 +92,7 @@ const MapTopBar = ({ setPref, pref }: MapProps) => {
                   {activePrefs.length > 0 && (
                     <>
                       {activePrefs.map((preference, idx) => (
-                        <div
-                          key={`preferenceInput-${idx}`}
-                          className="mb-2 flex items-center"
-                        >
+                        <div key={`preferenceInput-${idx}`} className="mb-2 flex items-center">
                           <Autocomplete
                             className="w-full"
                             onLoad={onLoad}
@@ -161,4 +145,4 @@ const MapTopBar = ({ setPref, pref }: MapProps) => {
   );
 };
 
-export default MapTopBar;
+export default MapTopbar;
