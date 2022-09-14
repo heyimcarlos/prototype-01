@@ -56,7 +56,7 @@ export default function BoundsMap() {
           anchor="bottom"
           onClick={(e) => console.log("Marker Event =", e)}
         >
-          <img src="./pin.png" />
+          <img alt="map-market" src="./pin.png" />
         </Marker>
       </Map>
       <ControlPanel />

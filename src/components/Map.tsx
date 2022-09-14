@@ -1,146 +1,62 @@
-import Head from "next/head";
-import React, { useRef, useState } from "react";
-import Map, {
-  Source,
-  Layer,
-  MapRef,
-  MapLayerMouseEvent,
-  FillLayer,
-  LineLayer,
-  LayerProps,
-  Marker,
-} from "react-map-gl";
+import React, { useMemo, useRef, useState } from "react";
+import MapboxMap, { Source, Layer, MapRef, MapLayerMouseEvent, Marker } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
-import { FeatureCollection, Feature, Geometry, GeoJsonProperties, Position } from "geojson";
-import "mapbox-gl/dist/mapbox-gl.css";
+import { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
-import { GetPlaceOutput } from "@/server/router/example.js";
-import { JSONArray } from "superjson/dist/types.js";
+import * as turf from "@turf/turf";
+import { BriefcaseIcon, ShoppingCartIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
+import { Coordinate, Listing, Place } from "@prisma/client";
+import { transformPlaceToFeature } from "@/lib/transformPlace";
+import { PreferenceObj } from "@/pages/index";
+import slugify from "@/lib/slugify";
+import { transformIntToMoney } from "@/lib/transformInt";
 
-export const transformPlaceToFeatureCollection = (place: GetPlaceOutput) => {
-  const bounds = place.bounds as JSONArray;
-  const coordsArr = bounds.map((bound) => bound as Position);
+import "mapbox-gl/dist/mapbox-gl.css";
 
-  const featureCollection: FeatureCollection = {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        geometry: {
-          type: "Polygon",
-          coordinates: [coordsArr],
-        },
-        id: place.id,
-        properties: {
-          id: place.id,
-          neighborhood: place.name,
-        },
-      },
-    ],
-  };
-
-  featureCollection.features.push(...transformListingsToFeatureCollection(place.listing));
-
-  return featureCollection;
+type MapProps = {
+  pref: PreferenceObj;
+  listings: (Place & {
+    center: Coordinate;
+    listing: (Listing & {
+      location: Coordinate;
+    })[];
+  })[];
 };
 
-const transformListingsToFeatureCollection = (listings: GetPlaceOutput["listing"]) => {
-  const features = listings.map((listing): Feature => {
-    return {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        //@TODO: I think the order is incorrect here
-        coordinates: [listing.location.longitude, listing.location.latitude, 0],
-      },
-      id: listing.id,
-      properties: {
-        id: listing.id,
-        name: listing.name,
-      },
-    };
-  });
-
-  return features;
-};
-
-const fillLayer: FillLayer = {
-  id: "sdq-neighbourhoods-fill",
-  type: "fill",
-  paint: {
-    "fill-outline-color": "#0040c8",
-    "fill-color": "grey",
-    "fill-opacity": 0.25,
-  },
-};
-
-const lineLayer: LineLayer = {
-  id: "sdq-neighbourhoods-outline",
-  type: "line",
-  paint: {
-    "line-opacity": 0.25,
-    "line-width": 0.25,
-    "line-color": "blue",
-  },
-};
-
-const circleColor = "rgb(6, 182, 212)";
-
-// export const clusterLayer: LayerProps = {
-//   id: "clusters",
-//   type: "circle",
-//   filter: ["has", "point_count"],
-//   paint: {
-//     "circle-color": ["step", ["get", "point_count"], circleColor, 100, "#f1f075", 750, "#f28cb1"],
-//     "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
-//   },
-// };
-
-// export const clusterCountLayer: LayerProps = {
-//   id: "cluster-count",
-//   type: "symbol",
-//   filter: ["has", "point_count"],
-//   layout: {
-//     "text-field": "{point_count_abbreviated}",
-//     "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-//     "text-size": 14,
-//   },
-// };
-
-export const unclusteredPointLayer: LayerProps = {
-  id: "unclustered-point",
-  type: "circle",
-  filter: ["!", ["has", "point_count"]],
-  paint: {
-    "circle-color": circleColor,
-    "circle-radius": 10,
-    "circle-stroke-width": 1,
-    "circle-stroke-color": "#fff",
-  },
-};
-
-const slugify = (str: string) => {
-  return str
-    .toLowerCase()
-    .replace(/[^a-z0-9 -]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-};
-
-const MapPage = () => {
+const Map = ({ pref, listings }: MapProps) => {
   const [show, setShow] = useState(true);
+  const [selectedListing, setSelectedListing] = useState("");
+  const [showRoutes, setShowRoutes] = useState(false);
+  const [curListingId, setCurListingId] = useState("");
+
   const mapRef = useRef<MapRef>(null);
-  const [featureCollection, setFeatureCollection] = useState<FeatureCollection>();
-  const mutation = trpc.useMutation(["example.getPlace"], {
+
+  const mutation = trpc.useMutation(["map.place"], {
     onSuccess: (data) => {
-      const featureCollection = transformPlaceToFeatureCollection(data);
-      const feature = featureCollection.features[0];
-      if (feature) fitBounds(feature);
-      setFeatureCollection(featureCollection);
+      const placeAsFeature = transformPlaceToFeature(data);
+      if (placeAsFeature) fitBounds(placeAsFeature);
     },
   });
-  const { data } = trpc.useQuery(["example.initial"], {});
+
+  const destinationsCoords = useMemo(() => {
+    const destArr = [];
+    for (const key in pref) {
+      destArr.push({ ...pref[key as keyof typeof pref], key });
+    }
+    return destArr;
+  }, [pref]);
+
+  const { data: matrix } = trpc.useQuery(
+    ["map.matrix", { origin: selectedListing, destinations: pref }],
+    {
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !!selectedListing && !!pref,
+    }
+  );
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
     if (!mapRef.current) return;
@@ -155,18 +71,15 @@ const MapPage = () => {
         animate: true,
         duration: 1400,
         essential: true,
-        // @INFO: we utilize easing to modify the animation easing process.
-        // easing: (t) => t,
       }
     );
-    setShow(!show);
+    setShow(false);
   };
 
-  const onClick = (event: MapLayerMouseEvent) => {
+  const onClickMap = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
     const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
     const feature = queryRenderedFeatures[0];
-    // @TODO: we should be getting the cluster_id from the feature
 
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
@@ -174,23 +87,28 @@ const MapPage = () => {
       mutation.mutate({ slug });
     } else {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
-      //   const test = mapRef.current.getCenter();
-      //   mapRef.current.flyTo({
-      //     center: [test.lng, test.lat],
-      //     zoom: 14,
-      //     duration: 1000,
-      //   });
+      const test = mapRef.current.getCenter();
+      mapRef.current.flyTo({
+        center: [test.lng, test.lat],
+        zoom: 14,
+        duration: 1000,
+        animate: true,
+        easing: (t) => t,
+      });
+      setShowRoutes(false);
     }
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
   };
 
+  const routeColor = (idx: number) => {
+    const colors = ["royalblue", "red", "green"];
+    return colors[idx];
+  };
+
   return (
     <div className="h-full w-full">
-      <Head>
-        <title>ntornos map</title>
-      </Head>
-      <Map
+      <MapboxMap
         id="mapa"
         ref={mapRef}
         initialViewState={{
@@ -198,18 +116,20 @@ const MapPage = () => {
           latitude: 18.45707,
           zoom: 14,
         }}
-        onZoomEnd={(event) => {
-          // @INFO: temporary implementation, this is sketchy
-          if (15 > event.viewState.zoom && !show) setShow(true);
-          if (15 < event.viewState.zoom && show) setShow(false);
+        // onZoomEnd={(e) => onZoomEnd(e)}
+        onClick={(e) => {
+          setShow(true);
+          setSelectedListing("");
+          setCurListingId("");
+          onClickMap(e);
         }}
-        onClick={onClick}
-        // style={{ width: "100%", height: "100%" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
-        {data?.map(
+        {/* INFO: Sector main cluster */}
+        {listings?.map(
           (place) =>
+            // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
             show && (
               <Marker
                 onClick={() => {
@@ -228,28 +148,100 @@ const MapPage = () => {
             )
         )}
 
-        {featureCollection && !show && (
-          <Source type="geojson" data={featureCollection}>
-            <Layer {...lineLayer} />
-            <Layer {...fillLayer} />
-          </Source>
-        )}
-        {featureCollection && (
+        {/* @INFO: Within bounds listings */}
+        {mutation.data?.listing.length &&
+          mutation.data.listing.map(
+            (listing) =>
+              !show && (
+                <Marker
+                  onClick={(e) => {
+                    e.originalEvent.stopPropagation();
+                    setShowRoutes(true);
+                    setSelectedListing(
+                      `${listing.location.longitude},${listing.location.latitude}`
+                    );
+                    setCurListingId(listing.id);
+                  }}
+                  latitude={listing.location.latitude}
+                  longitude={listing.location.longitude}
+                  key={`listing-${listing.id}`}
+                >
+                  <div
+                    className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
+                    style={{
+                      opacity: curListingId ? (curListingId === listing.id ? 1 : 0.4) : 1,
+                    }}
+                  >
+                    <span className="text-sm">{transformIntToMoney(listing.price)}</span>
+                  </div>
+                </Marker>
+              )
+          )}
+
+        {/* @INFO: Destination lineStrings being rendered here */}
+        {destinationsCoords.length > 0 &&
+          showRoutes &&
+          destinationsCoords.map((dest, idx) => {
+            return (
+              <Marker key={idx} longitude={dest.lng} latitude={dest.lat}>
+                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white">
+                  {dest.key === "work" && <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />}
+
+                  {dest.key === "pharmacy" && (
+                    <ShoppingBagIcon className=" h-8 w-8" aria-hidden="true" />
+                  )}
+
+                  {dest.key === "market" && (
+                    <ShoppingCartIcon className=" h-8 w-8" aria-hidden="true" />
+                  )}
+                </div>
+              </Marker>
+            );
+          })}
+
+        {/* @INFO: Bounds being rendered here */}
+        {mutation.data?.bounds && (
           <Source
+            id="polygons-source"
             type="geojson"
-            data={featureCollection}
-            cluster
-            clusterMaxZoom={14}
-            clusterRadius={500}
+            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
           >
-            {/* <Layer {...clusterLayer} /> */}
-            {/* <Layer {...clusterCountLayer} /> */}
-            <Layer {...unclusteredPointLayer} />
+            <Layer
+              minzoom={14.1}
+              id="polygons"
+              type="fill"
+              source="polygons-source"
+              paint={{ "fill-color": "gray", "fill-opacity": 0.5 }}
+            />
           </Source>
         )}
-      </Map>
+
+        {/* @INFO: Routes being rendered here */}
+        {matrix &&
+          showRoutes &&
+          matrix.features?.map((feat, idx) => {
+            return (
+              <Source key={idx} type="geojson" data={feat}>
+                <Layer
+                  id={`linelayer-${idx}`}
+                  type="line"
+                  source="line-source"
+                  layout={{
+                    "line-join": "round",
+                    "line-cap": "round",
+                  }}
+                  paint={{
+                    "line-color": routeColor(idx),
+                    "line-width": 5,
+                    "line-opacity": 0.6,
+                  }}
+                />
+              </Source>
+            );
+          })}
+      </MapboxMap>
     </div>
   );
 };
 
-export default MapPage;
+export default Map;
