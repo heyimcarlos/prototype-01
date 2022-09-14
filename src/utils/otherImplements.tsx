@@ -1,4 +1,4 @@
-
+export {};
 
 // const onZoomEnd = (event) => {
 //   // @INFO: temporary implementation, this is sketchy
@@ -14,17 +14,12 @@
 //   }
 // };
 
-
-
 // const onClickMaker = (event, lng, lat) => {
 //   event.originalEvent.stopPropagation();
 //   setIsListingClick(true);
 //   setShowRoutes(true);
 //   setSelectedListing(`${lng},${lat}`);
 // };
-
-
-
 
 // longitude={
 //   feat.geometry.coordinates[
@@ -37,12 +32,8 @@
 //   ][1]
 // }
 
-
-
-
-
 // {
-  /* {destArr.length > 0 &&
+/* {destArr.length > 0 &&
           showRoutes &&
           destArr.map((dest, idx) => {
             console.log(dest.lng);
@@ -57,7 +48,7 @@
 // }
 
 // {
-  /* {directions &&
+/* {directions &&
           directions.features.map((feat, idx) => (
             <Marker
               key={idx}
@@ -77,4 +68,4 @@
               </div>
             </Marker>
           ))} */
-}
+// }

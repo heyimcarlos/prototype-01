@@ -1,8 +1,6 @@
 import React from "react";
 
-type Props = {};
-
-const Divider = (props: Props) => {
+const Divider = () => {
   return (
     <div className="relative my-2 py-2">
       <div className="absolute inset-0 flex items-center" aria-hidden="true">
