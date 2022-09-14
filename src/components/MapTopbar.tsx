@@ -1,9 +1,9 @@
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Autocomplete } from "@react-google-maps/api";
-import { Fragment, useEffect, useMemo, useState } from "react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import PreferenceInput from "./PreferenceInput";
-import Divider from "./Divider";
+import PreferenceInput from "@/components/PreferenceInput";
+import Divider from "@/components/Divider";
 import { availablePreferences, PreferenceKey, PreferenceObj } from "@/pages";
 
 function classNames(...classes: string[]) {
