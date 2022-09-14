@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MapboxMap, {
   Source,
   Layer,
@@ -23,6 +23,12 @@ import * as turf from "@turf/turf";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 import MapTopBar from "@/components/MapTopBar";
+import {
+  BellIcon,
+  BriefcaseIcon,
+  CakeIcon,
+  CheckIcon,
+} from "@heroicons/react/20/solid";
 
 type GOOGLE_LIBRARIES =
   | "drawing"
@@ -112,8 +118,6 @@ export type MapProps = {
   };
 };
 
-let i = -1;
-
 const Map = ({ setPref, pref }: MapProps) => {
   const [show, setShow] = useState(true);
 
@@ -125,6 +129,8 @@ const Map = ({ setPref, pref }: MapProps) => {
   const [showRoutes, setShowRoutes] = useState(false);
 
   const [directions, setDirections] = useState<FeatureCollection>();
+
+  const [curListingId, setCurListingId] = useState("");
 
   const mapRef = useRef<MapRef>(null);
 
@@ -156,8 +162,8 @@ const Map = ({ setPref, pref }: MapProps) => {
         duration: 1400,
         essential: true,
       }
-    ),
-      setShow(!show);
+    );
+    setShow(false);
   };
 
   const matrixQuery = trpc.useQuery(
@@ -200,7 +206,7 @@ const Map = ({ setPref, pref }: MapProps) => {
       const slug = slugify(feature.properties.name);
 
       mutation.mutate({ slug });
-    } else if (!isListingClick) {
+    } else {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
       const test = mapRef.current.getCenter();
       mapRef.current.flyTo({
@@ -209,21 +215,32 @@ const Map = ({ setPref, pref }: MapProps) => {
         duration: 1000,
       });
       setShowRoutes(false);
+      // setListingSelected("");
     }
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
   };
 
-  // console.log("directions", directions);
-
   const routeColor = (idx: number) => {
-    console.log("idx", idx);
     const colors = ["royalblue", "red", "green"];
-    console.log("color", colors[idx]);
     return colors[idx];
   };
 
-  // console.log("directions", directions?.features[0]?.geometry.coordinates);
+  // console.log("listings", mutation?.data?.listing);
+  // console.log("directions", directions);
+  console.log("preferences", pref);
+
+  const getDestArr = (prefs) => {
+    const destArr = [];
+    for (const key in pref) {
+      destArr.push(prefs[key]);
+    }
+    return destArr;
+  };
+
+  const destArr = getDestArr(pref);
+
+  console.log("destArr", destArr);
 
   return (
     <div className="h-full w-full">
@@ -238,13 +255,13 @@ const Map = ({ setPref, pref }: MapProps) => {
           latitude: 18.45707,
           zoom: 14,
         }}
-        onZoomEnd={(event) => {
-          // @INFO: temporary implementation, this is sketchy
-          if (15 > event.viewState.zoom && !show) setShow(true);
-          if (15 < event.viewState.zoom && show) setShow(false);
-        }}
+        // onZoomEnd={(e) => onZoomEnd(e)}
         onClick={(e) => {
           setIsListingClick(false);
+          console.log(isListingClick);
+          setShow(true);
+          setSelectedListing("");
+          setCurListingId("");
           onClickMap(e);
         }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
@@ -278,19 +295,33 @@ const Map = ({ setPref, pref }: MapProps) => {
             (listing) =>
               !show && (
                 <Marker
-                  onClick={() => {
-                    // matrixQuery;
+                  onClick={(e) => {
+                    e.originalEvent.stopPropagation();
                     setIsListingClick(true);
                     setShowRoutes(true);
                     setSelectedListing(
                       `${listing.location.longitude},${listing.location.latitude}`
                     );
+                    setCurListingId(listing.id);
                   }}
+                  // style={{
+                  //   display: selectedListing === listing.id ? "none" : "block",
+                  // }}
                   latitude={listing.location.latitude}
                   longitude={listing.location.longitude}
                   key={`listing-${listing.id}`}
                 >
-                  <div className="bg-green-400 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center">
+                  <div
+                    className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
+                    style={{
+                      opacity: curListingId
+                        ? curListingId === listing.id
+                          ? 1
+                          : 0.4
+                        : 1,
+                      // opacity: 0.5,
+                    }}
+                  >
                     <span className="text-sm">
                       {transformIntToMoney(listing.price)}
                     </span>
@@ -298,6 +329,36 @@ const Map = ({ setPref, pref }: MapProps) => {
                 </Marker>
               )
           )}
+        {/* ---------------------------------------------------------------------------- */}
+
+        {destArr.length > 0 &&
+          showRoutes &&
+          destArr.map((dest, idx) => {
+            console.log(dest.lng);
+            return (
+              <Marker key={idx} longitude={dest.lng} latitude={dest.lat}>
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                  {/* <CheckIcon
+                    className="h-6 w-6 text-blue-600"
+                    aria-hidden="true"
+                  /> */}
+                  <BriefcaseIcon />
+                </div>
+              </Marker>
+            );
+          })}
+
+        {/* <Marker
+          //  key={idx}
+          longitude={-69.9527804}
+          latitude={18.4509765}
+        >
+          <div className="bg-white cursor-pointer py-1 px-2 rounded-full flex justify-center items-center">
+            <BellIcon />
+          </div>
+        </Marker> */}
+
+        {/* ---------------------------------------------------------------------------- */}
         {mutation.data?.bounds && (
           <Source
             id="polygons-source"
@@ -307,7 +368,7 @@ const Map = ({ setPref, pref }: MapProps) => {
             )}
           >
             <Layer
-              minzoom={15}
+              minzoom={14.1}
               id="polygons"
               type="fill"
               source="polygons-source"
@@ -337,63 +398,6 @@ const Map = ({ setPref, pref }: MapProps) => {
               </Source>
             );
           })}
-        {/* ---------------------------------------------------------------------------------------- */}
-        {/* <Source
-          // id="line-source"
-          type="geojson"
-          data={directions?.features[0]}
-        >
-          <Layer
-            id="lineLayer"
-            type="line"
-            source="line-source"
-            layout={{
-              "line-join": "round",
-              "line-cap": "round",
-            }}
-            paint={{
-              "line-color": "royalblue",
-              "line-width": 5,
-            }}
-          />
-        </Source>{" "}
-        <Source
-          // id="line-source"
-          type="geojson"
-          data={directions?.features[1]}
-        >
-          <Layer
-            id="lineLayer1"
-            type="line"
-            source="line-source"
-            layout={{
-              "line-join": "round",
-              "line-cap": "round",
-            }}
-            paint={{
-              "line-color": "red",
-              "line-width": 5,
-            }}
-          />
-        </Source> */}
-        {/* ---------------------------------------------------------------------------------------- */}
-        {/* {directions && showRoutes && (
-          <Source id="line-source" type="geojson" data={directions}>
-            <Layer
-              id="lineLayer"
-              type="line"
-              source="line-source"
-              layout={{
-                "line-join": "round",
-                "line-cap": "round",
-              }}
-              paint={{
-                "line-color": "royalblue",
-                "line-width": 5,
-              }}
-            />
-          </Source>
-        )} */}
       </MapboxMap>
     </div>
   );
