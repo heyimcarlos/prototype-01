@@ -4,7 +4,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import logoPicture from "../../public/assets/images/ntornosLogo.png";
+import logoPicture from "../../public/assets/images/logo2.0.png";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -30,7 +30,7 @@ const TwTopbar = () => {
               <div className="flex px-2 lg:px-0 relative">
                 <div
                   className="flex flex-shrink-0 items-center justify-start"
-                  style={{ marginLeft: "1.1rem" }}
+                  style={{ marginLeft: "1.1rem", marginBottom: "0.2rem" }}
                 >
                   <Image
                     className="block h-2 w-auto lg:hidden"
@@ -38,7 +38,7 @@ const TwTopbar = () => {
                     src={logoPicture}
                     alt="Your Company"
                     // layout="fill"
-                    height={45}
+                    height={35}
                     width={150}
                     // objectPosition="#"
                   />

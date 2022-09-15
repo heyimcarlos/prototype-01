@@ -54,7 +54,7 @@ const Home: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
           <button className="border p-1 mx-2 rounded">Search</button>
         </div> */}
         <TwTopbar />
-        <div className="pl-5 py-1 bg-rose-500">
+        <div className="pl-5 py-1 bg-indigo-600">
           <MapTopbar setPref={setPref} pref={pref} />
         </div>
         <Map listings={listings} pref={pref} />

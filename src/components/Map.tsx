@@ -5,6 +5,7 @@ import MapboxMap, {
   MapRef,
   MapLayerMouseEvent,
   Marker,
+  MapboxEvent,
 } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
@@ -71,8 +72,11 @@ const Map = ({ pref, listings }: MapProps) => {
     }
   );
 
+  // console.log("data", data)
+
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
     if (!mapRef.current) return;
+    console.log(feature);
     const [minLng, minLat, maxLng, maxLat] = bbox(feature);
     mapRef.current.fitBounds(
       [
@@ -122,6 +126,42 @@ const Map = ({ pref, listings }: MapProps) => {
     return colors[idx];
   };
 
+  const fitPrefBounds = (feature: MapboxEvent<MouseEvent>) => {
+    if (!mapRef.current) return;
+    // console.log("feature", feature.target._lngLat.lng);
+    // console.log("pref", pref);
+    const prefBounds = {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [[feature.target._lngLat.lng, feature.target._lngLat.lat]],
+        ],
+      },
+    };
+
+    for (const preference in pref) {
+      const arr = [pref[preference].lng, pref[preference].lat];
+      prefBounds.geometry.coordinates[0]?.push(arr);
+    }
+
+    // console.log("prefBounds", prefBounds);
+
+    const [minLng, minLat, maxLng, maxLat] = bbox(prefBounds);
+    mapRef.current.fitBounds(
+      [
+        [minLng, minLat],
+        [maxLng, maxLat],
+      ],
+      {
+        padding: 250,
+        animate: true,
+        duration: 1400,
+        essential: true,
+      }
+    );
+  };
+
   return (
     <div className="h-full w-full">
       <MapboxMap
@@ -157,8 +197,8 @@ const Map = ({ pref, listings }: MapProps) => {
                 latitude={place.center.latitude}
                 offset={[0, -10]}
               >
-                <div className="bg-rose-500 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
-                  <span className="text-sm font-semibold">
+                <div className="bg-indigo-600 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
+                  <span className="text-sm font-semibold text-white">
                     {place.listing.length}
                   </span>
                 </div>
@@ -181,6 +221,8 @@ const Map = ({ pref, listings }: MapProps) => {
                     );
 
                     setCurListingId(listing.id);
+
+                    fitPrefBounds(e);
                   }}
                   latitude={listing.location.latitude}
                   longitude={listing.location.longitude}
@@ -228,6 +270,7 @@ const Map = ({ pref, listings }: MapProps) => {
           })}
 
         {/* @INFO: Bounds being rendered here */}
+
         {mutation.data?.bounds && (
           <Source
             id="polygons-source"
@@ -242,6 +285,32 @@ const Map = ({ pref, listings }: MapProps) => {
               type="fill"
               source="polygons-source"
               paint={{ "fill-color": "gray", "fill-opacity": 0.5 }}
+            />
+          </Source>
+        )}
+
+        {selectedListing && mutation.data?.bounds && (
+          <Source
+            type="geojson"
+            data={turf.mask(
+              turf.polygon([mutation.data.bounds] as Position[][])
+            )}
+          >
+            <Layer
+              maxzoom={14.1}
+              // minzoom={14}
+              id={`linelayer-zoom-out-bounds`}
+              type="line"
+              source="line-source"
+              layout={{
+                "line-join": "round",
+                "line-cap": "round",
+              }}
+              paint={{
+                "line-color": "black",
+                "line-width": 2,
+                "line-opacity": 1,
+              }}
             />
           </Source>
         )}

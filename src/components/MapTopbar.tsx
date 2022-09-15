@@ -134,7 +134,7 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
                             [preference]: "",
                           });
                         }}
-                        className="rounded-lg bg-rose-500 cursor-pointer mx-1 py-1 px-2"
+                        className="text-white rounded-lg bg-indigo-600 cursor-pointer mx-1 py-1 px-2"
                         key={`preferenceOption-${idx}`}
                         color="inherit"
                       >
