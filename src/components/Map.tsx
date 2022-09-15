@@ -158,7 +158,9 @@ const Map = ({ pref, listings }: MapProps) => {
                 offset={[0, -10]}
               >
                 <div className="bg-rose-500 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
-                  <span className="text-sm">{place.listing.length}</span>
+                  <span className="text-sm font-semibold">
+                    {place.listing.length}
+                  </span>
                 </div>
               </Marker>
             )
