@@ -157,7 +157,7 @@ const Map = ({ pref, listings }: MapProps) => {
                 latitude={place.center.latitude}
                 offset={[0, -10]}
               >
-                <div className="bg-cyan-500 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
+                <div className="bg-rose-500 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
                   <span className="text-sm">{place.listing.length}</span>
                 </div>
               </Marker>
