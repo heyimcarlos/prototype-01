@@ -1,11 +1,21 @@
 import React, { useMemo, useRef, useState } from "react";
-import MapboxMap, { Source, Layer, MapRef, MapLayerMouseEvent, Marker } from "react-map-gl";
+import MapboxMap, {
+  Source,
+  Layer,
+  MapRef,
+  MapLayerMouseEvent,
+  Marker,
+} from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
 import { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
-import { BriefcaseIcon, ShoppingCartIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
+import {
+  BriefcaseIcon,
+  ShoppingCartIcon,
+  ShoppingBagIcon,
+} from "@heroicons/react/24/outline";
 import { Coordinate, Listing, Place } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import { PreferenceObj } from "@/pages/index";
@@ -37,6 +47,9 @@ const Map = ({ pref, listings }: MapProps) => {
       const placeAsFeature = transformPlaceToFeature(data);
       if (placeAsFeature) fitBounds(placeAsFeature);
     },
+    // onError: (error) => {
+    //   console.log("error here");
+    // },
   });
 
   const destinationsCoords = useMemo(() => {
@@ -78,7 +91,10 @@ const Map = ({ pref, listings }: MapProps) => {
 
   const onClickMap = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
-    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
+    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(
+      event.point,
+      {}
+    );
     const feature = queryRenderedFeatures[0];
 
     // @INFO: Below is the fetch db for the clicked place.
@@ -157,9 +173,11 @@ const Map = ({ pref, listings }: MapProps) => {
                   onClick={(e) => {
                     e.originalEvent.stopPropagation();
                     setShowRoutes(true);
+
                     setSelectedListing(
                       `${listing.location.longitude},${listing.location.latitude}`
                     );
+
                     setCurListingId(listing.id);
                   }}
                   latitude={listing.location.latitude}
@@ -169,10 +187,16 @@ const Map = ({ pref, listings }: MapProps) => {
                   <div
                     className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
                     style={{
-                      opacity: curListingId ? (curListingId === listing.id ? 1 : 0.4) : 1,
+                      opacity: curListingId
+                        ? curListingId === listing.id
+                          ? 1
+                          : 0.4
+                        : 1,
                     }}
                   >
-                    <span className="text-sm">{transformIntToMoney(listing.price)}</span>
+                    <span className="text-sm">
+                      {transformIntToMoney(listing.price)}
+                    </span>
                   </div>
                 </Marker>
               )
@@ -185,7 +209,9 @@ const Map = ({ pref, listings }: MapProps) => {
             return (
               <Marker key={idx} longitude={dest.lng} latitude={dest.lat}>
                 <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white">
-                  {dest.key === "work" && <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />}
+                  {dest.key === "work" && (
+                    <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />
+                  )}
 
                   {dest.key === "pharmacy" && (
                     <ShoppingBagIcon className=" h-8 w-8" aria-hidden="true" />
@@ -204,7 +230,9 @@ const Map = ({ pref, listings }: MapProps) => {
           <Source
             id="polygons-source"
             type="geojson"
-            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
+            data={turf.mask(
+              turf.polygon([mutation.data.bounds] as Position[][])
+            )}
           >
             <Layer
               minzoom={14.1}

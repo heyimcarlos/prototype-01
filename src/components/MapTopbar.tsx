@@ -15,8 +15,11 @@ type MapTopbarProps = {
 };
 
 const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete>();
-  const [activePrefs, setActivePrefs] = useState<typeof availablePreferences[number][]>([]);
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete>();
+  const [activePrefs, setActivePrefs] = useState<
+    typeof availablePreferences[number][]
+  >([]);
 
   useEffect(() => {
     const currentPrefKeys = Object.keys(pref) as (keyof typeof pref)[];
@@ -61,11 +64,11 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
         <>
           <Popover.Button
             className={classNames(
-              open ? "text-gray-900" : "text-gray-500",
-              "group border p-1 inline-flex items-center rounded-md bg-white text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              open ? "text-gray-900 " : "text-gray-500 ",
+              "group border p-1 inline-flex items-center rounded-md bg-white text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
             )}
           >
-            <span>Preferences</span>
+            <span className="mx-2">Preferences</span>
             <ChevronDownIcon
               className={classNames(
                 open ? "text-gray-600" : "text-gray-400",
@@ -92,7 +95,10 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
                   {activePrefs.length > 0 && (
                     <>
                       {activePrefs.map((preference, idx) => (
-                        <div key={`preferenceInput-${idx}`} className="mb-2 flex items-center">
+                        <div
+                          key={`preferenceInput-${idx}`}
+                          className="mb-2 flex items-center"
+                        >
                           <Autocomplete
                             className="w-full"
                             onLoad={onLoad}
@@ -117,7 +123,7 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
                       {inactivePrefs.length > 0 && <Divider />}
                     </>
                   )}
-                  <div className="mt-0">
+                  <div className="mt-0" color="white">
                     {/* Map through non-active preferences, in this case the preferences that do not exist inside of active preferences */}
                     {inactivePrefs.map((preference, idx) => (
                       <button
@@ -128,8 +134,9 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
                             [preference]: "",
                           });
                         }}
-                        className="rounded-full bg-green-400 cursor-pointer mx-1 py-1 px-2"
+                        className="rounded-lg bg-rose-500 cursor-pointer mx-1 py-1 px-2"
                         key={`preferenceOption-${idx}`}
+                        color="inherit"
                       >
                         {preference}
                       </button>

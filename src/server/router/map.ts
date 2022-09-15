@@ -75,7 +75,9 @@ export const mapRouter = createRouter()
       }),
     }),
     async resolve({ input }) {
-      const destKeys = Object.keys(input.destinations) as (keyof typeof input.destinations)[];
+      const destKeys = Object.keys(
+        input.destinations
+      ) as (keyof typeof input.destinations)[];
 
       if (destKeys.length < 1) {
         throw new trpc.TRPCError({
@@ -93,6 +95,7 @@ export const mapRouter = createRouter()
 
       const array: string[] = [];
       destKeys.forEach((key) => {
+        // console.log("input.destinations.market", input.destinations.market);
         const value = input.destinations[key];
         if (value) {
           array.push(`${value.lng},${value.lat}`);
@@ -131,14 +134,19 @@ export const mapRouter = createRouter()
         });
       }
 
-      const featureList: turf.helpers.Feature<turf.helpers.LineString, turf.helpers.Properties>[] =
-        [];
+      const featureList: turf.helpers.Feature<
+        turf.helpers.LineString,
+        turf.helpers.Properties
+      >[] = [];
 
       for (const key in matrix) {
         const route = matrix[key]?.routes[0];
         if (!route) continue;
 
-        const feature: turf.helpers.Feature<turf.helpers.LineString, turf.helpers.Properties> = {
+        const feature: turf.helpers.Feature<
+          turf.helpers.LineString,
+          turf.helpers.Properties
+        > = {
           ...route.geometry,
           properties: {
             duration: matrix[key]?.routes[0]?.duration,
