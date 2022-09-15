@@ -9,13 +9,10 @@ import { prisma } from "@/server/db/client";
 import { inferSSRProps } from "@/lib/types/inferSSRProps";
 import MapTopbar from "@/components/MapTopbar";
 import TwTopbar from "@/components/TwTopbar";
+import { useRef } from "react";
+import { MapRef } from "react-map-gl";
 // Google Maps Library
-type GOOGLE_LIBRARIES =
-  | "drawing"
-  | "geometry"
-  | "localContext"
-  | "places"
-  | "visualization";
+type GOOGLE_LIBRARIES = "drawing" | "geometry" | "localContext" | "places" | "visualization";
 export const GOOGLE_MAP_LIBRARIES = ["places"] as GOOGLE_LIBRARIES[];
 
 // Map Preferences
@@ -23,18 +20,18 @@ export const availablePreferences = ["work", "pharmacy", "market"] as const;
 export type PreferenceValue = { address: string; lat: number; lng: number };
 export type PreferenceKey = typeof availablePreferences[number];
 export type PreferenceObj = {
-  [key in PreferenceKey]?: PreferenceValue;
+  [key in PreferenceKey]: PreferenceValue;
 };
 
-const Home: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
-  listings,
-}) => {
+const Home: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ listings }) => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     libraries: GOOGLE_MAP_LIBRARIES,
   });
 
-  const [pref, setPref] = useLocalStorage<PreferenceObj>("preferences", {});
+  const [pref, setPref] = useLocalStorage<PreferenceObj>("preferences", {} as PreferenceObj);
+
+  const mapRef = useRef<MapRef>(null);
 
   if (!isLoaded) return <div>Loading...</div>;
 
@@ -55,9 +52,9 @@ const Home: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
         </div> */}
         <TwTopbar />
         <div className="pl-5 py-1 bg-indigo-600">
-          <MapTopbar setPref={setPref} pref={pref} />
+          <MapTopbar mapRef={mapRef} setPref={setPref} pref={pref} />
         </div>
-        <Map listings={listings} pref={pref} />
+        <Map mapRef={mapRef} listings={listings} pref={pref} />
       </main>
     </>
   );

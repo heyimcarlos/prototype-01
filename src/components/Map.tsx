@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { RefObject, useMemo, useRef, useState } from "react";
 import MapboxMap, {
   Source,
   Layer,
@@ -12,20 +12,17 @@ import { trpc } from "@/utils/trpc";
 import { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
-import {
-  BriefcaseIcon,
-  ShoppingCartIcon,
-  ShoppingBagIcon,
-} from "@heroicons/react/24/outline";
+import { BriefcaseIcon, ShoppingCartIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
 import { Coordinate, Listing, Place } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
-import { PreferenceObj } from "@/pages/index";
+import { PreferenceKey, PreferenceObj } from "@/pages/index";
 import slugify from "@/lib/slugify";
 import { transformIntToMoney } from "@/lib/transformInt";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
 type MapProps = {
+  mapRef: RefObject<MapRef>;
   pref: PreferenceObj;
   listings: (Place & {
     center: Coordinate;
@@ -35,48 +32,46 @@ type MapProps = {
   })[];
 };
 
-const Map = ({ pref, listings }: MapProps) => {
+const Map = ({ pref, listings, mapRef }: MapProps) => {
   const [show, setShow] = useState(true);
   const [selectedListing, setSelectedListing] = useState("");
   const [showRoutes, setShowRoutes] = useState(false);
   const [curListingId, setCurListingId] = useState("");
-
-  const mapRef = useRef<MapRef>(null);
 
   const mutation = trpc.useMutation(["map.place"], {
     onSuccess: (data) => {
       const placeAsFeature = transformPlaceToFeature(data);
       if (placeAsFeature) fitBounds(placeAsFeature);
     },
-    // onError: (error) => {
-    //   console.log("error here");
-    // },
   });
 
-  const destinationsCoords = useMemo(() => {
+  const preferencesCoordinates = useMemo(() => {
     const destArr = [];
-    for (const key in pref) {
-      destArr.push({ ...pref[key as keyof typeof pref], key });
+    const keys = Object.keys(pref) as PreferenceKey[];
+
+    for (const key of keys) {
+      if (pref[key]?.address) {
+        destArr.push({ ...pref[key], key });
+      } else {
+        // find the closest place of the preference
+      }
     }
     return destArr;
   }, [pref]);
 
   const { data: matrix } = trpc.useQuery(
-    ["map.matrix", { origin: selectedListing, destinations: pref }],
+    ["map.matrix", { origin: selectedListing, destinations: preferencesCoordinates }],
     {
       refetchOnReconnect: false,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       retry: false,
-      enabled: !!selectedListing && !!pref,
+      enabled: !!selectedListing && preferencesCoordinates.length > 0,
     }
   );
 
-  // console.log("data", data)
-
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
     if (!mapRef.current) return;
-    console.log(feature);
     const [minLng, minLat, maxLng, maxLat] = bbox(feature);
     mapRef.current.fitBounds(
       [
@@ -95,10 +90,7 @@ const Map = ({ pref, listings }: MapProps) => {
 
   const onClickMap = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
-    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(
-      event.point,
-      {}
-    );
+    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
     const feature = queryRenderedFeatures[0];
 
     // @INFO: Below is the fetch db for the clicked place.
@@ -128,15 +120,11 @@ const Map = ({ pref, listings }: MapProps) => {
 
   const fitPrefBounds = (feature: MapboxEvent<MouseEvent>) => {
     if (!mapRef.current) return;
-    // console.log("feature", feature.target._lngLat.lng);
-    // console.log("pref", pref);
     const prefBounds = {
       type: "Feature",
       geometry: {
         type: "Polygon",
-        coordinates: [
-          [[feature.target._lngLat.lng, feature.target._lngLat.lat]],
-        ],
+        coordinates: [[[feature.target._lngLat.lng, feature.target._lngLat.lat]]],
       },
     };
 
@@ -198,9 +186,7 @@ const Map = ({ pref, listings }: MapProps) => {
                 offset={[0, -10]}
               >
                 <div className="bg-indigo-600 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
-                  <span className="text-sm font-semibold text-white">
-                    {place.listing.length}
-                  </span>
+                  <span className="text-sm font-semibold text-white">{place.listing.length}</span>
                 </div>
               </Marker>
             )
@@ -231,31 +217,23 @@ const Map = ({ pref, listings }: MapProps) => {
                   <div
                     className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
                     style={{
-                      opacity: curListingId
-                        ? curListingId === listing.id
-                          ? 1
-                          : 0.4
-                        : 1,
+                      opacity: curListingId ? (curListingId === listing.id ? 1 : 0.4) : 1,
                     }}
                   >
-                    <span className="text-sm">
-                      {transformIntToMoney(listing.price)}
-                    </span>
+                    <span className="text-sm">{transformIntToMoney(listing.price)}</span>
                   </div>
                 </Marker>
               )
           )}
 
         {/* @INFO: Destination lineStrings being rendered here */}
-        {destinationsCoords.length > 0 &&
+        {preferencesCoordinates.length > 0 &&
           showRoutes &&
-          destinationsCoords.map((dest, idx) => {
+          preferencesCoordinates.map((dest, idx) => {
             return (
               <Marker key={idx} longitude={dest.lng} latitude={dest.lat}>
                 <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white">
-                  {dest.key === "work" && (
-                    <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />
-                  )}
+                  {dest.key === "work" && <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />}
 
                   {dest.key === "pharmacy" && (
                     <ShoppingBagIcon className=" h-8 w-8" aria-hidden="true" />
@@ -275,9 +253,7 @@ const Map = ({ pref, listings }: MapProps) => {
           <Source
             id="polygons-source"
             type="geojson"
-            data={turf.mask(
-              turf.polygon([mutation.data.bounds] as Position[][])
-            )}
+            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
           >
             <Layer
               minzoom={14.1}
@@ -292,9 +268,7 @@ const Map = ({ pref, listings }: MapProps) => {
         {selectedListing && mutation.data?.bounds && (
           <Source
             type="geojson"
-            data={turf.mask(
-              turf.polygon([mutation.data.bounds] as Position[][])
-            )}
+            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
           >
             <Layer
               maxzoom={14.1}

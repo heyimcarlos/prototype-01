@@ -10,6 +10,7 @@ const PreferenceObjectValidator = z.object({
   address: z.string(),
   lat: z.number(),
   lng: z.number(),
+  key: z.union([z.literal("work"), z.literal("pharmacy"), z.literal("market")]),
 });
 
 export const mapRouter = createRouter()
@@ -68,45 +69,16 @@ export const mapRouter = createRouter()
   .query("matrix", {
     input: z.object({
       origin: z.string(),
-      destinations: z.object({
-        work: PreferenceObjectValidator.optional(),
-        pharmacy: PreferenceObjectValidator.optional(),
-        market: PreferenceObjectValidator.optional(),
-      }),
+      destinations: z.array(PreferenceObjectValidator),
     }),
     async resolve({ input }) {
-      const destKeys = Object.keys(
-        input.destinations
-      ) as (keyof typeof input.destinations)[];
-
-      if (destKeys.length < 1) {
-        throw new trpc.TRPCError({
-          code: "BAD_REQUEST",
-          message: "destination-not-provided",
-        });
-      }
-
-      if (!input.origin) {
-        throw new trpc.TRPCError({
-          code: "NOT_FOUND",
-          message: "place-not-found-motherfucker",
-        });
-      }
-
-      const array: string[] = [];
-      destKeys.forEach((key) => {
-        // console.log("input.destinations.market", input.destinations.market);
-        const value = input.destinations[key];
-        if (value) {
-          array.push(`${value.lng},${value.lat}`);
-        }
-      });
-
       // calculate matrix in parallel.
       const matrix = await Promise.all(
-        array.map(async (destination) => {
+        input.destinations.map(async (destination) => {
+          const str = `${destination.lng},${destination.lat}`;
+          console.log(str);
           const res = await fetch(
-            `${mapboxApiUrl}/driving/${input.origin};${destination}?geometries=geojson&access_token=${env.NEXT_PUBLIC_MAPBOX_TOKEN}`
+            `${mapboxApiUrl}/driving/${input.origin};${destination.lng},${destination.lat}?geometries=geojson&access_token=${env.NEXT_PUBLIC_MAPBOX_TOKEN}`
           );
 
           const json: {
@@ -134,19 +106,14 @@ export const mapRouter = createRouter()
         });
       }
 
-      const featureList: turf.helpers.Feature<
-        turf.helpers.LineString,
-        turf.helpers.Properties
-      >[] = [];
+      const featureList: turf.helpers.Feature<turf.helpers.LineString, turf.helpers.Properties>[] =
+        [];
 
       for (const key in matrix) {
         const route = matrix[key]?.routes[0];
         if (!route) continue;
 
-        const feature: turf.helpers.Feature<
-          turf.helpers.LineString,
-          turf.helpers.Properties
-        > = {
+        const feature: turf.helpers.Feature<turf.helpers.LineString, turf.helpers.Properties> = {
           ...route.geometry,
           properties: {
             duration: matrix[key]?.routes[0]?.duration,

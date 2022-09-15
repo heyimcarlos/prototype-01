@@ -1,25 +1,25 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, RefObject, useEffect, useMemo, useState } from "react";
 import { Popover, Transition } from "@headlessui/react";
-import { Autocomplete } from "@react-google-maps/api";
+import { Autocomplete, StandaloneSearchBox } from "@react-google-maps/api";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import PreferenceInput from "@/components/PreferenceInput";
 import Divider from "@/components/Divider";
 import { availablePreferences, PreferenceKey, PreferenceObj } from "@/pages";
+import { MapRef } from "react-map-gl";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 type MapTopbarProps = {
+  mapRef: RefObject<MapRef>;
   pref: PreferenceObj;
   setPref: React.Dispatch<React.SetStateAction<PreferenceObj>>;
 };
 
-const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
-  const [autocomplete, setAutocomplete] =
-    useState<google.maps.places.Autocomplete>();
-  const [activePrefs, setActivePrefs] = useState<
-    typeof availablePreferences[number][]
-  >([]);
+const MapTopbar = ({ setPref, pref, mapRef }: MapTopbarProps) => {
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete>();
+  const [searchBox, setSearchBox] = useState<google.maps.places.SearchBox>();
+  const [activePrefs, setActivePrefs] = useState<typeof availablePreferences[number][]>([]);
 
   useEffect(() => {
     const currentPrefKeys = Object.keys(pref) as (keyof typeof pref)[];
@@ -34,18 +34,68 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
     setAutocomplete(autocomplete);
   };
 
-  const onPlaceChanged = (name: PreferenceKey) => {
+  useEffect(() => {
+    console.log(mapRef.current?.getBounds());
+    const bounds = mapRef.current?.getBounds();
+    console.log("bounds", bounds);
+    if (bounds && searchBox) {
+      searchBox?.setBounds({
+        east: bounds.getEast(),
+        north: bounds.getNorth(),
+        south: bounds.getSouth(),
+        west: bounds.getWest(),
+      });
+      console.log(searchBox?.getBounds());
+    }
+  }, [mapRef, searchBox]);
+
+  const onPlacesChanged = () => {
+    if (searchBox) {
+      // if (mapRef) {
+      //   const bounds = mapRef.current?.getBounds();
+      //   if (bounds) {
+      //     console.log(bounds.getSouthWest(), bounds.getNorthEast());
+      //     const a = new google.maps.LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast());
+      //     console.log(a);
+      //     // const googleBounds = new google.maps.LatLngBounds(
+      //     //   new google.maps.LatLng(bounds.sw),
+      //     //   new google.maps.LatLng(bounds.ne)
+      //     // );
+      //     searchBox.setBounds(a);
+      //   }
+      //   // console.log(googleBounds, "googleBounds");
+      //   // console.log("gl:", bounds, "google:", googlebounds);
+      //   // searchBox.setBounds(bounds);
+      // }
+      // const bounds = searchBox.getBounds();
+      // console.log("searchbox bounds", bounds);
+      // const bounds = searchBox.getBounds();
+      // console.log("bounds", bounds);
+      const places = searchBox.getPlaces();
+      console.log("places", places);
+    }
+  };
+
+  const onSearchBoxLoad = (searchBox: google.maps.places.SearchBox) => {
+    setSearchBox(searchBox);
+  };
+
+  const onPlaceChanged = () => {
+    console.log(autocomplete);
     if (autocomplete) {
       const place = autocomplete?.getPlace();
+      console.log(autocomplete.getBounds());
+      console.log(autocomplete.getFields());
+      console.log(autocomplete);
       if (place?.name) {
-        setPref({
-          ...pref,
-          [name]: {
-            address: place?.name,
-            lat: place?.geometry?.location?.lat(),
-            lng: place?.geometry?.location?.lng(),
-          },
-        });
+        // setPref({
+        //   ...pref,
+        //   [name]: {
+        //     address: place?.name,
+        //     lat: place?.geometry?.location?.lat(),
+        //     lng: place?.geometry?.location?.lng(),
+        //   },
+        // });
         setAutocomplete(undefined);
       }
     }
@@ -95,20 +145,28 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
                   {activePrefs.length > 0 && (
                     <>
                       {activePrefs.map((preference, idx) => (
-                        <div
-                          key={`preferenceInput-${idx}`}
-                          className="mb-2 flex items-center"
-                        >
-                          <Autocomplete
-                            className="w-full"
-                            onLoad={onLoad}
-                            onPlaceChanged={() => onPlaceChanged(preference)}
+                        <div key={`preferenceInput-${idx}`} className="mb-2 flex items-center">
+                          <StandaloneSearchBox
+                            onPlacesChanged={onPlacesChanged}
+                            onLoad={onSearchBoxLoad}
                           >
                             <PreferenceInput
                               name={preference}
                               value={pref[preference]?.address || ""}
                             />
-                          </Autocomplete>
+                          </StandaloneSearchBox>
+                          {/* <Autocomplete
+                            restrictions={{ country: "do" }}
+                            // options={{fields: }}
+                            className="w-full"
+                            onLoad={onLoad}
+                            onPlaceChanged={onPlaceChanged}
+                          >
+                            <PreferenceInput
+                              name={preference}
+                              value={pref[preference]?.address || ""}
+                            />
+                          </Autocomplete> */}
                           <div
                             className=""
                             onClick={() => {
