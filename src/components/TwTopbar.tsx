@@ -18,18 +18,28 @@ const TwTopbar = () => {
       {({ open }) => (
         <>
           {/* <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8"> */}
-          <div className="">
+          <div
+            className=""
+            style={{
+              marginTop: "-0.2rem",
+              //   marginBottom: "-0.5rem",
+              paddingTop: "0.2rem",
+            }}
+          >
             <div className="flex h-16 justify-between">
               <div className="flex px-2 lg:px-0 relative">
-                <div className="flex flex-shrink-0 items-center justify-start ml-1">
+                <div
+                  className="flex flex-shrink-0 items-center justify-start"
+                  style={{ marginLeft: "1.1rem" }}
+                >
                   <Image
                     className="block h-2 w-auto lg:hidden"
                     // src="/public/assets/images/ntornosLogo.png"
                     src={logoPicture}
                     alt="Your Company"
                     // layout="fill"
-                    height={60}
-                    width={180}
+                    height={45}
+                    width={150}
                     // objectPosition="#"
                   />
                   {/* <Image
