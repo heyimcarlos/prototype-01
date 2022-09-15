@@ -8,9 +8,14 @@ import { env } from "@/env/client.mjs";
 import { prisma } from "@/server/db/client";
 import { inferSSRProps } from "@/lib/types/inferSSRProps";
 import MapTopbar from "@/components/MapTopbar";
-
+import TwTopbar from "@/components/TwTopbar";
 // Google Maps Library
-type GOOGLE_LIBRARIES = "drawing" | "geometry" | "localContext" | "places" | "visualization";
+type GOOGLE_LIBRARIES =
+  | "drawing"
+  | "geometry"
+  | "localContext"
+  | "places"
+  | "visualization";
 export const GOOGLE_MAP_LIBRARIES = ["places"] as GOOGLE_LIBRARIES[];
 
 // Map Preferences
@@ -21,7 +26,9 @@ export type PreferenceObj = {
   [key in PreferenceKey]?: PreferenceValue;
 };
 
-const Home: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ listings }) => {
+const Home: NextPage<inferSSRProps<typeof getServerSideProps>> = ({
+  listings,
+}) => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     libraries: GOOGLE_MAP_LIBRARIES,
@@ -39,11 +46,15 @@ const Home: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ listings }) 
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="w-full h-[calc(100vh-48px)]">
-        <div className="h-12 border-2 border-solid flex items-center">
-          <input placeholder="Search Place" className="rounded border border-solid mx-2 p-1" />
+        {/* <div className="h-12 border-2 border-solid flex items-center">
+          <input
+            placeholder="Search Place"
+            className="rounded border border-solid mx-2 p-1"
+          />
           <button className="border p-1 mx-2 rounded">Search</button>
-        </div>
-        <MapTopbar setPref={setPref} pref={pref} />
+        </div> */}
+        {/* <MapTopbar setPref={setPref} pref={pref} /> */}
+        <TwTopbar />
         <Map listings={listings} pref={pref} />
       </main>
     </>
