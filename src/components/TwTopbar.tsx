@@ -21,9 +21,9 @@ const TwTopbar = () => {
           <div
             className=""
             style={{
-              marginTop: "-0.2rem",
-              //   marginBottom: "-0.5rem",
-              paddingTop: "0.2rem",
+              marginTop: "-0.5rem",
+              marginBottom: "-0.5rem",
+              //   paddingTop: "-0.2rem",
             }}
           >
             <div className="flex h-16 justify-between">
@@ -88,7 +88,8 @@ const TwTopbar = () => {
                 {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
                 <a
                   href="#"
-                  className="inline-flex items-center border-b-2 border-black px-1 pt-1 text-sm font-medium text-gray-900"
+                  className="inline-flex items-center border-b-2 border-black px-1 pt-3 text-sm font-medium text-gray-900"
+                  style={{ marginBottom: "0.5rem" }}
                 >
                   Favorites
                 </a>
