@@ -239,7 +239,7 @@ const Map = ({ pref, listings, mapRef }: MapProps) => {
                     <ShoppingBagIcon className=" h-8 w-8" aria-hidden="true" />
                   )}
 
-                  {dest.key === "market" && (
+                  {dest.key === "supermarket" && (
                     <ShoppingCartIcon className=" h-8 w-8" aria-hidden="true" />
                   )}
                 </div>

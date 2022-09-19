@@ -16,7 +16,7 @@ type GOOGLE_LIBRARIES = "drawing" | "geometry" | "localContext" | "places" | "vi
 export const GOOGLE_MAP_LIBRARIES = ["places"] as GOOGLE_LIBRARIES[];
 
 // Map Preferences
-export const availablePreferences = ["work", "pharmacy", "market"] as const;
+export const availablePreferences = ["work", "pharmacy", "supermarket"] as const;
 export type PreferenceValue = { address: string; lat: number; lng: number };
 export type PreferenceKey = typeof availablePreferences[number];
 export type PreferenceObj = {

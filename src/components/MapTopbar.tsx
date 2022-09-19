@@ -1,11 +1,14 @@
-import { Fragment, RefObject, useEffect, useMemo, useState } from "react";
+import React, { Fragment, RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Autocomplete, StandaloneSearchBox } from "@react-google-maps/api";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { DocumentIcon, DocumentCheckIcon } from "@heroicons/react/24/outline";
 import PreferenceInput from "@/components/PreferenceInput";
 import Divider from "@/components/Divider";
 import { availablePreferences, PreferenceKey, PreferenceObj } from "@/pages";
 import { MapRef } from "react-map-gl";
+import _ from "lodash";
+import { useRouter } from "next/router";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -16,11 +19,15 @@ type MapTopbarProps = {
   setPref: React.Dispatch<React.SetStateAction<PreferenceObj>>;
 };
 
+type PreferenceKeys = typeof availablePreferences[number];
+
 const MapTopbar = ({ setPref, pref, mapRef }: MapTopbarProps) => {
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete>();
-  const [searchBox, setSearchBox] = useState<google.maps.places.SearchBox>();
-  const [activePrefs, setActivePrefs] = useState<typeof availablePreferences[number][]>([]);
-
+  const [activePrefs, setActivePrefs] = useState<PreferenceKeys[]>([]);
+  const [value, setValue] = useState<{ [key in Exclude<PreferenceKey, "work">]: string }>(
+    {} as { [key in Exclude<PreferenceKey, "work">]: string }
+  );
+  const router = useRouter();
   useEffect(() => {
     const currentPrefKeys = Object.keys(pref) as (keyof typeof pref)[];
     setActivePrefs(currentPrefKeys);
@@ -30,72 +37,31 @@ const MapTopbar = ({ setPref, pref, mapRef }: MapTopbarProps) => {
     return availablePreferences.filter((pref) => !activePrefs?.includes(pref));
   }, [activePrefs]);
 
+  useEffect(() => {
+    console.log(router.query);
+    if (_.isEmpty(router.query)) return;
+    for (const key of Object.keys(router.query) as Exclude<PreferenceKey, "work">[]) {
+      setValue((prev) => ({ ...prev, [key]: router.query[key] as string }));
+    }
+  }, [router.query]);
+
   const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
     setAutocomplete(autocomplete);
   };
 
-  useEffect(() => {
-    console.log(mapRef.current?.getBounds());
-    const bounds = mapRef.current?.getBounds();
-    console.log("bounds", bounds);
-    if (bounds && searchBox) {
-      searchBox?.setBounds({
-        east: bounds.getEast(),
-        north: bounds.getNorth(),
-        south: bounds.getSouth(),
-        west: bounds.getWest(),
-      });
-      console.log(searchBox?.getBounds());
-    }
-  }, [mapRef, searchBox]);
-
-  const onPlacesChanged = () => {
-    if (searchBox) {
-      // if (mapRef) {
-      //   const bounds = mapRef.current?.getBounds();
-      //   if (bounds) {
-      //     console.log(bounds.getSouthWest(), bounds.getNorthEast());
-      //     const a = new google.maps.LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast());
-      //     console.log(a);
-      //     // const googleBounds = new google.maps.LatLngBounds(
-      //     //   new google.maps.LatLng(bounds.sw),
-      //     //   new google.maps.LatLng(bounds.ne)
-      //     // );
-      //     searchBox.setBounds(a);
-      //   }
-      //   // console.log(googleBounds, "googleBounds");
-      //   // console.log("gl:", bounds, "google:", googlebounds);
-      //   // searchBox.setBounds(bounds);
-      // }
-      // const bounds = searchBox.getBounds();
-      // console.log("searchbox bounds", bounds);
-      // const bounds = searchBox.getBounds();
-      // console.log("bounds", bounds);
-      const places = searchBox.getPlaces();
-      console.log("places", places);
-    }
-  };
-
-  const onSearchBoxLoad = (searchBox: google.maps.places.SearchBox) => {
-    setSearchBox(searchBox);
-  };
-
-  const onPlaceChanged = () => {
+  const onPlaceChanged = (name: PreferenceKeys) => {
     console.log(autocomplete);
     if (autocomplete) {
       const place = autocomplete?.getPlace();
-      console.log(autocomplete.getBounds());
-      console.log(autocomplete.getFields());
-      console.log(autocomplete);
       if (place?.name) {
-        // setPref({
-        //   ...pref,
-        //   [name]: {
-        //     address: place?.name,
-        //     lat: place?.geometry?.location?.lat(),
-        //     lng: place?.geometry?.location?.lng(),
-        //   },
-        // });
+        setPref({
+          ...pref,
+          [name]: {
+            address: place?.name,
+            lat: place?.geometry?.location?.lat(),
+            lng: place?.geometry?.location?.lng(),
+          },
+        });
         setAutocomplete(undefined);
       }
     }
@@ -108,6 +74,13 @@ const MapTopbar = ({ setPref, pref, mapRef }: MapTopbarProps) => {
     });
   };
 
+  const handlePrefChange = (preference: PreferenceKey, e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(preference, e.target.value);
+    const resultStr = pref[preference] + e.target.value;
+    console.log("resultStr: ", resultStr);
+    setPref({ ...pref, [preference]: resultStr });
+  };
+  console.log(value);
   return (
     <Popover className="relative">
       {({ open }) => (
@@ -142,45 +115,78 @@ const MapTopbar = ({ setPref, pref, mapRef }: MapTopbarProps) => {
               <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 {/* FORM */}
                 <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-6 sm:p-6">
-                  {activePrefs.length > 0 && (
-                    <>
-                      {activePrefs.map((preference, idx) => (
-                        <div key={`preferenceInput-${idx}`} className="mb-2 flex items-center">
-                          <StandaloneSearchBox
-                            onPlacesChanged={onPlacesChanged}
-                            onLoad={onSearchBoxLoad}
-                          >
-                            <PreferenceInput
-                              name={preference}
-                              value={pref[preference]?.address || ""}
-                            />
-                          </StandaloneSearchBox>
-                          {/* <Autocomplete
-                            restrictions={{ country: "do" }}
-                            // options={{fields: }}
-                            className="w-full"
-                            onLoad={onLoad}
-                            onPlaceChanged={onPlaceChanged}
-                          >
-                            <PreferenceInput
-                              name={preference}
-                              value={pref[preference]?.address || ""}
-                            />
-                          </Autocomplete> */}
-                          <div
-                            className=""
-                            onClick={() => {
-                              // matrixQuery();
-                              removePref(preference);
-                            }}
-                          >
-                            <XMarkIcon className="text-gray-500 mt-6 h-8 w-8 group-hover:text-gray-500" />
+                  {activePrefs.length > 0 &&
+                    activePrefs.map((preference, idx) => (
+                      <div key={`preferenceInput-${idx}`} className="mb-2 flex items-center">
+                        {preference === "work" ? (
+                          <>
+                            <Autocomplete
+                              restrictions={{ country: "do" }}
+                              className="w-full"
+                              onLoad={onLoad}
+                              onPlaceChanged={() => onPlaceChanged(preference)}
+                            >
+                              <PreferenceInput
+                                name={preference}
+                                value={pref[preference]?.address || ""}
+                              />
+                            </Autocomplete>
+                            <div
+                              onClick={() => {
+                                removePref(preference);
+                              }}
+                            >
+                              <XMarkIcon className="text-gray-500 mt-6 h-8 w-8 group-hover:text-gray-500" />
+                            </div>
+                          </>
+                        ) : (
+                          <div className="w-full">
+                            <label
+                              htmlFor={preference}
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              {_.capitalize(preference)}
+                            </label>
+                            <div className="mt-1 flex items-center justify-between">
+                              <input
+                                value={value?.[preference] || ""}
+                                onChange={(e) => {
+                                  setValue({ ...value, [preference]: e.target.value });
+                                }}
+                                type="text"
+                                name={preference}
+                                id="email"
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                placeholder={`Enter your ${preference} address`}
+                              />
+                              <div className="flex items-center mx-4">
+                                {router.query[preference] === value[preference] ? (
+                                  <DocumentCheckIcon className="h-6 w-6" />
+                                ) : (
+                                  <DocumentIcon
+                                    onClick={(e) => {
+                                      router.query[preference] = value[preference];
+                                      router.push(router);
+                                    }}
+                                    className="h-6 w-6"
+                                  />
+                                )}
+                                <XMarkIcon
+                                  onClick={() => {
+                                    delete router.query[preference];
+                                    router.push(router);
+                                    removePref(preference);
+                                  }}
+                                  className="text-gray-500  h-8 w-8 group-hover:text-gray-500"
+                                />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                      {inactivePrefs.length > 0 && <Divider />}
-                    </>
-                  )}
+                        )}
+                      </div>
+                    ))}
+                  {inactivePrefs.length > 0 && <Divider />}
+
                   <div className="mt-0" color="white">
                     {/* Map through non-active preferences, in this case the preferences that do not exist inside of active preferences */}
                     {inactivePrefs.map((preference, idx) => (

@@ -10,7 +10,7 @@ const PreferenceObjectValidator = z.object({
   address: z.string(),
   lat: z.number(),
   lng: z.number(),
-  key: z.union([z.literal("work"), z.literal("pharmacy"), z.literal("market")]),
+  key: z.union([z.literal("work"), z.literal("pharmacy"), z.literal("supermarket")]),
 });
 
 export const mapRouter = createRouter()

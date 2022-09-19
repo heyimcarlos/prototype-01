@@ -28,7 +28,7 @@ const PreferenceInput = (props: Props) => {
   //     }
   //   };
   return (
-    <div>
+    <div className="w-full">
       <label htmlFor={props.name} className="block text-sm font-medium text-gray-700">
         {_.capitalize(props.name)}
       </label>
