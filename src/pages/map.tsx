@@ -13,7 +13,6 @@ import { useRef } from "react";
 import { MapRef } from "react-map-gl";
 import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 import { MapPreferenceKeys } from "@/lib/types/mapPreferences";
-
 // Map Preferences
 export type PreferenceValue = { address: string; lat: number; lng: number };
 export type PreferenceObj = {
@@ -26,7 +25,10 @@ const MapPage: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ listings 
     libraries: GOOGLE_MAP_LIBRARIES,
   });
 
-  const [pref, setPref] = useLocalStorage<PreferenceObj>("preferences", {} as PreferenceObj);
+  //   const a = useMapPreferences((state) => state.mapPreferences);
+  //   console.log("a", a);
+
+  const [pref] = useLocalStorage<PreferenceObj>("preferences", {} as PreferenceObj);
 
   const mapRef = useRef<MapRef>(null);
 
@@ -42,7 +44,7 @@ const MapPage: NextPage<inferSSRProps<typeof getServerSideProps>> = ({ listings 
       <main className="w-full h-[calc(100vh-90px)]">
         <TwTopbar />
         <div className="pl-5 py-1 bg-indigo-600">
-          <MapTopbar mapRef={mapRef} setPref={setPref} pref={pref} />
+          <MapTopbar mapRef={mapRef} />
         </div>
         <Map mapRef={mapRef} listings={listings} pref={pref} />
       </main>
