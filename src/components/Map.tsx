@@ -12,7 +12,11 @@ import { trpc } from "@/utils/trpc";
 import { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
-import { BriefcaseIcon, ShoppingCartIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
+import {
+  BriefcaseIcon,
+  ShoppingCartIcon,
+  ShoppingBagIcon,
+} from "@heroicons/react/24/outline";
 import { Coordinate, Listing, Place } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import { PreferenceKey, PreferenceObj } from "@/pages/index";
@@ -60,7 +64,10 @@ const Map = ({ pref, listings, mapRef }: MapProps) => {
   }, [pref]);
 
   const { data: matrix } = trpc.useQuery(
-    ["map.matrix", { origin: selectedListing, destinations: preferencesCoordinates }],
+    [
+      "map.matrix",
+      { origin: selectedListing, destinations: preferencesCoordinates },
+    ],
     {
       refetchOnReconnect: false,
       refetchOnMount: false,
@@ -90,7 +97,10 @@ const Map = ({ pref, listings, mapRef }: MapProps) => {
 
   const onClickMap = (event: MapLayerMouseEvent) => {
     if (!mapRef.current) return;
-    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(event.point, {});
+    const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(
+      event.point,
+      {}
+    );
     const feature = queryRenderedFeatures[0];
 
     // @INFO: Below is the fetch db for the clicked place.
@@ -124,7 +134,9 @@ const Map = ({ pref, listings, mapRef }: MapProps) => {
       type: "Feature",
       geometry: {
         type: "Polygon",
-        coordinates: [[[feature.target._lngLat.lng, feature.target._lngLat.lat]]],
+        coordinates: [
+          [[feature.target._lngLat.lng, feature.target._lngLat.lat]],
+        ],
       },
     };
 
@@ -186,7 +198,9 @@ const Map = ({ pref, listings, mapRef }: MapProps) => {
                 offset={[0, -10]}
               >
                 <div className="bg-indigo-600 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
-                  <span className="text-sm font-semibold text-white">{place.listing.length}</span>
+                  <span className="text-sm font-semibold text-white">
+                    {place.listing.length}
+                  </span>
                 </div>
               </Marker>
             )
@@ -217,10 +231,16 @@ const Map = ({ pref, listings, mapRef }: MapProps) => {
                   <div
                     className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
                     style={{
-                      opacity: curListingId ? (curListingId === listing.id ? 1 : 0.4) : 1,
+                      opacity: curListingId
+                        ? curListingId === listing.id
+                          ? 1
+                          : 0.4
+                        : 1,
                     }}
                   >
-                    <span className="text-sm">{transformIntToMoney(listing.price)}</span>
+                    <span className="text-sm">
+                      {transformIntToMoney(listing.price)}
+                    </span>
                   </div>
                 </Marker>
               )
@@ -233,7 +253,9 @@ const Map = ({ pref, listings, mapRef }: MapProps) => {
             return (
               <Marker key={idx} longitude={dest.lng} latitude={dest.lat}>
                 <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white">
-                  {dest.key === "work" && <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />}
+                  {dest.key === "work" && (
+                    <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />
+                  )}
 
                   {dest.key === "pharmacy" && (
                     <ShoppingBagIcon className=" h-8 w-8" aria-hidden="true" />
@@ -253,7 +275,9 @@ const Map = ({ pref, listings, mapRef }: MapProps) => {
           <Source
             id="polygons-source"
             type="geojson"
-            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
+            data={turf.mask(
+              turf.polygon([mutation.data.bounds] as Position[][])
+            )}
           >
             <Layer
               minzoom={14.1}
@@ -268,7 +292,9 @@ const Map = ({ pref, listings, mapRef }: MapProps) => {
         {selectedListing && mutation.data?.bounds && (
           <Source
             type="geojson"
-            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
+            data={turf.mask(
+              turf.polygon([mutation.data.bounds] as Position[][])
+            )}
           >
             <Layer
               maxzoom={14.1}
