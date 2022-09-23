@@ -43,7 +43,8 @@
     "superjson": "^1.9.1",
     "ts-node": "^10.9.1",
     "usehooks-ts": "^2.6.0",
-    "zod": "^3.19.0"
+    "zod": "^3.19.0",
+    "zustand": "^4.1.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.184",
