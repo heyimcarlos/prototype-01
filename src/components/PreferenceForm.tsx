@@ -1,15 +1,16 @@
+import { useMemo, useState } from "react";
 import { Autocomplete } from "@react-google-maps/api";
-import React, { useMemo, useState } from "react";
-import PreferenceInput from "./PreferenceInput";
-import _ from "lodash";
-import { MapPreferenceKeys, mapPreferenceKeysArray } from "@/lib/types/mapPreferences";
 import { z } from "zod";
-import { useMapPreferences } from "@/stores/useMapPreferences";
+import _ from "lodash";
 import { useForm } from "react-hook-form";
+import { useMapPreferences } from "@/stores/useMapPreferences";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import PreferenceInput from "./PreferenceInput";
 import Button from "./Button";
 import Divider from "./Divider";
+import { MapPreferenceKeys, mapPreferenceKeysArray } from "@/lib/types/mapPreferences";
+import FlyoutMenu from "./FlyoutMenu";
 
 type FormKeysSchema = {
   [key in Exclude<MapPreferenceKeys, "work">]: z.ZodOptional<z.ZodString>;
@@ -40,17 +41,16 @@ const PreferenceForm = () => {
   const { register, handleSubmit, watch, unregister } = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
   });
+
   const formValues = watch();
-  console.log("formValues2", formValues);
+
   const isDisabled = useMemo(() => {
     // is disabled if localstorage state and form state are the same
     const a = active.every((preference) => {
-      console.log("preference", preference, "formValues", formValues);
       if (preference.key === "work") return true;
       if (!formValues[preference.key] && !preference.value) return true;
       return formValues[preference.key] === preference.value;
     });
-    console.log(a);
     return a;
   }, [formValues, active]);
 
@@ -90,90 +90,92 @@ const PreferenceForm = () => {
   };
 
   return (
-    <div>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="relative grid gap-6 bg-white px-5 py-6 sm:gap-6 sm:p-6"
-      >
-        {active.length > 0 &&
-          active.map((preference, idx) => (
-            <div key={`preferenceInput-${idx}`} className="mb-2 flex items-center">
-              {preference.key === "work" ? (
-                <>
-                  <Autocomplete
-                    restrictions={{ country: "do" }}
-                    className="w-full"
-                    onLoad={onLoad}
-                    onPlaceChanged={() => onPlaceChanged(preference.key)}
-                  >
-                    <PreferenceInput name={preference.key} value={preference.value || ""} />
-                  </Autocomplete>
-                  <div
-                    onClick={() => {
-                      deactivatePreference(preference);
-                    }}
-                  >
-                    <XMarkIcon className="text-gray-500 mt-6 h-8 w-8 group-hover:text-gray-500" />
-                  </div>
-                </>
-              ) : (
-                <div className="w-full">
-                  <label
-                    htmlFor={preference.key}
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    {_.capitalize(preference.key)}
-                  </label>
-                  <div className="mt-1 flex items-center justify-between">
-                    <input
-                      {...register(preference.key)}
-                      name={preference.key}
-                      defaultValue={preference.value}
-                      type="text"
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      placeholder={`Enter your ${preference.key} address`}
-                    />
-                    <XMarkIcon
+    <FlyoutMenu>
+      <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="relative grid gap-6 bg-white px-5 py-6 sm:gap-6 sm:p-6"
+        >
+          {active.length > 0 &&
+            active.map((preference, idx) => (
+              <div key={`preferenceInput-${idx}`} className="mb-2 flex items-center">
+                {preference.key === "work" ? (
+                  <>
+                    <Autocomplete
+                      restrictions={{ country: "do" }}
+                      className="w-full"
+                      onLoad={onLoad}
+                      onPlaceChanged={() => onPlaceChanged(preference.key)}
+                    >
+                      <PreferenceInput name={preference.key} value={preference.value || ""} />
+                    </Autocomplete>
+                    <div
                       onClick={() => {
                         deactivatePreference(preference);
-                        unregister(preference.key as FormKeys);
                       }}
-                      className="text-gray-500  h-8 w-8 group-hover:text-gray-500"
-                    />
+                    >
+                      <XMarkIcon className="text-gray-500 mt-6 h-8 w-8 group-hover:text-gray-500" />
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-full">
+                    <label
+                      htmlFor={preference.key}
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      {_.capitalize(preference.key)}
+                    </label>
+                    <div className="mt-1 flex items-center justify-between">
+                      <input
+                        {...register(preference.key)}
+                        name={preference.key}
+                        defaultValue={preference.value}
+                        type="text"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        placeholder={`Enter your ${preference.key} address`}
+                      />
+                      <XMarkIcon
+                        onClick={() => {
+                          deactivatePreference(preference);
+                          unregister(preference.key as FormKeys);
+                        }}
+                        className="text-gray-500  h-8 w-8 group-hover:text-gray-500"
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            ))}
 
-        {canSubmit && (
-          <div className="w-full flex justify-end">
-            <Button type="submit" disabled={isDisabled}>
-              Save
-            </Button>
-          </div>
-        )}
-
-        {inactive.length > 0 && !!active.length && <Divider />}
-
-        <div className="flex flex-wrap" color="white">
-          {/* Map through non-active preferences, in this case the preferences that do not exist inside of active preferences */}
-          {inactive.map((preference, idx) => (
-            <div key={`preferenceOption-${idx}`} className="m-1">
-              <Button
-                type="button"
-                onClick={() => {
-                  activatePreference(preference);
-                }}
-                color="inherit"
-              >
-                {preference.key}
+          {canSubmit && (
+            <div className="w-full flex justify-end">
+              <Button type="submit" disabled={isDisabled}>
+                Save
               </Button>
             </div>
-          ))}
-        </div>
-      </form>
-    </div>
+          )}
+
+          {inactive.length > 0 && !!active.length && <Divider />}
+
+          <div className="flex flex-wrap" color="white">
+            {/* Map through non-active preferences, in this case the preferences that do not exist inside of active preferences */}
+            {inactive.map((preference, idx) => (
+              <div key={`preferenceOption-${idx}`} className="m-1">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    activatePreference(preference);
+                  }}
+                  color="inherit"
+                >
+                  {preference.key}
+                </Button>
+              </div>
+            ))}
+          </div>
+        </form>
+      </div>
+    </FlyoutMenu>
   );
 };
 
