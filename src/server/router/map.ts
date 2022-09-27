@@ -68,7 +68,6 @@ export const mapRouter = createRouter()
           slug: input.slug,
         },
         include: {
-          // borderCoords: true,
           listing: true,
         },
       });
@@ -136,19 +135,24 @@ export const mapRouter = createRouter()
             const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=${keyword}&location=${origin.lat},${origin.lng}&rankby=${rankBy}&type=${type}&key=${env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
             const res = await fetch(url);
             const json = await res.json();
-            const result = nearbySearchValidator.parse(json.results[0]);
-
-            return {
-              ...preference,
-              latitude: result.geometry.location.lat,
-              longitude: result.geometry.location.lng,
-            };
+            if (json.results[0]) {
+              const parsed = nearbySearchValidator.parse(json.results[0]);
+              return {
+                ...preference,
+                latitude: parsed.geometry.location.lat,
+                longitude: parsed.geometry.location.lng,
+              };
+            }
+            // const result = nearbySearchValidator.parse(json.results[0]);
           })
         );
 
         // make a directions request using with each of the preferences places picked.
         const directionsResults = await Promise.all(
           nearbyResults.map(async (nearbyResult) => {
+            if (!nearbyResult) {
+              return;
+            }
             const { latitude, longitude } = nearbyResult;
             const url = `${mapboxApiUrl}/driving/${origin.lng},${origin.lat};${longitude},${latitude}?geometries=geojson&access_token=${env.NEXT_PUBLIC_MAPBOX_TOKEN}`;
             const res = await fetch(url);
@@ -160,6 +164,7 @@ export const mapRouter = createRouter()
             });
           })
         );
+
         return directionsResults;
       } catch (error) {
         console.log(error);
@@ -175,8 +180,6 @@ export const mapRouter = createRouter()
       // calculate matrix in parallel.
       const matrix = await Promise.all(
         input.destinations.map(async (destination) => {
-          const str = `${destination.lng},${destination.lat}`;
-          console.log(str);
           const res = await fetch(
             `${mapboxApiUrl}/driving/${input.origin};${destination.lng},${destination.lat}?geometries=geojson&access_token=${env.NEXT_PUBLIC_MAPBOX_TOKEN}`
           );

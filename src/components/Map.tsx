@@ -42,10 +42,12 @@ const Map = ({ places, mapRef }: MapProps) => {
     onSuccess: (data) => {
       let farthest = data?.[0];
       data?.forEach((feature) => {
-        update(feature.properties.preference);
-        if (feature.properties.distance && farthest?.properties.distance) {
-          if (feature.properties.distance > farthest.properties.distance) {
-            farthest = feature;
+        if (feature) {
+          update(feature.properties.preference);
+          if (feature.properties.distance && farthest?.properties.distance) {
+            if (feature.properties.distance > farthest.properties.distance) {
+              farthest = feature;
+            }
           }
         }
       });
@@ -235,19 +237,19 @@ const Map = ({ places, mapRef }: MapProps) => {
             return (
               <Marker
                 key={idx}
-                longitude={dest.properties.preference.longitude}
-                latitude={dest.properties.preference.latitude}
+                longitude={dest?.properties.preference.longitude}
+                latitude={dest?.properties.preference.latitude}
               >
                 <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white">
-                  {dest.properties.preference.key === "work" && (
+                  {dest?.properties.preference.key === "work" && (
                     <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />
                   )}
 
-                  {dest.properties.preference.key === "pharmacy" && (
+                  {dest?.properties.preference.key === "pharmacy" && (
                     <ShoppingBagIcon className=" h-8 w-8" aria-hidden="true" />
                   )}
 
-                  {dest.properties.preference.key === "supermarket" && (
+                  {dest?.properties.preference.key === "supermarket" && (
                     <ShoppingCartIcon className=" h-8 w-8" aria-hidden="true" />
                   )}
                 </div>
