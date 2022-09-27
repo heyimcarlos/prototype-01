@@ -1,25 +1,18 @@
-import React, { RefObject, useMemo, useState } from "react";
-import MapboxMap, {
-  Source,
-  Layer,
-  MapRef,
-  MapLayerMouseEvent,
-  Marker,
-  MapboxEvent,
-} from "react-map-gl";
+import React, { RefObject, useState } from "react";
+import MapboxMap, { Source, Layer, MapRef, MapLayerMouseEvent, Marker } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
 import { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
 import { BriefcaseIcon, ShoppingCartIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
-import { Coordinate, Listing, Place, Prisma } from "@prisma/client";
+import { Coordinate, Listing, Place } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import slugify from "@/lib/slugify";
 import { transformIntToMoney } from "@/lib/transformInt";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useMapPreferences } from "@/stores/useMapPreferences.js";
+import { useMapPreferences } from "@/stores/useMapPreferences";
 
 type MapProps = {
   mapRef: RefObject<MapRef>;
@@ -44,32 +37,22 @@ const Map = ({ places, mapRef }: MapProps) => {
     },
   });
   const active = useMapPreferences((state) => state.active);
-  const nearbyMutation = trpc.useMutation(["map.nearby"], {});
+  const update = useMapPreferences((state) => state.update);
+  const nearbyMutation = trpc.useMutation(["map.nearby"], {
+    onSuccess: (data) => {
+      let farthest = data?.[0];
+      data?.forEach((feature) => {
+        update(feature.properties.preference);
+        if (feature.properties.distance && farthest?.properties.distance) {
+          if (feature.properties.distance > farthest.properties.distance) {
+            farthest = feature;
+          }
+        }
+      });
 
-  // const preferencesCoordinates = useMemo(() => {
-  //   const destArr = [];
-  //   const keys = Object.keys(pref) as PreferenceKey[];
-
-  //   for (const key of keys) {
-  //     if (pref[key]?.address) {
-  //       destArr.push({ ...pref[key], key });
-  //     } else {
-  //       // find the closest place of the preference
-  //     }
-  //   }
-  //   return destArr;
-  // }, [pref]);
-
-  // const { data: matrix } = trpc.useQuery(
-  //   ["map.matrix", { origin: selectedListing, destinations: preferencesCoordinates }],
-  //   {
-  //     refetchOnReconnect: false,
-  //     refetchOnMount: false,
-  //     refetchOnWindowFocus: false,
-  //     retry: false,
-  //     enabled: !!selectedListing && preferencesCoordinates.length > 0,
-  //   }
-  // );
+      fitBounds(farthest as GeoJSON.Feature<GeoJSON.LineString>);
+    },
+  });
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
     if (!mapRef.current) return;
@@ -115,52 +98,29 @@ const Map = ({ places, mapRef }: MapProps) => {
   };
 
   const handleListingClick = (listing: MapProps["places"][number]["listing"][number]) => {
-    // setShowRoutes(true);
+    setShowRoutes(true);
 
     setSelectedListing(`${listing.location.longitude},${listing.location.latitude}`);
 
     setCurListingId(listing.id);
 
-    // @TODO:
-    nearbyMutation.mutate({});
+    nearbyMutation.mutate({
+      origin: {
+        lng: listing.location.longitude,
+        lat: listing.location.latitude,
+      },
+      rankBy: "distance",
+      preferences: active.map(({ key, value }) => ({
+        key,
+        value,
+      })),
+    });
   };
 
   const routeColor = (idx: number) => {
     const colors = ["royalblue", "red", "green"];
     return colors[idx];
   };
-
-  // const fitPrefBounds = (feature: MapboxEvent<MouseEvent>) => {
-  //   if (!mapRef.current) return;
-  //   const prefBounds = {
-  //     type: "Feature",
-  //     geometry: {
-  //       type: "Polygon",
-  //       coordinates: [[[feature.target._lngLat.lng, feature.target._lngLat.lat]]],
-  //     },
-  //   };
-
-  //   for (const preference in pref) {
-  //     const arr = [pref[preference].lng, pref[preference].lat];
-  //     prefBounds.geometry.coordinates[0]?.push(arr);
-  //   }
-
-  //   // console.log("prefBounds", prefBounds);
-
-  //   const [minLng, minLat, maxLng, maxLat] = bbox(prefBounds);
-  //   mapRef.current.fitBounds(
-  //     [
-  //       [minLng, minLat],
-  //       [maxLng, maxLat],
-  //     ],
-  //     {
-  //       padding: 250,
-  //       animate: true,
-  //       duration: 1400,
-  //       essential: true,
-  //     }
-  //   );
-  // };
 
   return (
     <div className="h-full w-full">
@@ -172,7 +132,6 @@ const Map = ({ places, mapRef }: MapProps) => {
           latitude: 18.45707,
           zoom: 14,
         }}
-        // onZoomEnd={(e) => onZoomEnd(e)}
         onClick={(e) => {
           setShow(true);
           setSelectedListing("");
@@ -211,9 +170,7 @@ const Map = ({ places, mapRef }: MapProps) => {
               <Marker
                 onClick={(e) => {
                   e.originalEvent.stopPropagation();
-                  console.log(e.target, "e");
                   handleListingClick(listing);
-
                   // fitPrefBounds(e);
                 }}
                 latitude={listing.location.latitude}
@@ -232,53 +189,30 @@ const Map = ({ places, mapRef }: MapProps) => {
             )
         )}
 
-        {/* @INFO: Destination lineStrings being rendered here */}
-        {/* {preferencesCoordinates.length > 0 &&
-          showRoutes &&
-          preferencesCoordinates.map((dest, idx) => {
-            return (
-              <Marker key={idx} longitude={dest.lng} latitude={dest.lat}>
-                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white">
-                  {dest.key === "work" && <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />}
-
-                  {dest.key === "pharmacy" && (
-                    <ShoppingBagIcon className=" h-8 w-8" aria-hidden="true" />
-                  )}
-
-                  {dest.key === "supermarket" && (
-                    <ShoppingCartIcon className=" h-8 w-8" aria-hidden="true" />
-                  )}
-                </div>
-              </Marker>
-            );
-          })} */}
-
         {/* @INFO: Bounds being rendered here */}
-
         {placeMutation.data?.bounds && (
           <Source
             id="polygons-source"
             type="geojson"
-            data={turf.mask(turf.polygon([placeMutation.data.bounds] as Position[][]))}
+            data={turf.polygon([placeMutation.data.bounds] as Position[][])}
           >
             <Layer
               minzoom={14.1}
               id="polygons"
               type="fill"
               source="polygons-source"
-              paint={{ "fill-color": "gray", "fill-opacity": 0.5 }}
+              paint={{ "fill-color": "gray", "fill-opacity": 0.25 }}
             />
           </Source>
         )}
 
-        {selectedListing && placeMutation.data?.bounds && (
+        {placeMutation.data?.bounds && (
           <Source
             type="geojson"
             data={turf.mask(turf.polygon([placeMutation.data.bounds] as Position[][]))}
           >
             <Layer
               maxzoom={14.1}
-              // minzoom={14}
               id={`linelayer-zoom-out-bounds`}
               type="line"
               source="line-source"
@@ -295,12 +229,41 @@ const Map = ({ places, mapRef }: MapProps) => {
           </Source>
         )}
 
-        {/* @INFO: Routes being rendered here */}
-        {/* {matrix &&
-          showRoutes &&
-          matrix.features?.map((feat, idx) => {
+        {/* @INFO: Destination lineStrings being rendered here */}
+        {showRoutes &&
+          nearbyMutation.data?.map((dest, idx) => {
             return (
-              <Source key={idx} type="geojson" data={feat}>
+              <Marker
+                key={idx}
+                longitude={dest.properties.preference.longitude}
+                latitude={dest.properties.preference.latitude}
+              >
+                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white">
+                  {dest.properties.preference.key === "work" && (
+                    <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />
+                  )}
+
+                  {dest.properties.preference.key === "pharmacy" && (
+                    <ShoppingBagIcon className=" h-8 w-8" aria-hidden="true" />
+                  )}
+
+                  {dest.properties.preference.key === "supermarket" && (
+                    <ShoppingCartIcon className=" h-8 w-8" aria-hidden="true" />
+                  )}
+                </div>
+              </Marker>
+            );
+          })}
+
+        {/* @INFO: Routes being rendered here */}
+        {showRoutes &&
+          nearbyMutation.data?.map((feature, idx) => {
+            return (
+              <Source
+                key={idx}
+                type="geojson"
+                data={feature as GeoJSON.Feature<GeoJSON.LineString>}
+              >
                 <Layer
                   id={`linelayer-${idx}`}
                   type="line"
@@ -317,7 +280,7 @@ const Map = ({ places, mapRef }: MapProps) => {
                 />
               </Source>
             );
-          })} */}
+          })}
       </MapboxMap>
     </div>
   );

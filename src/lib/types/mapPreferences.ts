@@ -10,12 +10,11 @@ export const mapPreferenceKeysArray = mapPreferenceKeys
   .array()
   .parse(["work", "pharmacy", "supermarket"]);
 
-const mapPreference = z.object({
+export const mapPreference = z.object({
   value: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   key: mapPreferenceKeys,
-  //   active: z.boolean(),
 });
 
 export type MapPreferenceKeys = z.infer<typeof mapPreferenceKeys>;

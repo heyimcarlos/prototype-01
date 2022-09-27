@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Map from "@/components/Map";
-import { useLocalStorage } from "usehooks-ts";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { GetServerSidePropsContext } from "next";
 import { env } from "@/env/client.mjs";
