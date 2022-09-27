@@ -52,6 +52,9 @@ const Map = ({ places, mapRef }: MapProps) => {
 
       fitBounds(farthest as GeoJSON.Feature<GeoJSON.LineString>);
     },
+    onError: (e) => {
+      console.log(e, "wtf?");
+    },
   });
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
@@ -63,7 +66,7 @@ const Map = ({ places, mapRef }: MapProps) => {
         [maxLng, maxLat],
       ],
       {
-        padding: 40,
+        padding: 150,
         animate: true,
         duration: 1400,
         essential: true,
@@ -110,10 +113,7 @@ const Map = ({ places, mapRef }: MapProps) => {
         lat: listing.location.latitude,
       },
       rankBy: "distance",
-      preferences: active.map(({ key, value }) => ({
-        key,
-        value,
-      })),
+      preferences: active,
     });
   };
 
