@@ -1,8 +1,6 @@
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import cityScape from "../../public/assets/images/cityScape.jpg";
-
-type Props = {};
 
 const getWindowDimensions = () => {
   const { innerWidth: width, innerHeight: height } = window;
@@ -12,7 +10,7 @@ const getWindowDimensions = () => {
   };
 };
 
-const LandingBG = (props: Props) => {
+const LandingBG = () => {
   const [width, setWidth] = useState<number>();
   const [height, setHeight] = useState<number>();
 
