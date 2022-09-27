@@ -31,8 +31,8 @@ const nearbySearchValidator = z.object({
     .optional(),
   place_id: z.string(),
   types: z.array(z.string()),
-  user_ratings_total: z.number(),
-  rating: z.number(),
+  user_ratings_total: z.number().optional(),
+  rating: z.number().optional(),
 });
 
 const directionsResponseValidator = z.object({
@@ -121,6 +121,13 @@ export const mapRouter = createRouter()
     }),
     async resolve({ input }) {
       const { preferences, rankBy, origin } = input;
+
+      if (!preferences.length) {
+        throw new trpc.TRPCError({
+          code: "BAD_REQUEST",
+          message: "no-preferences",
+        });
+      }
 
       try {
         const nearbyResults = await Promise.all(
