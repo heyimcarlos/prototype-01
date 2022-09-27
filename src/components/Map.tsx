@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { RefObject, useState } from "react";
 import MapboxMap, { Source, Layer, MapRef, MapLayerMouseEvent, Marker } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
@@ -8,15 +8,15 @@ import * as turf from "@turf/turf";
 import { BriefcaseIcon, ShoppingCartIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
 import { Coordinate, Listing, Place } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
-import { PreferenceObj } from "@/pages/index";
 import slugify from "@/lib/slugify";
 import { transformIntToMoney } from "@/lib/transformInt";
 
 import "mapbox-gl/dist/mapbox-gl.css";
+import { useMapPreferences } from "@/stores/useMapPreferences";
 
 type MapProps = {
-  pref: PreferenceObj;
-  listings: (Place & {
+  mapRef: RefObject<MapRef>;
+  places: (Place & {
     center: Coordinate;
     listing: (Listing & {
       location: Coordinate;
@@ -24,39 +24,35 @@ type MapProps = {
   })[];
 };
 
-const Map = ({ pref, listings }: MapProps) => {
+const Map = ({ places, mapRef }: MapProps) => {
   const [show, setShow] = useState(true);
   const [selectedListing, setSelectedListing] = useState("");
   const [showRoutes, setShowRoutes] = useState(false);
   const [curListingId, setCurListingId] = useState("");
 
-  const mapRef = useRef<MapRef>(null);
-
-  const mutation = trpc.useMutation(["map.place"], {
+  const placeMutation = trpc.useMutation(["map.place"], {
     onSuccess: (data) => {
       const placeAsFeature = transformPlaceToFeature(data);
       if (placeAsFeature) fitBounds(placeAsFeature);
     },
   });
+  const active = useMapPreferences((state) => state.active);
+  const update = useMapPreferences((state) => state.update);
+  const nearbyMutation = trpc.useMutation(["map.nearby"], {
+    onSuccess: (data) => {
+      let farthest = data?.[0];
+      data?.forEach((feature) => {
+        update(feature.properties.preference);
+        if (feature.properties.distance && farthest?.properties.distance) {
+          if (feature.properties.distance > farthest.properties.distance) {
+            farthest = feature;
+          }
+        }
+      });
 
-  const destinationsCoords = useMemo(() => {
-    const destArr = [];
-    for (const key in pref) {
-      destArr.push({ ...pref[key as keyof typeof pref], key });
-    }
-    return destArr;
-  }, [pref]);
-
-  const { data: matrix } = trpc.useQuery(
-    ["map.matrix", { origin: selectedListing, destinations: pref }],
-    {
-      refetchOnReconnect: false,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      retry: false,
-      enabled: !!selectedListing && !!pref,
-    }
-  );
+      fitBounds(farthest as GeoJSON.Feature<GeoJSON.LineString>);
+    },
+  });
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
     if (!mapRef.current) return;
@@ -84,7 +80,7 @@ const Map = ({ pref, listings }: MapProps) => {
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       const slug = slugify(feature.properties.name);
-      mutation.mutate({ slug });
+      placeMutation.mutate({ slug });
     } else {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
       const test = mapRef.current.getCenter();
@@ -99,6 +95,26 @@ const Map = ({ pref, listings }: MapProps) => {
     }
 
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
+  };
+
+  const handleListingClick = (listing: MapProps["places"][number]["listing"][number]) => {
+    setShowRoutes(true);
+
+    setSelectedListing(`${listing.location.longitude},${listing.location.latitude}`);
+
+    setCurListingId(listing.id);
+
+    nearbyMutation.mutate({
+      origin: {
+        lng: listing.location.longitude,
+        lat: listing.location.latitude,
+      },
+      rankBy: "distance",
+      preferences: active.map(({ key, value }) => ({
+        key,
+        value,
+      })),
+    });
   };
 
   const routeColor = (idx: number) => {
@@ -116,7 +132,6 @@ const Map = ({ pref, listings }: MapProps) => {
           latitude: 18.45707,
           zoom: 14,
         }}
-        // onZoomEnd={(e) => onZoomEnd(e)}
         onClick={(e) => {
           setShow(true);
           setSelectedListing("");
@@ -127,13 +142,13 @@ const Map = ({ pref, listings }: MapProps) => {
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
         {/* INFO: Sector main cluster */}
-        {listings?.map(
+        {places?.map(
           (place) =>
             // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
             show && (
               <Marker
                 onClick={() => {
-                  mutation.mutate({ slug: place.slug });
+                  placeMutation.mutate({ slug: place.slug });
                 }}
                 anchor="bottom"
                 key={`marker-${place.id}`}
@@ -141,57 +156,98 @@ const Map = ({ pref, listings }: MapProps) => {
                 latitude={place.center.latitude}
                 offset={[0, -10]}
               >
-                <div className="bg-cyan-500 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
-                  <span className="text-sm">{place.listing.length}</span>
+                <div className="bg-indigo-600 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
+                  <span className="text-sm font-semibold text-white">{place.listing.length}</span>
                 </div>
               </Marker>
             )
         )}
 
         {/* @INFO: Within bounds listings */}
-        {mutation.data?.listing.length &&
-          mutation.data.listing.map(
-            (listing) =>
-              !show && (
-                <Marker
-                  onClick={(e) => {
-                    e.originalEvent.stopPropagation();
-                    setShowRoutes(true);
-                    setSelectedListing(
-                      `${listing.location.longitude},${listing.location.latitude}`
-                    );
-                    setCurListingId(listing.id);
+        {placeMutation.data?.listing.map(
+          (listing) =>
+            !show && (
+              <Marker
+                onClick={(e) => {
+                  e.originalEvent.stopPropagation();
+                  handleListingClick(listing);
+                  // fitPrefBounds(e);
+                }}
+                latitude={listing.location.latitude}
+                longitude={listing.location.longitude}
+                key={`listing-${listing.id}`}
+              >
+                <div
+                  className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
+                  style={{
+                    opacity: curListingId ? (curListingId === listing.id ? 1 : 0.4) : 1,
                   }}
-                  latitude={listing.location.latitude}
-                  longitude={listing.location.longitude}
-                  key={`listing-${listing.id}`}
                 >
-                  <div
-                    className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
-                    style={{
-                      opacity: curListingId ? (curListingId === listing.id ? 1 : 0.4) : 1,
-                    }}
-                  >
-                    <span className="text-sm">{transformIntToMoney(listing.price)}</span>
-                  </div>
-                </Marker>
-              )
-          )}
+                  <span className="text-sm">{transformIntToMoney(listing.price)}</span>
+                </div>
+              </Marker>
+            )
+        )}
+
+        {/* @INFO: Bounds being rendered here */}
+        {placeMutation.data?.bounds && (
+          <Source
+            id="polygons-source"
+            type="geojson"
+            data={turf.polygon([placeMutation.data.bounds] as Position[][])}
+          >
+            <Layer
+              minzoom={14.1}
+              id="polygons"
+              type="fill"
+              source="polygons-source"
+              paint={{ "fill-color": "gray", "fill-opacity": 0.25 }}
+            />
+          </Source>
+        )}
+
+        {placeMutation.data?.bounds && (
+          <Source
+            type="geojson"
+            data={turf.mask(turf.polygon([placeMutation.data.bounds] as Position[][]))}
+          >
+            <Layer
+              maxzoom={14.1}
+              id={`linelayer-zoom-out-bounds`}
+              type="line"
+              source="line-source"
+              layout={{
+                "line-join": "round",
+                "line-cap": "round",
+              }}
+              paint={{
+                "line-color": "black",
+                "line-width": 2,
+                "line-opacity": 1,
+              }}
+            />
+          </Source>
+        )}
 
         {/* @INFO: Destination lineStrings being rendered here */}
-        {destinationsCoords.length > 0 &&
-          showRoutes &&
-          destinationsCoords.map((dest, idx) => {
+        {showRoutes &&
+          nearbyMutation.data?.map((dest, idx) => {
             return (
-              <Marker key={idx} longitude={dest.lng} latitude={dest.lat}>
+              <Marker
+                key={idx}
+                longitude={dest.properties.preference.longitude}
+                latitude={dest.properties.preference.latitude}
+              >
                 <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white">
-                  {dest.key === "work" && <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />}
+                  {dest.properties.preference.key === "work" && (
+                    <BriefcaseIcon className=" h-8 w-8" aria-hidden="true" />
+                  )}
 
-                  {dest.key === "pharmacy" && (
+                  {dest.properties.preference.key === "pharmacy" && (
                     <ShoppingBagIcon className=" h-8 w-8" aria-hidden="true" />
                   )}
 
-                  {dest.key === "market" && (
+                  {dest.properties.preference.key === "supermarket" && (
                     <ShoppingCartIcon className=" h-8 w-8" aria-hidden="true" />
                   )}
                 </div>
@@ -199,29 +255,15 @@ const Map = ({ pref, listings }: MapProps) => {
             );
           })}
 
-        {/* @INFO: Bounds being rendered here */}
-        {mutation.data?.bounds && (
-          <Source
-            id="polygons-source"
-            type="geojson"
-            data={turf.mask(turf.polygon([mutation.data.bounds] as Position[][]))}
-          >
-            <Layer
-              minzoom={14.1}
-              id="polygons"
-              type="fill"
-              source="polygons-source"
-              paint={{ "fill-color": "gray", "fill-opacity": 0.5 }}
-            />
-          </Source>
-        )}
-
         {/* @INFO: Routes being rendered here */}
-        {matrix &&
-          showRoutes &&
-          matrix.features?.map((feat, idx) => {
+        {showRoutes &&
+          nearbyMutation.data?.map((feature, idx) => {
             return (
-              <Source key={idx} type="geojson" data={feat}>
+              <Source
+                key={idx}
+                type="geojson"
+                data={feature as GeoJSON.Feature<GeoJSON.LineString>}
+              >
                 <Layer
                   id={`linelayer-${idx}`}
                   type="line"
