@@ -6,12 +6,15 @@ export const mapPreferenceKeys = z.union([
   z.literal("supermarket"),
 ]);
 
-const mapPreference = z.object({
-  address: z.string(),
-  latitude: z.number(),
-  longitude: z.number(),
+export const mapPreferenceKeysArray = mapPreferenceKeys
+  .array()
+  .parse(["work", "pharmacy", "supermarket"]);
+
+export const mapPreference = z.object({
+  value: z.string().optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   key: mapPreferenceKeys,
-  active: z.boolean(),
 });
 
 export type MapPreferenceKeys = z.infer<typeof mapPreferenceKeys>;
