@@ -11,12 +11,12 @@ const TwHomeSearchbar = () => {
           <div className="mx-auto max-w-md px-4 sm:max-w-2xl sm:px-6 sm:text-center ">
             <div className="lg:py-24">
               <h1 className="mt-4 text-3xl font-bold text-center tracking-tight text-white sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl">
-                <span className="fixed text-indigo-600 mr-2">
+                <span className="absolute text-indigo-600 mr-2">
                   Know the area.
                 </span>
                 <span className="text-black -ml-[0.15rem]">Know the area.</span>
                 <br />
-                <span className="fixed">Find your place.</span>
+                <span className="absolute">Find your place.</span>
                 <span className="text-black -ml-[0.15rem]">
                   Find your place.
                 </span>
