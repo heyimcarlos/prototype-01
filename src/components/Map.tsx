@@ -13,8 +13,14 @@ import { transformIntToMoney } from "@/lib/transformInt";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useMapPreferences } from "@/stores/useMapPreferences";
+import { useSidebar } from "@/stores/useSidebar";
 
 type MapProps = {
+  initialViewport: {
+    longitude: number;
+    latitude: number;
+    zoom: number;
+  };
   mapRef: RefObject<MapRef>;
   places: (Place & {
     center: Coordinate;
@@ -24,16 +30,18 @@ type MapProps = {
   })[];
 };
 
-const Map = ({ places, mapRef }: MapProps) => {
+const Map = ({ places, mapRef, initialViewport }: MapProps) => {
   const [show, setShow] = useState(true);
   const [selectedListing, setSelectedListing] = useState("");
   const [showRoutes, setShowRoutes] = useState(false);
   const [curListingId, setCurListingId] = useState("");
-
+  const setListings = useSidebar((state) => state.setListings);
   const placeMutation = trpc.useMutation(["map.place"], {
     onSuccess: (data) => {
       const placeAsFeature = transformPlaceToFeature(data);
       if (placeAsFeature) fitBounds(placeAsFeature);
+
+      setListings(data.listing);
     },
   });
   const active = useMapPreferences((state) => state.active);
@@ -124,15 +132,28 @@ const Map = ({ places, mapRef }: MapProps) => {
     return colors[idx];
   };
 
+  const showVisibleMarkers = () => {
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+    const bounds = map.getBounds();
+    const listings = [];
+    for (const place of places) {
+      if (bounds.contains({ lat: place.center.latitude, lng: place.center.longitude })) {
+        listings.push(place.listing);
+      }
+    }
+    const flattened = listings.flat();
+    setListings(flattened);
+  };
+
   return (
     <div className="h-full w-full">
       <MapboxMap
         id="mapa"
         ref={mapRef}
-        initialViewState={{
-          longitude: -69.94115,
-          latitude: 18.45707,
-          zoom: 14,
+        initialViewState={initialViewport}
+        onDragEnd={() => {
+          showVisibleMarkers();
         }}
         onClick={(e) => {
           setShow(true);
