@@ -1,6 +1,6 @@
 import React from "react";
 
-const Test2 = () => {
+const TwHomeSearchbar = () => {
   return (
     <div className="absolute z-10 w-full mt-[1.9rem] sm:mt-[2.5rem] md:mt-[2.4rem] lg:mt-[0.5rem] xl:mt-[2rem]">
       <div className="pt-10 sm:pt-16 lg:overflow-hidden lg:pt-20 pb-14">
@@ -44,4 +44,4 @@ const Test2 = () => {
   );
 };
 
-export default Test2;
+export default TwHomeSearchbar;

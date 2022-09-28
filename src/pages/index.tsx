@@ -4,13 +4,8 @@ import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
 import cityScape from "../../public/assets/images/2nd.jpg";
-import HomeTopbar from "@/components/HomeTopbar";
-import ScrollTest from "@/components/scrollTest";
-import HomeSearchbar from "@/components/HomeSearchBar";
-import LandingBG from "@/components/LandingBG";
-import TwResNavbar from "@/components/TwResNavbar";
-import Test from "@/components/Test";
-import Test2 from "@/components/Test2";
+import TwHomeNavbar from "@/components/TwHomeNavbar";
+import TwHomeSearchbar from "@/components/TwHomeSearchbar";
 
 const Home = () => {
   const [searchType, setSearchType] = useState("buy");
@@ -30,29 +25,23 @@ const Home = () => {
       </Head>
       <main className="">
         <div className="w-full h-[20rem] ">
-          {/* <HomeTopbar /> */}
-
-          <TwResNavbar />
-
-          {/* <HomeSearchbar
-            searchType={searchType}
-            setSearchType={setSearchType}
-          /> */}
-
-          {/* <Test /> */}
-          <Test2 />
-
+          <TwHomeNavbar />
+          <TwHomeSearchbar />
           <div
             id="BackgroundImage"
             className="absolute z-0 top-0 w-full h-80 sm:h-[30rem] lg:h-[45rem] xl:h-[49rem]"
           >
             <Image src={cityScape} alt="cityScape" layout="fill" />
           </div>
-
-          {/* <LandingBG /> */}
         </div>
-
-        {/* <ScrollTest /> */}
+        <div className="">HELLLOOOOO</div>
+        <div className="">HELLLOOOOO</div>
+        <div className="">HELLLOOOOO</div>
+        <div className="">HELLLOOOOO</div>
+        <div className="">HELLLOOOOO</div>
+        <div className="">HELLLOOOOO</div>
+        <div className="">HELLLOOOOO</div>
+        <div className="">HELLLOOOOO</div>
       </main>
     </>
   );

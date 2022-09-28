@@ -11,7 +11,7 @@ const navigation = [
   { name: "Dashboard", href: "#" },
 ];
 
-const TwResNavbar = () => {
+const TwHomeNavbar = () => {
   return (
     <Popover as="header" className="absolute z-20 w-full">
       <div className="pt-2 h-[5rem] bg-gradient-to-b from-black opacity-90">
@@ -133,4 +133,4 @@ const TwResNavbar = () => {
   );
 };
 
-export default TwResNavbar;
+export default TwHomeNavbar;
