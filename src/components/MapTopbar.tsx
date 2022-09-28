@@ -1,4 +1,11 @@
-import React, { Fragment, RefObject, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  Fragment,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Autocomplete, StandaloneSearchBox } from "@react-google-maps/api";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/20/solid";
@@ -24,20 +31,22 @@ type MapTopbarProps = {
 type PreferenceKeys = typeof availablePreferences[number];
 
 const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
-  const FormSchema = z.object({
-    [availablePreferences[1]]: z.string().optional(),
-    [availablePreferences[2]]: z.string().optional(),
-  });
+  // const FormSchema = z.object({
+  //   [availablePreferences[1]]: z.string().optional(),
+  //   [availablePreferences[2]]: z.string().optional(),
+  // });
   type FormValues = z.infer<typeof FormSchema>;
 
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete>();
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete>();
   const [activePrefs, setActivePrefs] = useState<PreferenceKeys[]>([]);
 
   const router = useRouter();
 
-  const { register, handleSubmit, watch, unregister, resetField } = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
-  });
+  const { register, handleSubmit, watch, unregister, resetField } =
+    useForm<FormValues>({
+      resolver: zodResolver(FormSchema),
+    });
 
   useEffect(() => {
     const localStoragePrefKeys = Object.keys(pref) as (keyof typeof pref)[];
@@ -98,7 +107,10 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
     });
   };
 
-  const handlePrefChange = (preference: PreferenceKey, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePrefChange = (
+    preference: PreferenceKey,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     console.log(preference, e.target.value);
     const resultStr = pref[preference] + e.target.value;
     console.log("resultStr: ", resultStr);
@@ -117,7 +129,10 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
         >
           {keys.length > 0 &&
             activePrefs.map((preference, idx) => (
-              <div key={`preferenceInput-${idx}`} className="mb-2 flex items-center">
+              <div
+                key={`preferenceInput-${idx}`}
+                className="mb-2 flex items-center"
+              >
                 {preference === "work" ? (
                   <>
                     <Autocomplete
@@ -126,7 +141,10 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
                       onLoad={onLoad}
                       onPlaceChanged={() => onPlaceChanged(preference)}
                     >
-                      <PreferenceInput name={preference} value={pref[preference]?.address || ""} />
+                      <PreferenceInput
+                        name={preference}
+                        value={pref[preference]?.address || ""}
+                      />
                     </Autocomplete>
                     <div
                       onClick={() => {
@@ -138,7 +156,10 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
                   </>
                 ) : (
                   <div className="w-full">
-                    <label htmlFor={preference} className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor={preference}
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       {_.capitalize(preference)}
                     </label>
                     <div className="mt-1 flex items-center justify-between">
@@ -157,7 +178,9 @@ const MapTopbar = ({ setPref, pref }: MapTopbarProps) => {
                             // removePref(preference);
                             delete router.query[preference];
                             router.push(router);
-                            setActivePrefs(activePrefs.filter((pref) => pref !== preference));
+                            setActivePrefs(
+                              activePrefs.filter((pref) => pref !== preference)
+                            );
                           }}
                           className="text-gray-500  h-8 w-8 group-hover:text-gray-500"
                         />
