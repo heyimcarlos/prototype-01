@@ -1,7 +1,9 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import React from "react";
+import React, { useState } from "react";
 
 const TwHomeSearchbar = () => {
+  const [searchType, setSearchType] = useState("buy");
+
   return (
     <div className="absolute z-10 w-full mt-[1.9rem] sm:mt-[2.5rem] md:mt-[2.4rem] lg:mt-[0.5rem] xl:mt-[2rem]">
       <div className="pt-10 sm:pt-16 lg:overflow-hidden lg:pt-20 pb-14">
@@ -22,15 +24,37 @@ const TwHomeSearchbar = () => {
 
               <div className="mt-5 sm:mt-12 lg:ml-6">
                 <form action="#" className="sm:mx-auto sm:max-w-xl lg:mx-0 ">
+                  <div className="flex">
+                    <label
+                      htmlFor="search"
+                      className={`${
+                        searchType === "buy"
+                          ? "bg-white text-black"
+                          : "bg-indigo-600 text-white"
+                      } px-5 py-1 rounded-tl-md text-sm`}
+                      onClick={() => setSearchType("buy")}
+                    >
+                      Buy
+                    </label>
+                    <label
+                      htmlFor="search"
+                      className={`${
+                        searchType === "rent"
+                          ? "bg-white text-black"
+                          : "bg-indigo-600 text-white"
+                      } px-5 py-1 rounded-tr-md text-sm`}
+                      onClick={() => setSearchType("rent")}
+                    >
+                      Rent
+                    </label>
+                  </div>
+
                   <div className="sm:flex">
                     <div className="min-w-0 flex-1 flex items-center justify-end">
                       <label htmlFor="search" className="sr-only">
                         Initial search
                       </label>
-                      <div
-                        // className="pointer-events-none absolute inset-y-0 right-0 flex items-center pl-3 z-100"
-                        className="absolute flex items-center px-3 py-2 bg-indigo-600 rounded-md mr-[0.4rem]"
-                      >
+                      <div className="absolute flex items-center px-3 py-2 bg-indigo-600 rounded-md mr-[0.4rem]">
                         <MagnifyingGlassIcon
                           className="h-5 w-5 text-white"
                           aria-hidden="true"
@@ -40,7 +64,7 @@ const TwHomeSearchbar = () => {
                         id="search"
                         type="text"
                         placeholder="City, Neighborhood, Address"
-                        className="block w-full rounded-md border-0 px-4 py-3 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2 focus:ring-offset-gray-900"
+                        className="block w-full rounded-bl-md rounded-r-md border-0 px-4 py-3 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                       />
                     </div>
                   </div>

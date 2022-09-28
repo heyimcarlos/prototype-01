@@ -39,7 +39,6 @@ const TwHomeNavbar = () => {
               <div className="w-full flex justify-end md:hidden -mt-1">
                 <a
                   href="#"
-                  // className=" items-center rounded-md border border-transparent px-2 py-1 text-md font-medium focus:bg-indigo-600 text-white hover:bg-gray-700"
                   className="text-base font-medium text-white hover:text-gray-300 px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
                 >
                   Register/Sign In
@@ -62,7 +61,6 @@ const TwHomeNavbar = () => {
             <a
               href="#"
               className="text-base font-medium text-white hover:text-gray-300 px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
-              // className="inline-flex items-center rounded-md border border-transparent px-3 text-base font-medium text-white hover:bg-gray-700 py-2 pt-[0.7rem]"
             >
               Register/Sign In
             </a>
