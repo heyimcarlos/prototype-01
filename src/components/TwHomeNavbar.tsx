@@ -16,7 +16,7 @@ const TwHomeNavbar = () => {
     <Popover as="header" className="absolute z-20 w-full">
       <div className="pt-2 h-[5rem] bg-gradient-to-b from-black opacity-90">
         <nav
-          className="relative mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6"
+          className="relative mx-auto flex items-center justify-between px-4 sm:px-6"
           aria-label="Global"
         >
           <div className="flex flex-1 items-center mt-1">
@@ -30,7 +30,7 @@ const TwHomeNavbar = () => {
 
               <a href="#" className="-mt-1">
                 <span className="sr-only">ntornos</span>
-                <div className="font-['Libre_Baskerville'] text-2xl ml-2 inline">
+                <div className="font-['Libre_Baskerville'] text-2xl ml-2 inline md:text-3xl md:-ml-1">
                   <span className="text-indigo-600">n</span>
                   <span className="text-white">tornos</span>
                 </div>
@@ -39,28 +39,30 @@ const TwHomeNavbar = () => {
               <div className="w-full flex justify-end md:hidden -mt-1">
                 <a
                   href="#"
-                  className=" items-center rounded-md border border-transparent px-2 py-1 text-md font-medium focus:bg-indigo-600 text-white hover:bg-gray-700"
+                  // className=" items-center rounded-md border border-transparent px-2 py-1 text-md font-medium focus:bg-indigo-600 text-white hover:bg-gray-700"
+                  className="text-base font-medium text-white hover:text-gray-300 px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
                 >
                   Register/Sign In
                 </a>
               </div>
             </div>
-            <div className="hidden space-x-8 md:ml-10 md:w-full md:flex md:justify-end md:mr-6">
+            <div className="hidden md:w-full md:flex md:justify-end">
               {navigation.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
-                  className="text-base font-medium text-white hover:text-gray-300"
+                  className="text-base font-medium text-white px-3 py-2 hover:text-indigo-600 hover:bg-white hover:rounded-md"
                 >
                   {item.name}
                 </a>
               ))}
             </div>
           </div>
-          <div className="hidden md:flex md:items-center md:space-x-6">
+          <div className="hidden md:flex md:items-center">
             <a
               href="#"
-              className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white hover:bg-gray-700"
+              className="text-base font-medium text-white hover:text-gray-300 px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
+              // className="inline-flex items-center rounded-md border border-transparent px-3 text-base font-medium text-white hover:bg-gray-700 py-2 pt-[0.7rem]"
             >
               Register/Sign In
             </a>

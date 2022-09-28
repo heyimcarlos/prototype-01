@@ -1,3 +1,4 @@
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import React from "react";
 
 const TwHomeSearchbar = () => {
@@ -22,14 +23,23 @@ const TwHomeSearchbar = () => {
               <div className="mt-5 sm:mt-12 lg:ml-6">
                 <form action="#" className="sm:mx-auto sm:max-w-xl lg:mx-0 ">
                   <div className="sm:flex">
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 flex items-center justify-end">
                       <label htmlFor="search" className="sr-only">
                         Initial search
                       </label>
+                      <div
+                        // className="pointer-events-none absolute inset-y-0 right-0 flex items-center pl-3 z-100"
+                        className="absolute flex items-center px-3 py-2 bg-indigo-600 rounded-md mr-[0.4rem]"
+                      >
+                        <MagnifyingGlassIcon
+                          className="h-5 w-5 text-white"
+                          aria-hidden="true"
+                        />
+                      </div>
                       <input
                         id="search"
                         type="text"
-                        placeholder="Country, City, Neighborhood, Address"
+                        placeholder="City, Neighborhood, Address"
                         className="block w-full rounded-md border-0 px-4 py-3 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2 focus:ring-offset-gray-900"
                       />
                     </div>

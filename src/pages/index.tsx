@@ -24,7 +24,7 @@ const Home = () => {
         />
       </Head>
       <main className="">
-        <div className="w-full h-[20rem] ">
+        <div className="w-full h-[20rem] sm:h-[30rem] lg:h-[45rem] xl:h-[49rem]">
           <TwHomeNavbar />
           <TwHomeSearchbar />
           <div
@@ -34,13 +34,6 @@ const Home = () => {
             <Image src={cityScape} alt="cityScape" layout="fill" />
           </div>
         </div>
-        <div className="">HELLLOOOOO</div>
-        <div className="">HELLLOOOOO</div>
-        <div className="">HELLLOOOOO</div>
-        <div className="">HELLLOOOOO</div>
-        <div className="">HELLLOOOOO</div>
-        <div className="">HELLLOOOOO</div>
-        <div className="">HELLLOOOOO</div>
         <div className="">HELLLOOOOO</div>
       </main>
     </>
