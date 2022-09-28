@@ -22,7 +22,9 @@ const TwHomeSearchbar = () => {
           `/map?lat=${geometry.location?.lat()}&lng=${geometry.location?.lng()}&type=${searchType}`
         );
       }
+      setAutocomplete(undefined);
     }
+    return 123;
   };
 
   return (
@@ -76,13 +78,19 @@ const TwHomeSearchbar = () => {
                       <Autocomplete
                         restrictions={{ country: "do" }}
                         // types={["regions"]}
+                        // ref={inputRef}
                         className="w-full"
                         onLoad={onLoad}
-                        onPlaceChanged={onPlaceChanged}
+                        onPlaceChanged={() => onPlaceChanged()}
                       >
                         <input
                           id="search"
                           type="text"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                            }
+                          }}
                           placeholder="City, Neighborhood"
                           className="block w-full rounded-bl-md rounded-r-md border-0 px-4 py-3 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                         />

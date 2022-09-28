@@ -62,10 +62,10 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         </div>
         <div className="h-full w-[40%] overflow-y-auto bg-white">
           {listings.map((listing) => (
-            <>
-              <ListingCard {...listing} key={listing.id} />
+            <div key={listing.id}>
+              <ListingCard {...listing} />
               <Divider />
-            </>
+            </div>
           ))}
         </div>
       </main>
