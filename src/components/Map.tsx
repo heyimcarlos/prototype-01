@@ -1,5 +1,12 @@
 import React, { RefObject, useState } from "react";
-import MapboxMap, { Source, Layer, MapRef, MapLayerMouseEvent, Marker } from "react-map-gl";
+import MapboxMap, {
+  Source,
+  Layer,
+  MapRef,
+  MapLayerMouseEvent,
+  Marker,
+  ViewStateChangeEvent,
+} from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
 import { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
@@ -13,6 +20,7 @@ import { transformIntToMoney } from "@/lib/transformInt";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useMapPreferences } from "@/stores/useMapPreferences";
+import { useSidebar } from "@/stores/useSidebar";
 
 type MapProps = {
   mapRef: RefObject<MapRef>;
@@ -29,11 +37,13 @@ const Map = ({ places, mapRef }: MapProps) => {
   const [selectedListing, setSelectedListing] = useState("");
   const [showRoutes, setShowRoutes] = useState(false);
   const [curListingId, setCurListingId] = useState("");
-
+  const setListings = useSidebar((state) => state.setListings);
   const placeMutation = trpc.useMutation(["map.place"], {
     onSuccess: (data) => {
       const placeAsFeature = transformPlaceToFeature(data);
       if (placeAsFeature) fitBounds(placeAsFeature);
+
+      setListings(data.listing);
     },
   });
   const active = useMapPreferences((state) => state.active);
@@ -124,6 +134,20 @@ const Map = ({ places, mapRef }: MapProps) => {
     return colors[idx];
   };
 
+  const showVisibleMarkers = () => {
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+    const bounds = map.getBounds();
+    const listings = [];
+    for (const place of places) {
+      if (bounds.contains({ lat: place.center.latitude, lng: place.center.longitude })) {
+        listings.push(place.listing);
+      }
+    }
+    const flattened = listings.flat();
+    setListings(flattened);
+  };
+
   return (
     <div className="h-full w-full">
       <MapboxMap
@@ -133,6 +157,9 @@ const Map = ({ places, mapRef }: MapProps) => {
           longitude: -69.94115,
           latitude: 18.45707,
           zoom: 14,
+        }}
+        onDragEnd={() => {
+          showVisibleMarkers();
         }}
         onClick={(e) => {
           setShow(true);
