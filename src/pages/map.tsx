@@ -1,4 +1,3 @@
-import type { NextPage } from "next";
 import Head from "next/head";
 import Map from "@/components/Map";
 import { useJsApiLoader } from "@react-google-maps/api";
@@ -35,7 +34,10 @@ const ListingCard = ({ name, description, price }: Listing) => {
   );
 };
 
-const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({ places }) => {
+const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
+  places,
+  initialViewport,
+}) => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     libraries: GOOGLE_MAP_LIBRARIES,
@@ -56,7 +58,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
       </Head>
       <main className="w-full h-[calc(100vh-90px)] flex">
         <div className="w-[60%] h-full">
-          <Map mapRef={mapRef} places={places} />
+          <Map mapRef={mapRef} places={places} initialViewport={initialViewport} />
         </div>
         <div className="h-full w-[40%] overflow-y-auto bg-white">
           {listings.map((listing) => (
@@ -75,7 +77,7 @@ MapPage.layout = MapLayout;
 
 // @INFO: Server side fetching of places
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const getServerSideProps = async ({}: GetServerSidePropsContext) => {
+export const getServerSideProps = async ({ query }: GetServerSidePropsContext) => {
   const places = await prisma.place.findMany({
     include: {
       center: true,
@@ -87,6 +89,17 @@ export const getServerSideProps = async ({}: GetServerSidePropsContext) => {
     },
   });
 
+  const initialViewport = {
+    longitude: -69.94115,
+    latitude: 18.45707,
+    zoom: 14,
+  };
+
+  if (query.lat && query.lng) {
+    initialViewport.latitude = Number(query.lat);
+    initialViewport.longitude = Number(query.lng);
+  }
+
   if (!places.length) {
     return {
       notFound: true,
@@ -96,6 +109,7 @@ export const getServerSideProps = async ({}: GetServerSidePropsContext) => {
   return {
     props: {
       places,
+      initialViewport,
     },
   };
 };

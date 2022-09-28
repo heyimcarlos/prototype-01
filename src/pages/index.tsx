@@ -6,9 +6,20 @@ import { useState } from "react";
 import cityScape from "../../public/assets/images/2nd.jpg";
 import TwHomeNavbar from "@/components/TwHomeNavbar";
 import TwHomeSearchbar from "@/components/TwHomeSearchbar";
+import { useJsApiLoader } from "@react-google-maps/api";
+import { env } from "@/env/client.mjs";
+import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 
 const Home = () => {
   const [searchType, setSearchType] = useState("buy");
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    libraries: GOOGLE_MAP_LIBRARIES,
+  });
+
+  if (!isLoaded) return <div>Loading...</div>;
+
   return (
     <>
       <Head>
@@ -34,7 +45,7 @@ const Home = () => {
             <Image src={cityScape} alt="cityScape" layout="fill" />
           </div>
         </div>
-        <div className="">HELLLOOOOO</div>
+        <div className=""></div>
       </main>
     </>
   );
