@@ -1,12 +1,5 @@
 import React, { RefObject, useState } from "react";
-import MapboxMap, {
-  Source,
-  Layer,
-  MapRef,
-  MapLayerMouseEvent,
-  Marker,
-  ViewStateChangeEvent,
-} from "react-map-gl";
+import MapboxMap, { Source, Layer, MapRef, MapLayerMouseEvent, Marker } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
 import { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
@@ -23,6 +16,11 @@ import { useMapPreferences } from "@/stores/useMapPreferences";
 import { useSidebar } from "@/stores/useSidebar";
 
 type MapProps = {
+  initialViewport: {
+    longitude: number;
+    latitude: number;
+    zoom: number;
+  };
   mapRef: RefObject<MapRef>;
   places: (Place & {
     center: Coordinate;
@@ -32,7 +30,7 @@ type MapProps = {
   })[];
 };
 
-const Map = ({ places, mapRef }: MapProps) => {
+const Map = ({ places, mapRef, initialViewport }: MapProps) => {
   const [show, setShow] = useState(true);
   const [selectedListing, setSelectedListing] = useState("");
   const [showRoutes, setShowRoutes] = useState(false);
@@ -153,11 +151,7 @@ const Map = ({ places, mapRef }: MapProps) => {
       <MapboxMap
         id="mapa"
         ref={mapRef}
-        initialViewState={{
-          longitude: -69.94115,
-          latitude: 18.45707,
-          zoom: 14,
-        }}
+        initialViewState={initialViewport}
         onDragEnd={() => {
           showVisibleMarkers();
         }}

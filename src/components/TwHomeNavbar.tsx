@@ -3,6 +3,7 @@ import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
+import Link from "next/link";
 
 const navigation = [
   { name: "Sell", href: "#" },
@@ -28,13 +29,15 @@ const TwHomeNavbar = () => {
                 </Popover.Button>
               </div>
 
-              <a href="#" className="-mt-1">
-                <span className="sr-only">ntornos</span>
-                <div className="font-['Libre_Baskerville'] text-2xl ml-2 inline md:text-3xl md:-ml-1">
-                  <span className="text-indigo-600">n</span>
-                  <span className="text-white">tornos</span>
-                </div>
-              </a>
+              <Link href="/" className="-mt-1">
+                <a>
+                  <span className="sr-only">ntornos</span>
+                  <div className="font-['Libre_Baskerville'] text-2xl ml-2 inline md:text-3xl md:-ml-1">
+                    <span className="text-indigo-600">n</span>
+                    <span className="text-white">tornos</span>
+                  </div>
+                </a>
+              </Link>
 
               <div className="w-full flex justify-end md:hidden -mt-1">
                 <a
