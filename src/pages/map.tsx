@@ -19,23 +19,29 @@ import Image from "next/image";
 
 const ListingCard = ({ name, description, price }: Listing) => {
   return (
-    <div className="card w-96 bg-base-100 shadow-xl rounded m-2">
-      <figure>
-        <Image src="https://placeimg.com/400/225/arch" width={100} height={100} alt="listing" />
-      </figure>
-      <div className="card-body">
-        <h2 className="card-title">{name}</h2>
+    <div className="card w-[17.5rem] h-[17rem] shadow-md rounded mt-2 border-black/[.1] border-[1px] ">
+      <div className="">
+        <Image
+          src="https://placeimg.com/400/225/arch"
+          width={300}
+          height={200}
+          alt="listing"
+        />
+      </div>
+      <div className="ml-1">
+        <h2 className="text-lg font-semibold text-black">
+          {transformIntToMoney(price)}
+        </h2>
         <p>{description}</p>
-        <p>{transformIntToMoney(price)}</p>
-        <div className="card-actions justify-end">
-          <button className="btn btn-primary">Buy Now</button>
-        </div>
+        <p>{name}</p>
       </div>
     </div>
   );
 };
 
-const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({ places }) => {
+const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
+  places,
+}) => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     libraries: GOOGLE_MAP_LIBRARIES,
@@ -55,14 +61,15 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="w-full h-[calc(100vh-90px)] flex">
-        <div className="w-[60%] h-full">
+        <div className="w-[1300px]  h-full">
           <Map mapRef={mapRef} places={places} />
         </div>
-        <div className="h-full w-[40%] overflow-y-auto bg-white">
+        <div className=" w-[400px]  h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start">
           {listings.map((listing) => (
             <>
+              {/* {console.log(listing)} */}
               <ListingCard {...listing} key={listing.id} />
-              <Divider />
+              {/* <Divider /> */}
             </>
           ))}
         </div>
