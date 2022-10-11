@@ -61,18 +61,20 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="w-full h-[calc(100vh-90px)] flex">
-        <div className="w-[60%] h-full">
+        <div className="w-full h-full">
           <Map
             mapRef={mapRef}
             places={places}
             initialViewport={initialViewport}
           />
         </div>
-        <div className=" w-[400px]  h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start">
+        <div className=" min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
+          {listings.length < 1 && <div>No listing to show move the map</div>}
+          {/* {console.log(listings.length)} */}
           {listings.map((listing) => (
             <div key={listing.id}>
               <ListingCard {...listing} />
-              <Divider />
+              {/* <Divider /> */}
             </div>
           ))}
         </div>
@@ -98,6 +100,8 @@ export const getServerSideProps = async ({
       },
     },
   });
+
+  console.log("places =", places);
 
   const initialViewport = {
     longitude: -69.94115,
