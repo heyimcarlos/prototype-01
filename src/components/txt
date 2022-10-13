@@ -24,3 +24,61 @@
           <div>Next section of landing page</div>
         </div>
       </main>
+
+
+       // const active = useMapPreferences((state) => state.active);
+  // const update = useMapPreferences((state) => state.update);
+  // const nearbyMutation = trpc.useMutation(["map.nearby"], {
+  //   onSuccess: (data) => {
+  //     let farthest = data?.[0];
+  //     data?.forEach((feature) => {
+  //       if (feature) {
+  //         update(feature.properties.preference);
+  //         if (feature.properties.distance && farthest?.properties.distance) {
+  //           if (feature.properties.distance > farthest.properties.distance) {
+  //             farthest = feature;
+  //           }
+  //         }
+  //       }
+  //     });
+
+  //     fitBounds(farthest as GeoJSON.Feature<GeoJSON.LineString>);
+  //   },
+  //   onError: (e) => {
+  //     console.log(e, "wtf?");
+  //   },
+  // });
+
+      // nearbyMutation.mutate({
+    //   origin: {
+    //     lng: listing.location.longitude,
+    //     lat: listing.location.latitude,
+    //   },
+    //   rankBy: "distance",
+    //   preferences: active,
+    // });
+
+
+
+      // const routeColor = (idx: number) => {
+  //   const colors = ["royalblue", "red", "green"];
+  //   return colors[idx];
+  // };
+
+
+         {/* @INFO: Bounds being rendered here */}
+        {/* {placeMutation.data?.bounds && (
+          <Source
+            id="polygons-source"
+            type="geojson"
+            data={turf.polygon([placeMutation.data.bounds] as Position[][])}
+          >
+            <Layer
+              minzoom={14.1}
+              id="polygons"
+              type="fill"
+              source="polygons-source"
+              paint={{ "fill-color": "gray", "fill-opacity": 0.25 }}
+            />
+          </Source>
+        )} */}

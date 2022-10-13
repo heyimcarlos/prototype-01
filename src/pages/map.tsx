@@ -11,32 +11,7 @@ import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 import { NextPageWithLayout } from "./_app";
 import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
-import { Listing } from "@prisma/client";
-import Divider from "@/components/Divider";
-import { transformIntToMoney } from "@/lib/transformInt";
-import Image from "next/image";
-
-const ListingCard = ({ name, description, price }: Listing) => {
-  return (
-    <div className="card w-[17.5rem] h-[17rem] shadow-md rounded mt-2 border-black/[.1] border-[1px] ">
-      <div className="">
-        <Image
-          src="https://placeimg.com/400/225/arch"
-          width={300}
-          height={200}
-          alt="listing"
-        />
-      </div>
-      <div className="ml-1">
-        <h2 className="text-lg font-semibold text-black">
-          {transformIntToMoney(price)}
-        </h2>
-        <p>{description}</p>
-        <p>{name}</p>
-      </div>
-    </div>
-  );
-};
+import ListingCard from "@/components/ListingCard";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   places,
@@ -60,6 +35,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         <meta name="description" content="Real Estate User Facing" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <main className="w-full h-[calc(100vh-90px)] flex">
         <div className="w-full h-full">
           <Map
@@ -70,11 +46,9 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         </div>
         <div className=" min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
           {listings.length < 1 && <div>No listing to show move the map</div>}
-          {/* {console.log(listings.length)} */}
           {listings.map((listing) => (
             <div key={listing.id}>
               <ListingCard {...listing} />
-              {/* <Divider /> */}
             </div>
           ))}
         </div>
@@ -101,7 +75,7 @@ export const getServerSideProps = async ({
     },
   });
 
-  console.log("places =", places);
+  // console.log("places =", places);
 
   const initialViewport = {
     longitude: -69.94115,
