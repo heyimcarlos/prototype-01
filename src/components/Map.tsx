@@ -38,8 +38,47 @@ type MapProps = {
   })[];
 };
 
+const CustomMarker = ({
+  place,
+  placeMutation,
+  globalShow,
+  setGlobalShow,
+  names,
+}) => {
+  const [show, setShow] = useState(true);
+  if (globalShow && show === false) setShow(true);
+  const sectors = useSectors((state) => state.sectors);
+
+  return (
+    <>
+      {show && !names.includes(place.name) && (
+        <Marker
+          onClick={(e) => {
+            e.originalEvent.stopPropagation();
+            placeMutation.mutate({ slug: place.slug });
+            setShow(false);
+            setGlobalShow(false);
+          }}
+          anchor="bottom"
+          key={`marker-${place.id}`}
+          longitude={place.center.longitude}
+          latitude={place.center.latitude}
+          offset={[0, -10]}
+        >
+          <div className="bg-indigo-600 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
+            <span className="text-sm font-semibold text-white">
+              {place.listing.length}
+            </span>
+          </div>
+        </Marker>
+      )}
+    </>
+  );
+};
+
 const Map = ({ places, mapRef, initialViewport }: MapProps) => {
   const [show, setShow] = useState(true);
+  const [globalShow, setGlobalShow] = useState(false);
   const [showOutline, setShowOutline] = useState(false);
   const [selectedListing, setSelectedListing] = useState("");
   // const [showRoutes, setShowRoutes] = useState(false);
@@ -55,13 +94,10 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
   sectors.forEach((sector) => names.push(sector.name));
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // ------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // ------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
     if (!mapRef.current) return;
-    // console.log("sectors", sectors);
+
     if (sectors.length < 1) {
       const [minLng, minLat, maxLng, maxLat] = bbox(feature);
       mapRef.current.fitBounds(
@@ -89,7 +125,7 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
           listings: data.listing,
         });
       }
-      console.log("data", data);
+
       const placeAsFeature = transformPlaceToFeature(data);
       if (placeAsFeature) fitBounds(placeAsFeature);
       setListings(data.listing);
@@ -99,19 +135,17 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
   useEffect(() => {
     // fitAllCurBounds();
     if (sectors.length > 1) {
-      let allCurBounds = [];
+      let allCurBounds: [][] = [];
 
       sectors.forEach((sector) => {
-        allCurBounds = allCurBounds.concat(sector.bounds);
+        allCurBounds = allCurBounds.concat(sector.bounds as [][]);
       });
 
-      allCurBounds.push(allCurBounds[0]);
+      allCurBounds.push(allCurBounds[0] as []);
 
       if (!mapRef.current) return;
 
       const geometry = turf.geometry("Polygon", [allCurBounds]);
-
-      console.log("geometry", geometry);
 
       const [minLng, minLat, maxLng, maxLat] = bbox(geometry);
       mapRef.current.fitBounds(
@@ -133,6 +167,7 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
   }, [sectors, mapRef]);
 
   const onClickMap = (event: MapLayerMouseEvent) => {
+    event.originalEvent.stopPropagation();
     if (!mapRef.current) return;
     const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(
       event.point,
@@ -140,6 +175,7 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
     );
     const feature = queryRenderedFeatures[0];
 
+    // setGlobalShow(false);
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       const slug = slugify(feature.properties.name);
@@ -159,6 +195,7 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
       ) {
         setShow(false);
         return;
+      } else {
       }
 
       const test = mapRef.current.getCenter();
@@ -173,7 +210,7 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
       setShowOutline(false);
       deleteAllSectors();
     }
-
+    setGlobalShow(true);
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
   };
 
@@ -206,6 +243,8 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
     setListings(flattened);
   };
 
+  // const place = places;
+
   return (
     <div className="h-full w-full">
       <MapboxMap
@@ -217,7 +256,6 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
         }}
         onClick={(e) => {
           setShow(true);
-
           setSelectedListing("");
           setCurListingId("");
           onClickMap(e);
@@ -226,14 +264,28 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
         {/* INFO: Sector main cluster */}
-        {places?.map(
+
+        {places?.map((place) => (
+          // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
+
+          <CustomMarker
+            key={`marker-${place.id}`}
+            place={place}
+            placeMutation={placeMutation}
+            globalShow={globalShow}
+            setGlobalShow={setGlobalShow}
+            names={names}
+          />
+        ))}
+        {/* {places?.map(
           (place) =>
             // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
             show && (
               <Marker
-                onClick={() => {
+                onClick={(e) => {
                   placeMutation.mutate({ slug: place.slug });
                 }}
+                style={{}}
                 anchor="bottom"
                 key={`marker-${place.id}`}
                 longitude={place.center.longitude}
@@ -247,7 +299,7 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
                 </div>
               </Marker>
             )
-        )}
+        )} */}
         {/* @INFO: Within bounds listings */}
 
         {sectors.map((sector) =>
@@ -283,30 +335,29 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
           )
         )}
 
-        {showOutline &&
-          sectors.map((sector) => (
-            <Source
-              key={sector.name}
-              type="geojson"
-              data={turf.mask(turf.polygon([sector.bounds] as Position[][]))}
-            >
-              <Layer
-                // maxzoom={14.1}
-                id={`linelayer-zoom-out-bounds ${sector.name}`}
-                type="line"
-                source="line-source"
-                layout={{
-                  "line-join": "round",
-                  "line-cap": "round",
-                }}
-                paint={{
-                  "line-color": "black",
-                  "line-width": 2,
-                  "line-opacity": 1,
-                }}
-              />
-            </Source>
-          ))}
+        {sectors.map((sector) => (
+          <Source
+            key={sector.name}
+            type="geojson"
+            data={turf.mask(turf.polygon([sector.bounds] as Position[][]))}
+          >
+            <Layer
+              // maxzoom={14.1}
+              id={`linelayer-zoom-out-bounds ${sector.name}`}
+              type="line"
+              source="line-source"
+              layout={{
+                "line-join": "round",
+                "line-cap": "round",
+              }}
+              paint={{
+                "line-color": "black",
+                "line-width": 2,
+                "line-opacity": 1,
+              }}
+            />
+          </Source>
+        ))}
       </MapboxMap>
     </div>
   );

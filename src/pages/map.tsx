@@ -12,6 +12,7 @@ import { NextPageWithLayout } from "./_app";
 import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
 import ListingCard from "@/components/ListingCard";
+import { useSectors } from "@/stores/useSectors";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   places,
@@ -25,6 +26,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   const mapRef = useRef<MapRef>(null);
 
   const listings = useSidebar((state) => state.listings);
+  const sectors = useSectors((state) => state.sectors);
 
   if (!isLoaded) return <div>Loading...</div>;
 
@@ -46,11 +48,20 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         </div>
         <div className=" min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
           {listings.length < 1 && <div>No listing to show move the map</div>}
-          {listings.map((listing) => (
-            <div key={listing.id}>
-              <ListingCard {...listing} />
-            </div>
-          ))}
+          {sectors.map((sector) =>
+            sector.listings.map((listing) => (
+              <div key={listing.id}>
+                <ListingCard {...listing} />
+              </div>
+            ))
+          )}
+
+          {sectors.length < 1 &&
+            listings.map((listing) => (
+              <div key={listing.id}>
+                <ListingCard {...listing} />
+              </div>
+            ))}
         </div>
       </main>
     </>
