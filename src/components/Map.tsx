@@ -18,10 +18,11 @@ import slugify from "@/lib/slugify";
 import { transformIntToMoney } from "@/lib/transformInt";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useMapPreferences } from "@/stores/useMapPreferences";
+
 import { useSidebar } from "@/stores/useSidebar";
 import { useSectors } from "../stores/useSectors";
-import { Coord } from "@turf/turf";
+
+import { useGlobalShow } from "@/stores/useGlobalShow";
 
 type MapProps = {
   initialViewport: {
@@ -38,16 +39,12 @@ type MapProps = {
   })[];
 };
 
-const CustomMarker = ({
-  place,
-  placeMutation,
-  globalShow,
-  setGlobalShow,
-  names,
-}) => {
+const CustomMarker = ({ place, placeMutation, names }) => {
   const [show, setShow] = useState(true);
+  const globalShow = useGlobalShow((state) => state.globalShow);
+  const setGlobalShowFalse = useGlobalShow((state) => state.setGlobalShowFalse);
+
   if (globalShow && show === false) setShow(true);
-  const sectors = useSectors((state) => state.sectors);
 
   return (
     <>
@@ -57,7 +54,7 @@ const CustomMarker = ({
             e.originalEvent.stopPropagation();
             placeMutation.mutate({ slug: place.slug });
             setShow(false);
-            setGlobalShow(false);
+            setGlobalShowFalse();
           }}
           anchor="bottom"
           key={`marker-${place.id}`}
@@ -78,12 +75,13 @@ const CustomMarker = ({
 
 const Map = ({ places, mapRef, initialViewport }: MapProps) => {
   const [show, setShow] = useState(true);
-  const [globalShow, setGlobalShow] = useState(false);
-  const [showOutline, setShowOutline] = useState(false);
+
+  const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
+
   const [selectedListing, setSelectedListing] = useState("");
-  // const [showRoutes, setShowRoutes] = useState(false);
+
   const [curListingId, setCurListingId] = useState("");
-  // const [selectedAreas, setSelectedAreas] = useState<Array<object>>([]);
+
   const setListings = useSidebar((state) => state.setListings);
 
   const addSector = useSectors((state) => state.addSector);
@@ -133,7 +131,6 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
   });
 
   useEffect(() => {
-    // fitAllCurBounds();
     if (sectors.length > 1) {
       let allCurBounds: [][] = [];
 
@@ -163,7 +160,6 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
 
       setShow(false);
     }
-    // return;
   }, [sectors, mapRef]);
 
   const onClickMap = (event: MapLayerMouseEvent) => {
@@ -175,13 +171,10 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
     );
     const feature = queryRenderedFeatures[0];
 
-    // setGlobalShow(false);
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       const slug = slugify(feature.properties.name);
       placeMutation.mutate({ slug });
-
-      setShowOutline(true);
     } else {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
 
@@ -206,11 +199,10 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
         animate: true,
         easing: (t) => t,
       });
-      // setShowRoutes(false);
-      setShowOutline(false);
+
       deleteAllSectors();
     }
-    setGlobalShow(true);
+    setGlobalShowTrue();
     // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
   };
 
@@ -243,8 +235,6 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
     setListings(flattened);
   };
 
-  // const place = places;
-
   return (
     <div className="h-full w-full">
       <MapboxMap
@@ -272,34 +262,10 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
             key={`marker-${place.id}`}
             place={place}
             placeMutation={placeMutation}
-            globalShow={globalShow}
-            setGlobalShow={setGlobalShow}
             names={names}
           />
         ))}
-        {/* {places?.map(
-          (place) =>
-            // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
-            show && (
-              <Marker
-                onClick={(e) => {
-                  placeMutation.mutate({ slug: place.slug });
-                }}
-                style={{}}
-                anchor="bottom"
-                key={`marker-${place.id}`}
-                longitude={place.center.longitude}
-                latitude={place.center.latitude}
-                offset={[0, -10]}
-              >
-                <div className="bg-indigo-600 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
-                  <span className="text-sm font-semibold text-white">
-                    {place.listing.length}
-                  </span>
-                </div>
-              </Marker>
-            )
-        )} */}
+
         {/* @INFO: Within bounds listings */}
 
         {sectors.map((sector) =>
@@ -310,7 +276,6 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
                   onClick={(e) => {
                     e.originalEvent.stopPropagation();
                     handleListingClick(listing);
-                    // fitPrefBounds(e);
                   }}
                   latitude={listing.location.latitude}
                   longitude={listing.location.longitude}

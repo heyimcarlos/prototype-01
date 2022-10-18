@@ -6,12 +6,20 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import logoPicture from "../../public/assets/images/logo2.0.png";
 import Link from "next/link";
+import { useSectors } from "@/stores/useSectors";
+import FlyOutMenu2 from "../components/FlyOutMenu2";
+import { useGlobalShow } from "@/stores/useGlobalShow";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 const TwTopbar = () => {
+  const sectors = useSectors((state) => state.sectors);
+  const deleteThisSector = useSectors((state) => state.deleteThisSector);
+  const globalShow = useGlobalShow((state) => state.globalShow);
+  const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
+
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
@@ -24,10 +32,14 @@ const TwTopbar = () => {
             }}
           >
             <div className="flex h-16 justify-between">
-              <div className="flex px-2 lg:px-0 relative">
+              <div className="flexpx-2 lg:px-0 relative">
                 <div
                   className="flex flex-shrink-0 items-center justify-start cursor-pointer"
-                  style={{ marginLeft: "1.1rem", marginBottom: "0.2rem" }}
+                  style={{
+                    marginLeft: "1.1rem",
+                    marginBottom: "0.2rem",
+                    marginTop: "0.7rem",
+                  }}
                 >
                   <Link href="/" className="-mt-1">
                     <a>
@@ -41,13 +53,16 @@ const TwTopbar = () => {
                 </div>
               </div>
               <div className="flex flex-1 items-center px-2 justify-start">
-                {/* <div className="w-full max-w-lg lg:max-w-xs">
+                <div className="w-[17rem] max-w-lg lg:max-w-xs">
                   <label htmlFor="search" className="sr-only">
                     Search
                   </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                      <MagnifyingGlassIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
                     </div>
                     <input
                       id="search"
@@ -57,7 +72,45 @@ const TwTopbar = () => {
                       type="search"
                     />
                   </div>
-                </div> */}
+                </div>
+
+                <FlyOutMenu2 />
+
+                {sectors.length > 0 && (
+                  <div className="flex ml-1">
+                    <div
+                      className="pr-10 mr-1 border-2 rounded-xl"
+                      key={
+                        sectors.length > 0
+                          ? sectors[sectors.length - 1]?.name
+                          : ""
+                      }
+                    >
+                      <span className="pl-3">
+                        {sectors.length > 0
+                          ? sectors[sectors.length - 1]?.name
+                          : ""}
+                      </span>
+                      <div
+                        style={{
+                          display: "inline",
+                          position: "absolute",
+                          border: "0.15rem solid black",
+                          marginTop: "1.5px",
+                          marginLeft: "7px",
+                          borderRadius: "100%",
+                        }}
+                        onClick={() => {
+                          if (sectors.length < 1) return;
+                          deleteThisSector(sectors[sectors.length - 1]);
+                          setGlobalShowTrue();
+                        }}
+                      >
+                        <XMarkIcon className="h-4 w-4" aria-hidden="true" />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex items-center lg:hidden">
                 {/* Mobile menu button */}

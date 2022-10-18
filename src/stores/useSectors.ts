@@ -14,6 +14,15 @@ type SectorsState = {
     listings: (Listing & { location: Coordinate })[];
   }) => void;
   deleteAllSectors: () => void;
+  deleteThisSector: (
+    sectors:
+      | {
+          name: string;
+          bounds: JSONValue;
+          listings: (Listing & { location: Coordinate })[];
+        }
+      | undefined
+  ) => void;
 };
 
 export const useSectors = create<SectorsState>((set) => ({
@@ -21,4 +30,8 @@ export const useSectors = create<SectorsState>((set) => ({
   addSector: (sector) =>
     set((state) => ({ sectors: [...state.sectors, sector] })),
   deleteAllSectors: () => set(() => ({ sectors: [] })),
+  deleteThisSector: (sector) =>
+    set((state) => ({
+      sectors: state.sectors.filter((sec) => sec !== sector),
+    })),
 }));

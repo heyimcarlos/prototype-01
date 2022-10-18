@@ -86,8 +86,6 @@ export const getServerSideProps = async ({
     },
   });
 
-  // console.log("places =", places);
-
   const initialViewport = {
     longitude: -69.94115,
     latitude: 18.45707,
