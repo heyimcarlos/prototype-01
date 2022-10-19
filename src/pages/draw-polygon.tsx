@@ -11,7 +11,9 @@ export default function App() {
 
   const onUpdate = useCallback((e: { features: { id: number | string }[] }) => {
     setFeatures((currFeatures) => {
-      const newFeatures: { [key: string]: { id: number | string } } = { ...currFeatures };
+      const newFeatures: { [key: string]: { id: number | string } } = {
+        ...currFeatures,
+      };
       for (const f of e.features) {
         newFeatures[f.id] = f;
       }
@@ -21,7 +23,9 @@ export default function App() {
 
   const onDelete = useCallback((e: { features: { id: number | string }[] }) => {
     setFeatures((currFeatures) => {
-      const newFeatures: { [key: string]: { id: number | string } } = { ...currFeatures };
+      const newFeatures: { [key: string]: { id: number | string } } = {
+        ...currFeatures,
+      };
       for (const f of e.features) {
         delete newFeatures[f.id];
       }
@@ -42,13 +46,13 @@ export default function App() {
         mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
         <DrawControl
-          position="top-left"
+          position="top-right"
           displayControlsDefault={false}
           controls={{
             polygon: true,
             trash: true,
           }}
-          defaultMode="draw_polygon"
+          // defaultMode="draw_polygon"
           onCreate={onUpdate}
           onUpdate={onUpdate}
           onDelete={onDelete}

@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useState } from "react";
+import React, { RefObject, useCallback, useEffect, useState } from "react";
 import MapboxMap, {
   Source,
   Layer,
@@ -74,8 +74,6 @@ const CustomMarker = ({ place, placeMutation, names }) => {
 };
 
 const Map = ({ places, mapRef, initialViewport }: MapProps) => {
-  const [show, setShow] = useState(true);
-
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
 
   const [selectedListing, setSelectedListing] = useState("");
@@ -87,8 +85,9 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
   const addSector = useSectors((state) => state.addSector);
   const deleteAllSectors = useSectors((state) => state.deleteAllSectors);
 
-  const sectors = useSectors((state) => state.sectors);
   const names: string[] = [];
+
+  const sectors = useSectors((state) => state.sectors);
   sectors.forEach((sector) => names.push(sector.name));
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,7 +109,6 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
           essential: true,
         }
       );
-      setShow(false);
     }
   };
 
@@ -157,8 +155,6 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
           essential: true,
         }
       );
-
-      setShow(false);
     }
   }, [sectors, mapRef]);
 
@@ -173,8 +169,10 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
 
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
-      const slug = slugify(feature.properties.name);
-      placeMutation.mutate({ slug });
+      if (!names.includes(feature.properties.name)) {
+        const slug = slugify(feature.properties.name);
+        placeMutation.mutate({ slug });
+      }
     } else {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
 
@@ -186,7 +184,6 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
           return turf.booleanPointInPolygon(point, poly);
         })
       ) {
-        setShow(false);
         return;
       } else {
       }
@@ -245,7 +242,6 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
           showVisibleMarkers();
         }}
         onClick={(e) => {
-          setShow(true);
           setSelectedListing("");
           setCurListingId("");
           onClickMap(e);
@@ -269,35 +265,32 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
         {/* @INFO: Within bounds listings */}
 
         {sectors.map((sector) =>
-          sector.listings.map(
-            (listing) =>
-              !show && (
-                <Marker
-                  onClick={(e) => {
-                    e.originalEvent.stopPropagation();
-                    handleListingClick(listing);
-                  }}
-                  latitude={listing.location.latitude}
-                  longitude={listing.location.longitude}
-                  key={`listing-${listing.id}`}
-                >
-                  <div
-                    className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
-                    style={{
-                      opacity: curListingId
-                        ? curListingId === listing.id
-                          ? 1
-                          : 0.4
-                        : 1,
-                    }}
-                  >
-                    <span className="text-sm">
-                      {transformIntToMoney(listing.price)}
-                    </span>
-                  </div>
-                </Marker>
-              )
-          )
+          sector.listings.map((listing) => (
+            <Marker
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                handleListingClick(listing);
+              }}
+              latitude={listing.location.latitude}
+              longitude={listing.location.longitude}
+              key={`listing-${listing.id}`}
+            >
+              <div
+                className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
+                style={{
+                  opacity: curListingId
+                    ? curListingId === listing.id
+                      ? 1
+                      : 0.4
+                    : 1,
+                }}
+              >
+                <span className="text-sm">
+                  {transformIntToMoney(listing.price)}
+                </span>
+              </div>
+            </Marker>
+          ))
         )}
 
         {sectors.map((sector) => (
