@@ -3,6 +3,9 @@ import { Popover, Transition } from "@headlessui/react";
 import { useSectors } from "@/stores/useSectors";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useGlobalShow } from "@/stores/useGlobalShow";
+import { useDrawShow } from "@/stores/useDrawShow";
+import { useGlobalHide } from "@/stores/useGlobalHide";
+import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -12,6 +15,12 @@ export default function Example() {
   const sectors = useSectors((state) => state.sectors);
   const deleteThisSector = useSectors((state) => state.deleteThisSector);
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
+  const setDrawShowTrue = useDrawShow((state) => state.setDrawShowTrue);
+  const setGlobalHideFalse = useGlobalHide((state) => state.setGlobalHideFalse);
+  const setShowCustomSearchFalse = useShowCustomSearch(
+    (state) => state.setShowCustomSearchFalse
+  );
+
   return (
     <>
       {sectors.length > 1 && (
@@ -55,6 +64,11 @@ export default function Example() {
                               borderRadius: "100%",
                             }}
                             onClick={() => {
+                              if (sector.name === "Custom Boundary") {
+                                setDrawShowTrue();
+                                setGlobalHideFalse();
+                                setShowCustomSearchFalse();
+                              }
                               deleteThisSector(sector);
                               setGlobalShowTrue();
                             }}

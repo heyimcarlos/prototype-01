@@ -9,6 +9,9 @@ import Link from "next/link";
 import { useSectors } from "@/stores/useSectors";
 import FlyOutMenu2 from "../components/FlyOutMenu2";
 import { useGlobalShow } from "@/stores/useGlobalShow";
+import { useDrawShow } from "@/stores/useDrawShow";
+import { useGlobalHide } from "@/stores/useGlobalHide";
+import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -19,6 +22,11 @@ const TwTopbar = () => {
   const deleteThisSector = useSectors((state) => state.deleteThisSector);
   const globalShow = useGlobalShow((state) => state.globalShow);
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
+  const setDrawShowTrue = useDrawShow((state) => state.setDrawShowTrue);
+  const setGlobalHideFalse = useGlobalHide((state) => state.setGlobalHideFalse);
+  const setShowCustomSearchFalse = useShowCustomSearch(
+    (state) => state.setShowCustomSearchFalse
+  );
 
   return (
     <Disclosure as="nav" className="bg-white shadow">
@@ -102,6 +110,15 @@ const TwTopbar = () => {
                         }}
                         onClick={() => {
                           if (sectors.length < 1) return;
+                          if (
+                            sectors[sectors.length - 1]?.name ===
+                            "Custom Boundary"
+                          ) {
+                            setDrawShowTrue();
+                            setGlobalHideFalse();
+                            setShowCustomSearchFalse();
+                          }
+
                           deleteThisSector(sectors[sectors.length - 1]);
                           setGlobalShowTrue();
                         }}
