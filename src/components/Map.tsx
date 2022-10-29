@@ -1,4 +1,11 @@
-import React, { RefObject, useCallback, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import MapboxMap, {
   Source,
   Layer,
@@ -50,6 +57,8 @@ type MapProps = {
     latitude: number;
     zoom: number;
   };
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
   mapRef: RefObject<MapRef>;
   places: (Place & {
     center: Coordinate;
@@ -94,7 +103,7 @@ const CustomMarker = ({ place, placeMutation, names }) => {
   );
 };
 
-const Map = ({ places, mapRef, initialViewport }: MapProps) => {
+const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
 
   const [selectedListing, setSelectedListing] = useState("");
@@ -266,7 +275,7 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
       }
     } else {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
-
+      setOpen(false);
       if (
         sectors.some((sector) => {
           const point = [event.lngLat.lng, event.lngLat.lat];
@@ -333,7 +342,13 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
     setDrawShowFalse();
   };
 
-  const [flagTipA, setFlagTipA] = useState(false);
+  const [drawPolyToolTip, setDrawPolyToolTip] = useState(false);
+
+  useEffect(() => {
+    document
+      .getElementsByClassName("mapboxgl-ctrl-group")[1]
+      ?.classList.add("mt-[3rem]");
+  });
 
   return (
     <>
@@ -392,32 +407,36 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
             )}
           </div>
 
-          <div className="h-full w-full">
-            <div
-              className="h-5 w-5 fixed left-0 top-0 mt-[12.25rem] ml-[2.5rem]"
-              onMouseOver={() => {
-                setFlagTipA(true);
-              }}
-              onMouseOut={() => {
-                setFlagTipA(false);
-              }}
-            >
-              <Image alt="" src={toolTip} width={100} height={100} />
-            </div>
-            {flagTipA && (
-              <div className="h-[26rem] w-[39rem] fixed left-0 top-0 mt-[5.5rem] ml-[4rem] bg-white">
-                <Image alt="" width={1200} height={900} src={polyGif} />
-                <div className="bg-white -mt-[0.5rem]">
-                  Edit a created boundary by clicking within its borders and
-                  dragging the mid points
-                </div>
+          {drawShow && (
+            <div className="h-full w-full">
+              <div
+                className="h-5 w-5 fixed left-0 top-0 mt-[12.50rem] ml-[0.95rem]"
+                onMouseOver={() => {
+                  setDrawPolyToolTip(true);
+                }}
+                onMouseOut={() => {
+                  setDrawPolyToolTip(false);
+                }}
+              >
+                <Image alt="" src={toolTip} width={100} height={100} />
               </div>
-            )}
+              {drawPolyToolTip && (
+                <div className="h-[26rem] w-[39rem] fixed left-0 top-0 mt-[5.5rem] ml-[4rem] bg-white">
+                  <Image alt="" width={1200} height={900} src={polyGif} />
+                  <div className="bg-white -mt-[0.5rem]">
+                    Edit a created boundary by clicking within its borders and
+                    dragging the mid points
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
-            {/* <div className="h-5 w-5 bg-[#ffffff] fixed left-0 top-0 mt-[14rem] ml-[2.5rem]"></div> */}
-          </div>
+          <NavigationControl
+            position="top-left"
+            style={{ marginBottom: "2rem" }}
+          />
 
-          <NavigationControl position="top-left" />
           {/* <FullscreenControl position="top-left" /> */}
           {/* <ScaleControl position="top-left" /> */}
 
@@ -469,6 +488,7 @@ const Map = ({ places, mapRef, initialViewport }: MapProps) => {
                 onClick={(e) => {
                   e.originalEvent.stopPropagation();
                   handleListingClick(listing);
+                  setOpen(true);
                 }}
                 latitude={listing.location.latitude}
                 longitude={listing.location.longitude}
@@ -525,6 +545,7 @@ export default Map;
 const mapBoxDrawStyles = [
   // ACTIVE (being drawn)
   // line stroke
+  // { display: "none" },
   {
     id: "gl-draw-line",
     type: "line",

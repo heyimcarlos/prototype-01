@@ -5,7 +5,7 @@ import { GetServerSidePropsContext } from "next";
 import { env } from "@/env/client.mjs";
 import { prisma } from "@/server/db/client";
 import { inferSSRProps } from "@/lib/types/inferSSRProps";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { MapRef } from "react-map-gl";
 import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 import { NextPageWithLayout } from "./_app";
@@ -13,6 +13,8 @@ import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
 import ListingCard from "@/components/ListingCard";
 import { useSectors } from "@/stores/useSectors";
+import SlideOver from "@/components/SlideOver";
+import LeftSlideOver from "@/components/LeftSlideOver";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   places,
@@ -27,6 +29,9 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
   const listings = useSidebar((state) => state.listings);
   const sectors = useSectors((state) => state.sectors);
+
+  const [open, setOpen] = useState(false);
+  const [leftSlideOver, setLeftSlideOver] = useState(false);
 
   if (!isLoaded) return <div>Loading...</div>;
 
@@ -44,15 +49,24 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
             mapRef={mapRef}
             places={places}
             initialViewport={initialViewport}
+            open={open}
+            setOpen={setOpen}
           />
         </div>
+
+        <SlideOver open={open} setOpen={setOpen} />
+        <LeftSlideOver
+          leftSlideOver={leftSlideOver}
+          setLeftSlideOver={setLeftSlideOver}
+        />
+
         <div className=" min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
           {listings.length < 1 && sectors.length < 1 && (
             <div>No listing to show move the map</div>
           )}
           {sectors.map((sector) =>
             sector.listings.map((listing) => (
-              <div key={listing.id}>
+              <div key={listing.id} onClick={() => setLeftSlideOver(true)}>
                 <ListingCard {...listing} />
               </div>
             ))
