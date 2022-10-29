@@ -8,7 +8,6 @@ type DrawControlProps = ConstructorParameters<
   typeof MapboxDraw & toDisplayFeatures
 >[0] & {
   position?: ControlPosition;
-
   onCreate: (evt: { features: { id: number | string }[] }) => void;
   onUpdate: (evt: {
     features: { id: number | string }[];

@@ -7,11 +7,12 @@ import Image from "next/image";
 import logoPicture from "../../public/assets/images/logo2.0.png";
 import Link from "next/link";
 import { useSectors } from "@/stores/useSectors";
-import FlyOutMenu2 from "../components/FlyOutMenu2";
+import SectorsFlyoutMenu from "../components/SectorsFlyoutMenu";
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useDrawShow } from "@/stores/useDrawShow";
 import { useGlobalHide } from "@/stores/useGlobalHide";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
+import { useDrawControls } from "@/stores/useDrawControls";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -26,6 +27,10 @@ const TwTopbar = () => {
   const setGlobalHideFalse = useGlobalHide((state) => state.setGlobalHideFalse);
   const setShowCustomSearchFalse = useShowCustomSearch(
     (state) => state.setShowCustomSearchFalse
+  );
+  const setRedrawFalse = useDrawControls((state) => state.setRedrawFalse);
+  const setDrawDefaultSimple = useDrawControls(
+    (state) => state.setDrawDefaultSimple
   );
 
   return (
@@ -82,7 +87,7 @@ const TwTopbar = () => {
                   </div>
                 </div>
 
-                <FlyOutMenu2 />
+                <SectorsFlyoutMenu />
 
                 {sectors.length > 0 && (
                   <div className="flex ml-1">
@@ -117,6 +122,8 @@ const TwTopbar = () => {
                             setDrawShowTrue();
                             setGlobalHideFalse();
                             setShowCustomSearchFalse();
+                            setRedrawFalse();
+                            setDrawDefaultSimple();
                           }
 
                           deleteThisSector(sectors[sectors.length - 1]);

@@ -6,12 +6,13 @@ import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useDrawShow } from "@/stores/useDrawShow";
 import { useGlobalHide } from "@/stores/useGlobalHide";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
+import { useDrawControls } from "@/stores/useDrawControls";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Example() {
+export default function SectorsFlyoutMenu() {
   const sectors = useSectors((state) => state.sectors);
   const deleteThisSector = useSectors((state) => state.deleteThisSector);
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
@@ -19,6 +20,12 @@ export default function Example() {
   const setGlobalHideFalse = useGlobalHide((state) => state.setGlobalHideFalse);
   const setShowCustomSearchFalse = useShowCustomSearch(
     (state) => state.setShowCustomSearchFalse
+  );
+
+  const setRedrawFalse = useDrawControls((state) => state.setRedrawFalse);
+
+  const setDrawDefaultSimple = useDrawControls(
+    (state) => state.setDrawDefaultSimple
   );
 
   return (
@@ -68,6 +75,8 @@ export default function Example() {
                                 setDrawShowTrue();
                                 setGlobalHideFalse();
                                 setShowCustomSearchFalse();
+                                setRedrawFalse();
+                                setDrawDefaultSimple();
                               }
                               deleteThisSector(sector);
                               setGlobalShowTrue();
