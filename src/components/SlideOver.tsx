@@ -11,9 +11,9 @@ import { useState } from "react";
 //   return classes.filter(Boolean).join(" ");
 // }
 
-const SlideOver = ({ open, setOpen }) => {
+const SlideOver = ({ open, setOpen, listing }) => {
   const [selected, setSelected] = useState("");
-
+  // console.log("listing", listing);
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
@@ -70,7 +70,7 @@ const SlideOver = ({ open, setOpen }) => {
                             <div>
                               <div className="flex items-center">
                                 <h3 className="text-xl font-bold text-gray-900 sm:text-2xl">
-                                  $462,000
+                                  ${listing.price}
                                 </h3>
                                 <h3 className="ml-4 pt-2 text-sm">
                                   <b>4</b> bd | <b>3.5</b> ba | <b>1600</b> sqft

@@ -50,6 +50,7 @@ import { useDrawControls } from "@/stores/useDrawControls";
 import Image from "next/image.js";
 import toolTip from "../../public/assets/images/tooltip.png";
 import polyGif from "../../public/assets/images/ezgif.com-gif-maker (1).gif";
+import { useSelectedListing } from "@/stores/useSelectedListing";
 
 type MapProps = {
   initialViewport: {
@@ -159,6 +160,10 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
   const setDrawDefaultPoly = useDrawControls(
     (state) => state.setDrawDefaultPoly
   );
+
+  const [drawPolyToolTip, setDrawPolyToolTip] = useState(false);
+
+  const setListing = useSelectedListing((state) => state.setListing);
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -342,14 +347,6 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
     setDrawShowFalse();
   };
 
-  const [drawPolyToolTip, setDrawPolyToolTip] = useState(false);
-
-  useEffect(() => {
-    document
-      .getElementsByClassName("mapboxgl-ctrl-group")[1]
-      ?.classList.add("mt-[3rem]");
-  });
-
   return (
     <>
       <Head>
@@ -489,6 +486,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
                   e.originalEvent.stopPropagation();
                   handleListingClick(listing);
                   setOpen(true);
+                  setListing(listing);
                 }}
                 latitude={listing.location.latitude}
                 longitude={listing.location.longitude}

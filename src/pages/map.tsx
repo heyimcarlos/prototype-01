@@ -15,6 +15,7 @@ import ListingCard from "@/components/ListingCard";
 import { useSectors } from "@/stores/useSectors";
 import SlideOver from "@/components/SlideOver";
 import LeftSlideOver from "@/components/LeftSlideOver";
+import { useSelectedListing } from "@/stores/useSelectedListing";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   places,
@@ -32,6 +33,10 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
   const [open, setOpen] = useState(false);
   const [leftSlideOver, setLeftSlideOver] = useState(false);
+
+  const listing = useSelectedListing((state) => state.listing);
+  const leftListing = useSelectedListing((state) => state.leftListing);
+  const setLeftListing = useSelectedListing((state) => state.setLeftListing);
 
   if (!isLoaded) return <div>Loading...</div>;
 
@@ -54,10 +59,12 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           />
         </div>
 
-        <SlideOver open={open} setOpen={setOpen} />
+        <SlideOver open={open} setOpen={setOpen} listing={listing} />
+
         <LeftSlideOver
           leftSlideOver={leftSlideOver}
           setLeftSlideOver={setLeftSlideOver}
+          leftListing={leftListing}
         />
 
         <div className=" min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
@@ -66,7 +73,13 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           )}
           {sectors.map((sector) =>
             sector.listings.map((listing) => (
-              <div key={listing.id} onClick={() => setLeftSlideOver(true)}>
+              <div
+                key={listing.id}
+                onClick={() => {
+                  setLeftListing(listing);
+                  setLeftSlideOver(true);
+                }}
+              >
                 <ListingCard {...listing} />
               </div>
             ))
