@@ -87,7 +87,13 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
           {sectors.length < 1 &&
             listings.map((listing) => (
-              <div key={listing.id}>
+              <div
+                key={listing.id}
+                onClick={() => {
+                  setLeftListing(listing);
+                  setLeftSlideOver(true);
+                }}
+              >
                 <ListingCard {...listing} />
               </div>
             ))}

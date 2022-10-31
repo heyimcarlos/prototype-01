@@ -42,6 +42,7 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
             // leaveTo="translate-x-full"
           >
             <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl mt-[5.25rem]">
+              {/* <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl mt-[5.25rem]"> */}
               <div className="flex h-full w-full flex-col bg-white shadow-xl">
                 <div className=" w-full h-[29rem]">
                   <div className="fixed z-10 right-0 mt-3 mr-3 flex h-7 items-center">
@@ -54,14 +55,16 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                       <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                     </button>
                   </div>
-                  <Image
-                    // className="h-20 w-10"
-                    src={house}
-                    // width={"100%"}
-                    // height={"100%"}
-                    alt="house1"
-                    //   layout="fill"
-                  />
+                  <div className="max-w-[30rem]">
+                    <Image
+                      // className="h-20 w-10"
+                      src={house}
+                      // width={"100%"}
+                      // height={"100%"}
+                      alt="house1"
+                      //   layout="fill"
+                    />
+                  </div>
                 </div>
 
                 {/* Main */}
@@ -199,12 +202,8 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                             Bio
                           </dt>
                           <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 sm:ml-6">
-                            <p>
-                              Enim feugiat ut ipsum, neque ut. Tristique mi id
-                              elementum praesent. Gravida in tempus feugiat
-                              netus enim aliquet a, quam scelerisque. Dictumst
-                              in convallis nec in bibendum aenean arcu.
-                            </p>
+                            <span>{leftListing.name}</span>
+                            <p>{leftListing.description}</p>
                           </dd>
                         </div>
                         <div id="overview" className="sm:flex sm:px-6 sm:py-5">
@@ -212,7 +211,7 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                             Location
                           </dt>
                           <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 sm:ml-6">
-                            New York, NY, USA
+                            Kissimmee, FL, USA
                           </dd>
                         </div>
                         <div id="details" className="sm:flex sm:px-6 sm:py-5 ">
