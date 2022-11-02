@@ -69,6 +69,12 @@ type MapProps = {
   })[];
 };
 
+type Props = {
+  place: unknown;
+  placeMutation: unknown;
+  names: string;
+};
+
 const CustomMarker = ({ place, placeMutation, names }) => {
   const [show, setShow] = useState(true);
   const globalShow = useGlobalShow((state) => state.globalShow);

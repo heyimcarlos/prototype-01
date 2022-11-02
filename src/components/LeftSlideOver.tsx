@@ -6,10 +6,26 @@ import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import house from "../../public/assets/images/house1.jpeg";
 import { useState } from "react";
+import { Grid } from "@material-ui/core";
+
+import first from "../../public/assets/images/interior/first.webp";
+import second from "../../public/assets/images/interior/second.webp";
+import third from "../../public/assets/images/interior/third.webp";
+import fourth from "../../public/assets/images/interior/fourth.webp";
+import fifth from "../../public/assets/images/interior/fifth.webp";
+import sixth from "../../public/assets/images/interior/sixth.webp";
 
 // function classNames(...classes) {
 //   return classes.filter(Boolean).join(" ");
 // }
+const nums = [
+  { id: 1, img: first },
+  { id: 2, img: second },
+  { id: 3, img: third },
+  { id: 4, img: fourth },
+  { id: 5, img: fifth },
+  { id: 6, img: sixth },
+];
 
 const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
   const [selected, setSelected] = useState("");
@@ -24,38 +40,22 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
         // onClose={setOpen}
         // onBlur={setLeftSlideOver(false)}
       >
-        {/* <div className="fixed inset-0 ml-[60rem] mt-[20rem]" /> */}
-
-        {/* <div className="fixed inset-0 overflow-hidden ml-[60rem] mt-[20rem]"> */}
-        {/* <div className="absolute inset-0 overflow-hidden"> */}
         <div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full">
-          {/* <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16"> */}
           <Transition.Child
             as={Fragment}
             enter="transform transition ease-in-out duration-500 sm:duration-700"
             enterFrom="-translate-x-full"
-            // enterFrom="translate-x-full"
             enterTo="translate-x-0"
             leave="transform transition ease-in-out duration-500 sm:duration-700"
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
-            // leaveTo="translate-x-full"
           >
-            <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl mt-[5.25rem]">
+            <Dialog.Panel className="pointer-events-auto w-screen max-w-[82.5rem] mt-[5.25rem]">
               {/* <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl mt-[5.25rem]"> */}
-              <div className="flex h-full w-full flex-col bg-white shadow-xl">
-                <div className=" w-full h-[29rem]">
-                  <div className="fixed z-10 right-0 mt-3 mr-3 flex h-7 items-center">
-                    <button
-                      type="button"
-                      className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
-                      onClick={() => setLeftSlideOver(false)}
-                    >
-                      <span className="sr-only">Close panel</span>
-                      <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                    </button>
-                  </div>
-                  <div className="max-w-[30rem]">
+
+              <div className="flex h-full w-full flex-row bg-white shadow-xl ">
+                <div className=" w-[43rem] h-full overflow-auto">
+                  <div className="max-w-[43rem]">
                     <Image
                       // className="h-20 w-10"
                       src={house}
@@ -65,9 +65,60 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                       //   layout="fill"
                     />
                   </div>
+                  {/* <div className="w-full h-full flex flex-row flex-wrap bg-white pl-[0.2rem]">
+                    {nums.map((num) => {
+                      return (
+                        <div
+                          // className="min-w-[20.5rem] max-w-[20.5rem] max-h-[10rem] min-h-[10rem] h-[10rem] pl-1 "
+                          className="max-w-[15rem] max-h-[0rem] text-0"
+                          key={num}
+                        >
+                          <Image
+                            // className="h-20 w-10"
+                            src={house}
+                            // width="400%"
+                            // height="400%"
+                            alt="house1"
+                            //   layout="fill"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div> */}
+                  <Grid container>
+                    {nums.map((num) => {
+                      return (
+                        <Grid
+                          key={num.id}
+                          xl={6}
+                          className="max-w-[20.5rem] pl-[0.5rem]"
+                          item
+                        >
+                          <Image
+                            // className="h-20 w-10"
+                            src={num.img}
+                            // width="400%"
+                            // height="400%"
+                            alt="house1"
+                            //   layout="fill"
+                          />
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
                 </div>
 
-                {/* Main */}
+                <div className="fixed z-10 right-0 mt-3 mr-3 flex h-7 items-center">
+                  <button
+                    type="button"
+                    className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
+                    onClick={() => setLeftSlideOver(false)}
+                  >
+                    <span className="sr-only">Close panel</span>
+                    <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                </div>
+
                 <div className="divide-y divide-gray-200 -mt-[0.35rem]">
                   <div className="pb-4">
                     <div className="flow-root px-4 -mt-9 sm:flex sm:items-end sm:px-6">
@@ -147,10 +198,6 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                     </div>
                   </div>
 
-                  {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                  {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                  {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-
                   <div className="inline flex justify-evenly">
                     <a
                       href="#features"
@@ -187,11 +234,7 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                     </a>
                   </div>
 
-                  {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                  {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                  {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-
-                  <div className="h-[10.6rem] w-full overflow-auto scroll-smooth">
+                  <div className="h-full w-full overflow-auto scroll-smooth">
                     <div className="px-4 py-5 sm:px-0 sm:py-0 overflow-auto ">
                       <dl
                         id="features"
@@ -224,7 +267,7 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                         </div>
                       </dl>
                     </div>
-                    <div className="h-[10rem] flex justify-center items-center">
+                    <div className="h-[26.1rem] flex justify-center items-center bg-indigo-600">
                       Legal info about ntornos
                     </div>
                   </div>
