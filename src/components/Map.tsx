@@ -507,6 +507,12 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
                         : 0.4
                       : 1,
                   }}
+                  // onTouchStart={(e) => {
+                  //   e.stopPropagation();
+                  //   handleListingClick(listing);
+                  //   setOpen(true);
+                  //   setListing(listing);
+                  // }}
                 >
                   <span className="text-sm">
                     {transformIntToMoney(listing.price)}
