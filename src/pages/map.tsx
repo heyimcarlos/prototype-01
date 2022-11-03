@@ -5,34 +5,17 @@ import { GetServerSidePropsContext } from "next";
 import { env } from "@/env/client.mjs";
 import { prisma } from "@/server/db/client";
 import { inferSSRProps } from "@/lib/types/inferSSRProps";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { MapRef } from "react-map-gl";
 import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 import { NextPageWithLayout } from "./_app";
 import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
-import { Listing } from "@prisma/client";
-import Divider from "@/components/Divider";
-import { transformIntToMoney } from "@/lib/transformInt";
-import Image from "next/image";
-
-const ListingCard = ({ name, description, price }: Listing) => {
-  return (
-    <div className="card w-96 bg-base-100 shadow-xl rounded m-2">
-      <figure>
-        <Image src="https://placeimg.com/400/225/arch" width={100} height={100} alt="listing" />
-      </figure>
-      <div className="card-body">
-        <h2 className="card-title">{name}</h2>
-        <p>{description}</p>
-        <p>{transformIntToMoney(price)}</p>
-        <div className="card-actions justify-end">
-          <button className="btn btn-primary">Buy Now</button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import ListingCard from "@/components/ListingCard";
+import { useSectors } from "@/stores/useSectors";
+import SlideOver from "@/components/SlideOver";
+import LeftSlideOver from "@/components/LeftSlideOver";
+import { useSelectedListing } from "@/stores/useSelectedListing";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   places,
@@ -46,6 +29,14 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   const mapRef = useRef<MapRef>(null);
 
   const listings = useSidebar((state) => state.listings);
+  const sectors = useSectors((state) => state.sectors);
+
+  const [open, setOpen] = useState(false);
+  const [leftSlideOver, setLeftSlideOver] = useState(false);
+
+  const listing = useSelectedListing((state) => state.listing);
+  const leftListing = useSelectedListing((state) => state.leftListing);
+  const setLeftListing = useSelectedListing((state) => state.setLeftListing);
 
   if (!isLoaded) return <div>Loading...</div>;
 
@@ -56,17 +47,56 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         <meta name="description" content="Real Estate User Facing" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <main className="w-full h-[calc(100vh-90px)] flex">
-        <div className="w-[60%] h-full">
-          <Map mapRef={mapRef} places={places} initialViewport={initialViewport} />
+        <div className="w-full h-full">
+          <Map
+            mapRef={mapRef}
+            places={places}
+            initialViewport={initialViewport}
+            open={open}
+            setOpen={setOpen}
+          />
         </div>
-        <div className="h-full w-[40%] overflow-y-auto bg-white">
-          {listings.map((listing) => (
-            <div key={listing.id}>
-              <ListingCard {...listing} />
-              <Divider />
-            </div>
-          ))}
+
+        <SlideOver open={open} setOpen={setOpen} listing={listing} />
+
+        <LeftSlideOver
+          open={leftSlideOver}
+          setOpen={setLeftSlideOver}
+          listing={leftListing}
+        />
+
+        <div className=" min-w-[310px] max-w-[310px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
+          {listings.length < 1 && sectors.length < 1 && (
+            <div>No listing to show move the map</div>
+          )}
+          {sectors.map((sector) =>
+            sector.listings.map((listing) => (
+              <div
+                key={listing.id}
+                onClick={() => {
+                  setLeftListing(listing);
+                  setLeftSlideOver(true);
+                }}
+              >
+                <ListingCard {...listing} />
+              </div>
+            ))
+          )}
+
+          {sectors.length < 1 &&
+            listings.map((listing) => (
+              <div
+                key={listing.id}
+                onClick={() => {
+                  setLeftListing(listing);
+                  setLeftSlideOver(true);
+                }}
+              >
+                <ListingCard {...listing} />
+              </div>
+            ))}
         </div>
       </main>
     </>
@@ -77,7 +107,9 @@ MapPage.layout = MapLayout;
 
 // @INFO: Server side fetching of places
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const getServerSideProps = async ({ query }: GetServerSidePropsContext) => {
+export const getServerSideProps = async ({
+  query,
+}: GetServerSidePropsContext) => {
   const places = await prisma.place.findMany({
     include: {
       center: true,
