@@ -8,7 +8,7 @@ import { useGlobalHide } from "@/stores/useGlobalHide";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 import { useDrawControls } from "@/stores/useDrawControls";
 
-function classNames(...classes) {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 

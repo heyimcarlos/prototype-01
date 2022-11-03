@@ -1,19 +1,25 @@
-import React from "react";
-import { Fragment } from "react";
+import React, { Dispatch, SetStateAction, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import Image from "next/image";
 import house from "../../public/assets/images/house1.jpeg";
 import { useState } from "react";
+import { SelectedListingState } from "@/stores/useSelectedListing";
 
-// function classNames(...classes) {
-//   return classes.filter(Boolean).join(" ");
-// }
+type Props = {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  listing: SelectedListingState["listing"];
+};
 
-const SlideOver = ({ open, setOpen, listing }) => {
+const SlideOver = ({ open, setOpen, listing }: Props) => {
   const [selected, setSelected] = useState("");
-  // console.log("listing", listing);
+
+  if (!listing) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog

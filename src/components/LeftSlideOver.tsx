@@ -1,13 +1,11 @@
-import React from "react";
-import { Fragment } from "react";
+import React, { Fragment, Dispatch, SetStateAction } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
-
 import Image from "next/image";
-import house from "../../public/assets/images/house1.jpeg";
+import { SelectedListingState } from "@/stores/useSelectedListing";
 import { useState } from "react";
 import { Grid } from "@material-ui/core";
-
+import house from "../../public/assets/images/house1.jpeg";
 import first from "../../public/assets/images/interior/first.webp";
 import second from "../../public/assets/images/interior/second.webp";
 import third from "../../public/assets/images/interior/third.webp";
@@ -15,9 +13,6 @@ import fourth from "../../public/assets/images/interior/fourth.webp";
 import fifth from "../../public/assets/images/interior/fifth.webp";
 import sixth from "../../public/assets/images/interior/sixth.webp";
 
-// function classNames(...classes) {
-//   return classes.filter(Boolean).join(" ");
-// }
 const nums = [
   { id: 1, img: first },
   { id: 2, img: second },
@@ -27,18 +22,27 @@ const nums = [
   { id: 6, img: sixth },
 ];
 
-const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
+type Props = {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  listing: SelectedListingState["listing"];
+};
+
+const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
   const [selected, setSelected] = useState("");
-  console.log("leftListing", leftListing);
+
+  if (!listing) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <Transition.Root show={leftSlideOver} as={Fragment}>
+    <Transition.Root show={open} as={Fragment}>
       <Dialog
         as="div"
         className="relative z-10"
         onClose={() => setSelected("")}
-        // onClose={setOpen}
-        // onBlur={setLeftSlideOver(false)}
+      // onClose={setOpen}
+      // onBlur={setLeftSlideOver(false)}
       >
         <div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full">
           <Transition.Child
@@ -62,7 +66,7 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                       // width={"100%"}
                       // height={"100%"}
                       alt="house1"
-                      //   layout="fill"
+                    //   layout="fill"
                     />
                   </div>
                   {/* <div className="w-full h-full flex flex-row flex-wrap bg-white pl-[0.2rem]">
@@ -100,7 +104,7 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                             // width="400%"
                             // height="400%"
                             alt="house1"
-                            //   layout="fill"
+                          //   layout="fill"
                           />
                         </Grid>
                       );
@@ -112,7 +116,7 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                   <button
                     type="button"
                     className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
-                    onClick={() => setLeftSlideOver(false)}
+                    onClick={() => setOpen(false)}
                   >
                     <span className="sr-only">Close panel</span>
                     <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -126,7 +130,7 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                         <div>
                           <div className="flex items-center">
                             <h3 className="text-xl font-bold text-gray-900 sm:text-2xl">
-                              ${leftListing.price}
+                              ${listing.price}
                             </h3>
                             <h3 className="ml-4 pt-2 text-sm">
                               <b>4</b> bd | <b>3.5</b> ba | <b>1600</b> sqft
@@ -198,36 +202,33 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                     </div>
                   </div>
 
-                  <div className="inline flex justify-evenly">
+                  <div className="flex justify-evenly">
                     <a
                       href="#features"
-                      className={`inline ${
-                        selected === "features"
+                      className={`inline ${selected === "features"
                           ? "border-b-2 border-indigo-600"
                           : ""
-                      }`}
+                        }`}
                       onClick={() => setSelected("features")}
                     >
                       Features
                     </a>
                     <a
                       href="#overview"
-                      className={`inline  ${
-                        selected === "overview"
+                      className={`inline  ${selected === "overview"
                           ? "border-b-2 border-indigo-600"
                           : ""
-                      }`}
+                        }`}
                       onClick={() => setSelected("overview")}
                     >
                       Overview
                     </a>
                     <a
                       href="#details"
-                      className={`inline  ${
-                        selected === "details"
+                      className={`inline  ${selected === "details"
                           ? "border-b-2 border-indigo-600"
                           : ""
-                      }`}
+                        }`}
                       onClick={() => setSelected("details")}
                     >
                       Details
@@ -245,8 +246,8 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
                             Bio
                           </dt>
                           <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 sm:ml-6">
-                            <span>{leftListing.name}</span>
-                            <p>{leftListing.description}</p>
+                            <span>{listing.name}</span>
+                            <p>{listing.description}</p>
                           </dd>
                         </div>
                         <div id="overview" className="sm:flex sm:px-6 sm:py-5">
@@ -276,8 +277,6 @@ const LeftSlideOver = ({ leftSlideOver, setLeftSlideOver, leftListing }) => {
             </Dialog.Panel>
           </Transition.Child>
         </div>
-        {/* </div> */}
-        {/* </div> */}
       </Dialog>
     </Transition.Root>
   );
