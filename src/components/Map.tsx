@@ -386,7 +386,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
         >
           {/* space comment */}
 
-          <div className="h-full w-full flex justify-center items-end">
+          <div className="h-full w-full flex justify-start items-start">
             <button
               onClick={() => {
                 setDrawShowTrue();
@@ -403,7 +403,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
                 }
               }}
               className={
-                "absolute z-20 p-2 px-3 bg-[#ffffff] text-black mb-10 rounded-lg border-2 border-black"
+                "absolute z-19 p-2 px-3 bg-[#ffffff] text-black m-2 rounded-lg border-2 border-black"
               }
             >
               {search ? "Search this area" : "Draw"}
@@ -461,7 +461,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
             )}
           </div>
 
-          <div className="h-full w-full">
+          {/* <div className="h-full w-full">
             <div
               className="h-5 w-5 fixed left-0 top-0 mt-[12.50rem] ml-[0.95rem]"
               onMouseOver={() => {
@@ -482,12 +482,12 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
 
-          <NavigationControl
+          {/* <NavigationControl
             position="top-left"
             style={{ marginBottom: "2rem" }}
-          />
+          /> */}
 
           {/* <FullscreenControl position="top-left" /> */}
           {/* <ScaleControl position="top-left" /> */}

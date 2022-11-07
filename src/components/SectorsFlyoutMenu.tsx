@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { useSectors } from "@/stores/useSectors";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XCircleIcon } from "@heroicons/react/20/solid";
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useDrawShow } from "@/stores/useDrawShow";
 import { useGlobalHide } from "@/stores/useGlobalHide";
@@ -67,15 +67,6 @@ export default function SectorsFlyoutMenu() {
                         >
                           <span className="pl-3">{sector.name}</span>
                           <div
-                            className="border-[0.15rem] border-[#2f2f2f] rounded-full ml-[8px] h-[1.5rem] w-[1.5rem] flex justify-center items-center"
-                            // style={{
-                            //   display: "inline",
-                            //   position: "absolute",
-                            //   border: "0.15rem solid black",
-                            //   marginTop: "1.5px",
-                            //   marginLeft: "7px",
-                            //   borderRadius: "100%",
-                            // }}
                             onClick={() => {
                               if (sector.name === "Custom Boundary") {
                                 setDrawShowTrue();
@@ -88,7 +79,7 @@ export default function SectorsFlyoutMenu() {
                               setGlobalShowTrue();
                             }}
                           >
-                            <XMarkIcon className="h-4 w-4" aria-hidden="true" />
+                            <XCircleIcon className="h-5 w-5 text-black ml-1" />
                           </div>
                         </div>
                       ))}

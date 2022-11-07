@@ -1,6 +1,5 @@
 // import PreferenceForm from "./PreferenceForm";
 import { useSectors } from "@/stores/useSectors";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import SectorsFlyoutMenu from "./SectorsFlyoutMenu";
 import SectorsSelected from "./SectorsSelected";
 

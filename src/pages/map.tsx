@@ -49,14 +49,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="w-full h-[calc(100vh-48px-33.6px)] flex">
-        {/* <main
-        className={`w-full ${
-          sectors.length > 0
-            ? "h-[calc(100vh-48px-33.6px-32px)]"
-            : "h-[calc(100vh-48px-33.6px)]"
-        }  flex`}
-      > */}
+      <main className="w-full h-[calc(100vh-48px-33.6px)] flex justify-center">
         <div className="w-full h-full">
           <Map
             mapRef={mapRef}
@@ -65,16 +58,17 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
             open={open}
             setOpen={setOpen}
           />
-          {/* {sectors.length > 0 && <SectorsSelected />} */}
         </div>
 
-        <SlideOver open={open} setOpen={setOpen} listing={listing} />
+        {/* <SlideOver open={open} setOpen={setOpen} listing={listing} /> */}
 
         {/* <LeftSlideOver
           leftSlideOver={leftSlideOver}
           setLeftSlideOver={setLeftSlideOver}
           leftListing={leftListing}
         /> */}
+
+        <div className="h-[8.5rem] w-10/12 rounded-xl bg-black fixed bottom-0 mb-[4rem]"></div>
 
         <div className="hidden min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
           {listings.length < 1 && sectors.length < 1 && (

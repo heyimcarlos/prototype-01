@@ -6,9 +6,7 @@ import { useGlobalHide } from "@/stores/useGlobalHide";
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useSectors } from "@/stores/useSectors";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
-import { XMarkIcon } from "@heroicons/react/24/solid";
-// import { XMarkIcon } from "@heroicons/react/24/solid";
-
+import { XCircleIcon } from "@heroicons/react/20/solid";
 import SectorsFlyoutMenu from "@/components/SectorsFlyoutMenu";
 
 const SectorsSelected = () => {
@@ -33,7 +31,6 @@ const SectorsSelected = () => {
     <>
       {isMobile && (
         <div className=" pt-[0.16rem] fixed z-10">
-          {/* <div className="bg-white h-[2.1rem] fixed -mt-[1.7rem] z-10"> */}
           {sectors.length > 0 && (
             <div className={`flex ${isMobile ? "" : "ml-1"}`}>
               <SectorsFlyoutMenu />
@@ -47,7 +44,6 @@ const SectorsSelected = () => {
                   {sectors.length > 0 ? sectors[sectors.length - 1]?.name : ""}
                 </span>
                 <div
-                  className="border-[0.15rem] border-black rounded-full ml-[8px] h-[1.5rem] w-[1.5rem] flex justify-center items-center"
                   onClick={() => {
                     if (sectors.length < 1) return;
                     if (
@@ -59,12 +55,11 @@ const SectorsSelected = () => {
                       setSearchFalse();
                       setDrawShowFalse();
                     }
-
                     deleteThisSector(sectors[sectors.length - 1]);
                     setGlobalShowTrue();
                   }}
                 >
-                  <XMarkIcon className="h-4 w-4" aria-hidden="true" />
+                  <XCircleIcon className="h-5 w-5 ml-1 text-black" />
                 </div>
               </div>
             </div>
