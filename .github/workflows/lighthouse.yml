@@ -1,13 +1,33 @@
 name: Vercel Preview URL Lighthouse Audit
 
-on: [pull_request]
+on:
+  issue_comment:
+    types: [created, edited]
 
 jobs:
   generate_lighthouse_audit:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
+      - name: Get Vercel preview URL
+        id: get_preview_url
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const comment = context.payload.comment;
+            const regex = /https:\/\/[a-z0-9-]+\.vercel\.app/g;
+            const matches = comment.body.match(regex);
+            let previewUrl = "";
+            if (matches && matches.length) {
+              previewUrl = matches[0];
+              console.log('Preview url found:', previewUrl);
+            }
+            console.log("No preview url found.");
+            core.setOutput('vercel_preview_url', previewUrl);
+
       - name: Add comment to PR
+        if: ${{ steps.get_preview_url.outputs.vercel_preview_url != '' }}
         id: loading_comment_to_pr
         uses: marocchino/sticky-pull-request-comment@v1
         with:
@@ -16,32 +36,21 @@ jobs:
           header: lighthouse
           message: |
             Running Lighthouse audit...
-      - name: vercel-preview-url
-        uses: zentered/vercel-preview-url@v1.0.0
-        id: vercel-preview-url
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        with:
-          # vercel_team_id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel_project_id: ${{ secrets.VERCEL.PROJECT.ID }}
-      - name: Get URL
-        run: echo "https://${{ steps.vercel_preview_url.outputs.preview_url}}"
+      - name: Checkout repository
+        if: ${{ steps.get_preview_url.outputs.vercel_preview_url != '' }}
+        uses: actions/checkout@v3
 
-      # - name: Capture Vercel preview URL
-      #   uses: aaimio/vercel-preview-url-action@v1
-      #   id: vercel_preview_url
-      #   with:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # - uses: actions/checkout@v2
       - name: Audit preview URL with Lighthouse
+        if: ${{ steps.get_preview_url.outputs.vercel_preview_url != '' }}
         id: lighthouse_audit
         uses: treosh/lighthouse-ci-action@v3
         with:
           urls: |
-            ${{ steps.vercel_preview_url.outputs.preview_url }}
+            ${{ steps.get_preview_url.outputs.vercel_preview_url }}
           uploadArtifacts: true
           temporaryPublicStorage: true
       - name: Format lighthouse score
+        if: ${{ steps.get_preview_url.outputs.vercel_preview_url != '' }}
         id: format_lighthouse_score
         uses: actions/github-script@v3
         with:
@@ -65,7 +74,9 @@ jobs:
                 `*Lighthouse ran on [${Object.keys(links)[0]}](${Object.keys(links)[0]})*`
             ].join('\n')
              core.setOutput("comment", comment);
+
       - name: Add comment to PR
+        if: ${{ steps.get_preview_url.outputs.vercel_preview_url != '' }}
         id: comment_to_pr
         uses: marocchino/sticky-pull-request-comment@v1
         with:
