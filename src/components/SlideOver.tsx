@@ -1,11 +1,11 @@
-import React, { Dispatch, SetStateAction, Fragment } from "react";
+import React, { type Dispatch, type SetStateAction, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import Image from "next/image";
 import house from "../../public/assets/images/house1.jpeg";
 import { useState } from "react";
-import { SelectedListingState } from "@/stores/useSelectedListing";
+import type { SelectedListingState } from "@/stores/useSelectedListing";
 
 type Props = {
   open: boolean;

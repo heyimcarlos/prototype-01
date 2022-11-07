@@ -1,14 +1,14 @@
 import Head from "next/head";
 import Map from "@/components/Map";
 import { useJsApiLoader } from "@react-google-maps/api";
-import { GetServerSidePropsContext } from "next";
+import type { GetServerSidePropsContext } from "next";
 import { env } from "@/env/client.mjs";
 import { prisma } from "@/server/db/client";
-import { inferSSRProps } from "@/lib/types/inferSSRProps";
+import type { inferSSRProps } from "@/lib/types/inferSSRProps";
 import { useRef, useState } from "react";
-import { MapRef } from "react-map-gl";
+import type { MapRef } from "react-map-gl";
 import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
-import { NextPageWithLayout } from "./_app";
+import type { NextPageWithLayout } from "./_app";
 import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
 import ListingCard from "@/components/ListingCard";

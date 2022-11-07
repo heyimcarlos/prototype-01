@@ -3,8 +3,6 @@ import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
-import logoPicture from "../../public/assets/images/logo2.0.png";
 import Link from "next/link";
 import { useSectors } from "@/stores/useSectors";
 import SectorsFlyoutMenu from "../components/SectorsFlyoutMenu";
@@ -14,14 +12,10 @@ import { useGlobalHide } from "@/stores/useGlobalHide";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 import { useDrawControls } from "@/stores/useDrawControls";
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 const TwTopbar = () => {
   const sectors = useSectors((state) => state.sectors);
   const deleteThisSector = useSectors((state) => state.deleteThisSector);
-  const globalShow = useGlobalShow((state) => state.globalShow);
+  // const globalShow = useGlobalShow((state) => state.globalShow);
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
   const setDrawShowTrue = useDrawShow((state) => state.setDrawShowTrue);
   const setGlobalHideFalse = useGlobalHide((state) => state.setGlobalHideFalse);
@@ -55,13 +49,11 @@ const TwTopbar = () => {
                   }}
                 >
                   <Link href="/" className="-mt-1">
-                    <a>
-                      <span className="sr-only">ntornos</span>
-                      <div className="font-['Libre_Baskerville'] text-2xl ml-2 inline md:text-3xl md:-ml-1">
-                        <span className="text-indigo-600">n</span>
-                        <span className="text-black">tornos</span>
-                      </div>
-                    </a>
+                    <span className="sr-only">ntornos</span>
+                    <div className="font-['Libre_Baskerville'] text-2xl ml-2 inline md:text-3xl md:-ml-1">
+                      <span className="text-indigo-600">n</span>
+                      <span className="text-black">tornos</span>
+                    </div>
                   </Link>
                 </div>
               </div>

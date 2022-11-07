@@ -1,24 +1,24 @@
 import React, {
-  Dispatch,
-  RefObject,
-  SetStateAction,
+  type Dispatch,
+  type RefObject,
+  type SetStateAction,
   useEffect,
   useState,
 } from "react";
 import MapboxMap, {
   Source,
   Layer,
-  MapRef,
-  MapLayerMouseEvent,
+  type MapRef,
+  type MapLayerMouseEvent,
   Marker,
 } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
-import { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
+import type { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
 
-import { Coordinate, Listing, Place } from "@prisma/client";
+import type { Coordinate, Listing, Place } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import slugify from "@/lib/slugify";
 import { transformIntToMoney } from "@/lib/transformInt";
