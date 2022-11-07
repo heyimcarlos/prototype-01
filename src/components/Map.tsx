@@ -88,6 +88,8 @@ const CustomMarker = ({ place, placeMutation, names }) => {
       {!globalHide && show && !names.includes(place.name) && (
         <Marker
           onClick={(e) => {
+            // e.originalEvent.cancelBubble
+            e.originalEvent.preventDefault();
             e.originalEvent.stopPropagation();
             placeMutation.mutate({ slug: place.slug });
             setShow(false);
@@ -129,17 +131,17 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
 
   sectors.forEach((sector) => names.push(sector.name));
 
-  const showCustomSearch = useShowCustomSearch(
-    (state) => state.showCustomSearch
-  );
+  // const showCustomSearch = useShowCustomSearch(
+  //   (state) => state.showCustomSearch
+  // );
 
   const setShowCustomSearchTrue = useShowCustomSearch(
     (state) => state.setShowCustomSearchTrue
   );
 
-  const setShowCustomSearchFalse = useShowCustomSearch(
-    (state) => state.setShowCustomSearchFalse
-  );
+  // const setShowCustomSearchFalse = useShowCustomSearch(
+  //   (state) => state.setShowCustomSearchFalse
+  // );
 
   const setGlobalHideTrue = useGlobalHide((state) => state.setGlobalHideTrue);
 
@@ -155,17 +157,17 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
 
   const deleteThisSector = useSectors((state) => state.deleteThisSector);
 
-  const redraw = useDrawControls((state) => state.redraw);
+  const search = useDrawControls((state) => state.search);
 
-  const setRedrawTrue = useDrawControls((state) => state.setRedrawTrue);
+  const setSearchTrue = useDrawControls((state) => state.setSearchTrue);
 
-  const setRedrawFalse = useDrawControls((state) => state.setRedrawFalse);
+  const setSearchFalse = useDrawControls((state) => state.setSearchFalse);
 
-  const drawDefault = useDrawControls((state) => state.drawDefault);
+  // const drawDefault = useDrawControls((state) => state.drawDefault);
 
-  const setDrawDefaultPoly = useDrawControls(
-    (state) => state.setDrawDefaultPoly
-  );
+  // const setDrawDefaultPoly = useDrawControls(
+  //   (state) => state.setDrawDefaultPoly
+  // );
 
   const [drawPolyToolTip, setDrawPolyToolTip] = useState(false);
 
@@ -300,13 +302,13 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
       }
 
       const test = mapRef.current.getCenter();
-      mapRef.current.flyTo({
-        center: [test.lng, test.lat],
-        zoom: 14,
-        duration: 1000,
-        animate: true,
-        easing: (t) => t,
-      });
+      // mapRef.current.flyTo({
+      //   center: [test.lng, test.lat],
+      //   zoom: 14,
+      //   duration: 1000,
+      //   animate: true,
+      //   easing: (t) => t,
+      // });
 
       // deleteAllSectors();
     }
@@ -366,7 +368,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
           type="text/css"
         />
       </Head>
-      <div className="h-full w-full">
+      <div className="w-full h-full">
         <MapboxMap
           id="mapa"
           ref={mapRef}
@@ -382,58 +384,105 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
           mapStyle="mapbox://styles/mapbox/streets-v11"
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
         >
+          {/* space comment */}
+
           <div className="h-full w-full flex justify-center items-end">
-            {showCustomSearch && (
-              <button
-                onClick={() => {
+            <button
+              onClick={() => {
+                setDrawShowTrue();
+                if (search) {
                   showVisibleCustomPolygonMarkers();
-                  setRedrawTrue();
-                  if (redraw) {
-                    setDrawShowTrue();
-                    setDrawDefaultPoly();
-                    sectors.filter((sector) => {
-                      if (sector.name === "Custom Boundary") {
-                        deleteThisSector(sector);
-                      }
-                    });
-                    setRedrawFalse();
-                    setGlobalHideFalse();
-                    setShowCustomSearchFalse();
-                  }
-                }}
-                className={
-                  "absolute z-20 p-2 px-3 bg-[#ffffff] text-black mb-10 rounded-lg border-2 border-black"
+                  setSearchFalse();
+                } else {
+                  sectors.filter((sector) => {
+                    if (sector.name === "Custom Boundary") {
+                      deleteThisSector(sector);
+                    }
+                  });
+                  setGlobalHideFalse();
                 }
+              }}
+              className={
+                "absolute z-20 p-2 px-3 bg-[#ffffff] text-black mb-10 rounded-lg border-2 border-black"
+              }
+            >
+              {search ? "Search this area" : "Draw"}
+            </button>
+
+            {sectors.map((sector) => {
+              if (sector.name === "Custom Boundary") {
+                return (
+                  <button
+                    className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mb-10 ml-[8rem] rounded-lg border-2 border-black"
+                    key={sector.name}
+                    onClick={() => {
+                      deleteThisSector(sector);
+                      setGlobalHideFalse();
+                    }}
+                  >
+                    Delete
+                  </button>
+                );
+              }
+            })}
+
+            {drawShow && (
+              <button
+                className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mb-10 ml-[12rem] rounded-lg border-2 border-black"
+                // className="h-10 w-20 bg-black ml-[15rem] mb-10 fixed"
+                onClick={() => {
+                  setDrawShowFalse();
+                  setTimeout(() => {
+                    setDrawShowTrue();
+                  }, 100);
+                  sectors.filter((sector) => {
+                    if (sector.name === "Custom Boundary") {
+                      deleteThisSector(sector);
+                    }
+                  });
+                  setSearchFalse();
+                  setGlobalHideFalse();
+                }}
               >
-                {redraw ? "Draw" : "Search this area"}
+                Reset
+              </button>
+            )}
+            {drawShow && (
+              <button
+                className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mb-10 mr-[12rem] rounded-lg border-2 border-black"
+                onClick={() => {
+                  setSearchFalse();
+                  setGlobalHideFalse();
+                  setDrawShowFalse();
+                }}
+              >
+                Exit
               </button>
             )}
           </div>
 
-          {drawShow && (
-            <div className="h-full w-full">
-              <div
-                className="h-5 w-5 fixed left-0 top-0 mt-[12.50rem] ml-[0.95rem]"
-                onMouseOver={() => {
-                  setDrawPolyToolTip(true);
-                }}
-                onMouseOut={() => {
-                  setDrawPolyToolTip(false);
-                }}
-              >
-                <Image alt="" src={toolTip} width={100} height={100} />
-              </div>
-              {drawPolyToolTip && (
-                <div className="h-[26rem] w-[39rem] fixed left-0 top-0 mt-[5.5rem] ml-[4rem] bg-white">
-                  <Image alt="" width={1200} height={900} src={polyGif} />
-                  <div className="bg-white -mt-[0.5rem]">
-                    Edit a created boundary by clicking within its borders and
-                    dragging the mid points
-                  </div>
-                </div>
-              )}
+          <div className="h-full w-full">
+            <div
+              className="h-5 w-5 fixed left-0 top-0 mt-[12.50rem] ml-[0.95rem]"
+              onMouseOver={() => {
+                setDrawPolyToolTip(true);
+              }}
+              onMouseOut={() => {
+                setDrawPolyToolTip(false);
+              }}
+            >
+              <Image alt="" src={toolTip} width={100} height={100} />
             </div>
-          )}
+            {drawPolyToolTip && (
+              <div className="h-[26rem] w-[39rem] fixed left-0 top-0 mt-[5.5rem] ml-[4rem] bg-white">
+                <Image alt="" width={1200} height={900} src={polyGif} />
+                <div className="bg-white -mt-[0.5rem]">
+                  Edit a created boundary by clicking within its borders and
+                  dragging the mid points
+                </div>
+              </div>
+            )}
+          </div>
 
           <NavigationControl
             position="top-left"
@@ -445,17 +494,20 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
 
           {drawShow && (
             <DrawControl
-              position="top-left"
+              position="bottom-right"
               displayControlsDefault={false}
-              controls={{
-                polygon: true,
-                trash: true,
-              }}
-              defaultMode={drawDefault}
+              controls={
+                {
+                  // polygon: true,
+                  // trash: true,
+                }
+              }
+              defaultMode="draw_polygon"
+              // defaultMode={drawDefault}
               styles={mapBoxDrawStyles}
               onCreate={(e) => {
                 console.log("onCreate is firing in Map.tsx", e);
-
+                setSearchTrue();
                 setGlobalHideTrue();
                 setCustomPolyBounds(e.features[0]?.geometry.coordinates);
                 setShowCustomSearchTrue();
@@ -467,6 +519,8 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
               onDelete={(e) => {
                 console.log("onDelete is firing in Map.tsx", e);
                 setGlobalHideFalse();
+                setSearchFalse();
+                setDrawShowFalse();
               }}
             />
           )}
@@ -507,12 +561,6 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
                         : 0.4
                       : 1,
                   }}
-                  // onTouchStart={(e) => {
-                  //   e.stopPropagation();
-                  //   handleListingClick(listing);
-                  //   setOpen(true);
-                  //   setListing(listing);
-                  // }}
                 >
                   <span className="text-sm">
                     {transformIntToMoney(listing.price)}
@@ -555,7 +603,6 @@ export default Map;
 const mapBoxDrawStyles = [
   // ACTIVE (being drawn)
   // line stroke
-  // { display: "none" },
   {
     id: "gl-draw-line",
     type: "line",

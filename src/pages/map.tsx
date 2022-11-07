@@ -16,6 +16,7 @@ import { useSectors } from "@/stores/useSectors";
 import SlideOver from "@/components/SlideOver";
 import LeftSlideOver from "@/components/LeftSlideOver";
 import { useSelectedListing } from "@/stores/useSelectedListing";
+import SectorsSelected from "@/components/SectorsSelected";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   places,
@@ -48,7 +49,14 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="w-full h-[calc(100vh-90px)] flex">
+      <main className="w-full h-[calc(100vh-48px-33.6px)] flex">
+        {/* <main
+        className={`w-full ${
+          sectors.length > 0
+            ? "h-[calc(100vh-48px-33.6px-32px)]"
+            : "h-[calc(100vh-48px-33.6px)]"
+        }  flex`}
+      > */}
         <div className="w-full h-full">
           <Map
             mapRef={mapRef}
@@ -57,11 +65,12 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
             open={open}
             setOpen={setOpen}
           />
+          {/* {sectors.length > 0 && <SectorsSelected />} */}
         </div>
 
-        {/* <SlideOver open={open} setOpen={setOpen} listing={listing} />
+        <SlideOver open={open} setOpen={setOpen} listing={listing} />
 
-        <LeftSlideOver
+        {/* <LeftSlideOver
           leftSlideOver={leftSlideOver}
           setLeftSlideOver={setLeftSlideOver}
           leftListing={leftListing}
