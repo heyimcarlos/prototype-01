@@ -16,7 +16,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
           # comment this out if not using vercel teams
-          scope: ${{ secrets.VERCEL_SCOPE }}
+          # scope: ${{ secrets.VERCEL_SCOPE }}
       - name: Add comment to PR
         id: loading_lighthouse_comment_to_pr
         uses: marocchino/sticky-pull-request-comment@v2
@@ -43,7 +43,7 @@ jobs:
           # prefixed by the preview-url
           urls: |
             ${{ steps.vercel_action.outputs.preview-url }}
-            ${{ steps.vercel_action.outputs.preview-url }}/page1
+            # ${{ steps.vercel_action.outputs.preview-url }}/page1
           budgetPath: ".github/lighthouse/budget.json"
           uploadArtifacts: true
           temporaryPublicStorage: true
