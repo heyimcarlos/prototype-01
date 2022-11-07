@@ -18,18 +18,29 @@ jobs:
           header: lighthouse
           message: |
             Running Lighthouse audit...
-      - name: Capture Vercel preview URL
-        uses: aaimio/vercel-preview-url-action@v1
-        id: vercel_preview_url
+      - name: vercel-preview-url
+        uses: zentered/vercel-preview-url@v1.0.0
+        id: vercel-preview-url
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v2
+          vercel_team_id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel_project_id: ${{ secrets.VERCEL.PROJECT.ID }}
+      - name: Get URL
+        run: echo "https://${{ steps.vercel_preview_url.outputs.preview_url}}"
+
+      # - name: Capture Vercel preview URL
+      #   uses: aaimio/vercel-preview-url-action@v1
+      #   id: vercel_preview_url
+      #   with:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - uses: actions/checkout@v2
       - name: Audit preview URL with Lighthouse
         id: lighthouse_audit
         uses: treosh/lighthouse-ci-action@v3
         with:
           urls: |
-            ${{ steps.vercel_preview_url.outputs.vercel_preview_url }}
+            ${{ steps.vercel_preview_url.outputs.preview_url }}
           uploadArtifacts: true
           temporaryPublicStorage: true
       - name: Format lighthouse score
