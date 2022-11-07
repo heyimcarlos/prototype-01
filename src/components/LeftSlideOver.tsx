@@ -3,7 +3,6 @@ import { Dialog, Transition } from "@headlessui/react";
 import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import type { ListingWithLocation } from "@/stores/useSelectedListing";
-import { useState } from "react";
 import { Grid } from "@material-ui/core";
 import house from "../../public/assets/images/house1.jpeg";
 import first from "../../public/assets/images/interior/first.webp";
@@ -13,6 +12,8 @@ import fourth from "../../public/assets/images/interior/fourth.webp";
 import fifth from "../../public/assets/images/interior/fifth.webp";
 import sixth from "../../public/assets/images/interior/sixth.webp";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import _ from "lodash";
 
 const nums = [
   { id: 1, img: first },
@@ -30,17 +31,15 @@ type Props = {
 };
 
 const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
-  const [selected, setSelected] = useState("");
+  const router = useRouter();
+
+  const onClose = () => {
+    router.push(router.pathname, undefined, { shallow: true });
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-10"
-        onClose={() => setSelected("")}
-      // onClose={setOpen}
-      // onBlur={setLeftSlideOver(false)}
-      >
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
         <div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full">
           <Transition.Child
             as={Fragment}
@@ -113,7 +112,10 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
                   <button
                     type="button"
                     className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      onClose();
+                      setOpen(false);
+                    }}
                   >
                     <span className="sr-only">Close panel</span>
                     <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -200,36 +202,24 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
                   </div>
 
                   <div className="flex justify-evenly">
-                    <Link
-                      href="#features"
-                      className={`inline ${selected === "features"
-                          ? "border-b-2 border-indigo-600"
-                          : ""
-                        }`}
-                      onClick={() => setSelected("features")}
-                    >
-                      Features
-                    </Link>
-                    <a
-                      href="#overview"
-                      className={`inline  ${selected === "overview"
-                          ? "border-b-2 border-indigo-600"
-                          : ""
-                        }`}
-                      onClick={() => setSelected("overview")}
-                    >
-                      Overview
-                    </a>
-                    <a
-                      href="#details"
-                      className={`inline  ${selected === "details"
-                          ? "border-b-2 border-indigo-600"
-                          : ""
-                        }`}
-                      onClick={() => setSelected("details")}
-                    >
-                      Details
-                    </a>
+                    {[
+                      { href: "features" },
+                      { href: "overview" },
+                      { href: "details" },
+                    ].map((item) => {
+                      const currRoute = router.asPath.split("#")[1];
+                      const isActive = currRoute === item.href;
+                      return (
+                        <Link
+                          key={`key-${item.href}`}
+                          href={"#" + item.href}
+                          className={`${isActive ? "border-b-2 border-indigo-600" : ""
+                            } inline`}
+                        >
+                          {_.capitalize(item.href)}
+                        </Link>
+                      );
+                    })}
                   </div>
 
                   <div className="h-full w-full overflow-auto scroll-smooth">

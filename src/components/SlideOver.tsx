@@ -4,8 +4,10 @@ import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import Image from "next/image";
 import house from "../../public/assets/images/house1.jpeg";
-import { useState } from "react";
 import type { ListingWithLocation } from "@/stores/useSelectedListing";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { capitalize } from "lodash";
 
 type Props = {
   open: boolean;
@@ -14,16 +16,15 @@ type Props = {
 };
 
 const SlideOver = ({ open, setOpen, listing }: Props) => {
-  const [selected, setSelected] = useState("");
+  const router = useRouter();
+
+  const onClose = () => {
+    router.push(router.pathname, undefined, { shallow: true });
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-10"
-        onClose={() => setSelected("")}
-      // onClose={setOpen}
-      >
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
         <div className="fixed inset-0 ml-[60rem] mt-[20rem]" />
 
         <div className="fixed inset-0 overflow-hidden ml-[60rem] mt-[20rem]">
@@ -48,7 +49,10 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         <button
                           type="button"
                           className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
-                          onClick={() => setOpen(false)}
+                          onClick={() => {
+                            onClose();
+                            setOpen(false);
+                          }}
                         >
                           <span className="sr-only">Close panel</span>
                           <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -60,7 +64,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         // width={"100%"}
                         // height={"100%"}
                         alt="house1"
-                      //   layout="fill"
+                        //   layout="fill"
                       />
                     </div>
 
@@ -145,36 +149,25 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                       </div>
 
                       <div className="flex justify-evenly">
-                        <a
-                          href="#features"
-                          className={`inline ${selected === "features"
-                              ? "border-b-2 border-indigo-600"
-                              : ""
-                            }`}
-                          onClick={() => setSelected("features")}
-                        >
-                          Features
-                        </a>
-                        <a
-                          href="#overview"
-                          className={`inline  ${selected === "overview"
-                              ? "border-b-2 border-indigo-600"
-                              : ""
-                            }`}
-                          onClick={() => setSelected("overview")}
-                        >
-                          Overview
-                        </a>
-                        <a
-                          href="#details"
-                          className={`inline  ${selected === "details"
-                              ? "border-b-2 border-indigo-600"
-                              : ""
-                            }`}
-                          onClick={() => setSelected("details")}
-                        >
-                          Details
-                        </a>
+                        {[
+                          { href: "features" },
+                          { href: "overview" },
+                          { href: "details" },
+                        ].map((item) => {
+                          const currRoute = router.asPath.split("#")[1];
+                          const isActive = currRoute === item.href;
+                          return (
+                            <Link
+                              key={`key-${item.href}`}
+                              href={"#" + item.href}
+                              className={`${
+                                isActive ? "border-b-2 border-indigo-600" : ""
+                              } inline`}
+                            >
+                              {capitalize(item.href)}
+                            </Link>
+                          );
+                        })}
                       </div>
 
                       <div className="h-[10.6rem] w-full overflow-auto scroll-smooth">
