@@ -1,9 +1,8 @@
 name: Vercel Preview URL Lighthouse Audit
 
 on:
-  [pull_request]
-  # issue_comment:
-  # types: [edited]
+  issue_comment:
+    types: [edited]
 
 jobs:
   generate_lighthouse_audit:
@@ -20,8 +19,8 @@ jobs:
           message: |
             Running Lighthouse audit...
       - name: Capture Vercel preview URL
+        uses: aaimio/vercel-preview-url-action@v1
         id: vercel_preview_url
-        uses: aaron-binary/vercel-preview-url-action@v0.0.3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
