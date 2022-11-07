@@ -58,16 +58,19 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
             setOpen={setOpen}
           />
         </div>
+        {listing && (
+          <SlideOver open={open} setOpen={setOpen} listing={listing} />
+        )}
 
-        <SlideOver open={open} setOpen={setOpen} listing={listing} />
+        {leftListing && (
+          <LeftSlideOver
+            open={leftSlideOver}
+            setOpen={setLeftSlideOver}
+            listing={leftListing}
+          />
+        )}
 
-        <LeftSlideOver
-          open={leftSlideOver}
-          setOpen={setLeftSlideOver}
-          listing={leftListing}
-        />
-
-        <div className=" min-w-[310px] max-w-[310px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
+        <div className="min-w-[310px] max-w-[310px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
           {listings.length < 1 && sectors.length < 1 && (
             <div>No listing to show move the map</div>
           )}

@@ -5,20 +5,16 @@ import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import house from "../../public/assets/images/house1.jpeg";
 import { useState } from "react";
-import type { SelectedListingState } from "@/stores/useSelectedListing";
+import type { ListingWithLocation } from "@/stores/useSelectedListing";
 
 type Props = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  listing: SelectedListingState["listing"];
+  listing: ListingWithLocation;
 };
 
 const SlideOver = ({ open, setOpen, listing }: Props) => {
   const [selected, setSelected] = useState("");
-
-  if (!listing) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -26,7 +22,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
         as="div"
         className="relative z-10"
         onClose={() => setSelected("")}
-        // onClose={setOpen}
+      // onClose={setOpen}
       >
         <div className="fixed inset-0 ml-[60rem] mt-[20rem]" />
 
@@ -64,7 +60,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         // width={"100%"}
                         // height={"100%"}
                         alt="house1"
-                        //   layout="fill"
+                      //   layout="fill"
                       />
                     </div>
 
@@ -148,49 +144,38 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         </div>
                       </div>
 
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-
-                      <div className="inline flex justify-evenly">
+                      <div className="flex justify-evenly">
                         <a
                           href="#features"
-                          className={`inline ${
-                            selected === "features"
+                          className={`inline ${selected === "features"
                               ? "border-b-2 border-indigo-600"
                               : ""
-                          }`}
+                            }`}
                           onClick={() => setSelected("features")}
                         >
                           Features
                         </a>
                         <a
                           href="#overview"
-                          className={`inline  ${
-                            selected === "overview"
+                          className={`inline  ${selected === "overview"
                               ? "border-b-2 border-indigo-600"
                               : ""
-                          }`}
+                            }`}
                           onClick={() => setSelected("overview")}
                         >
                           Overview
                         </a>
                         <a
                           href="#details"
-                          className={`inline  ${
-                            selected === "details"
+                          className={`inline  ${selected === "details"
                               ? "border-b-2 border-indigo-600"
                               : ""
-                          }`}
+                            }`}
                           onClick={() => setSelected("details")}
                         >
                           Details
                         </a>
                       </div>
-
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
 
                       <div className="h-[10.6rem] w-full overflow-auto scroll-smooth">
                         <div className="px-4 py-5 sm:px-0 sm:py-0 overflow-auto ">

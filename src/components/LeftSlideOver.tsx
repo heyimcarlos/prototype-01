@@ -2,7 +2,7 @@ import React, { Fragment, type Dispatch, type SetStateAction } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import type { SelectedListingState } from "@/stores/useSelectedListing";
+import type { ListingWithLocation } from "@/stores/useSelectedListing";
 import { useState } from "react";
 import { Grid } from "@material-ui/core";
 import house from "../../public/assets/images/house1.jpeg";
@@ -26,15 +26,11 @@ const nums = [
 type Props = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  listing: SelectedListingState["listing"];
+  listing: ListingWithLocation;
 };
 
 const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
   const [selected, setSelected] = useState("");
-
-  if (!listing) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -42,8 +38,8 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
         as="div"
         className="relative z-10"
         onClose={() => setSelected("")}
-        // onClose={setOpen}
-        // onBlur={setLeftSlideOver(false)}
+      // onClose={setOpen}
+      // onBlur={setLeftSlideOver(false)}
       >
         <div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full">
           <Transition.Child
@@ -67,7 +63,7 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
                       // width={"100%"}
                       // height={"100%"}
                       alt="house1"
-                      //   layout="fill"
+                    //   layout="fill"
                     />
                   </div>
                   {/* <div className="w-full h-full flex flex-row flex-wrap bg-white pl-[0.2rem]">
@@ -105,7 +101,7 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
                             // width="400%"
                             // height="400%"
                             alt="house1"
-                            //   layout="fill"
+                          //   layout="fill"
                           />
                         </Grid>
                       );
@@ -206,33 +202,30 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
                   <div className="flex justify-evenly">
                     <Link
                       href="#features"
-                      className={`inline ${
-                        selected === "features"
+                      className={`inline ${selected === "features"
                           ? "border-b-2 border-indigo-600"
                           : ""
-                      }`}
+                        }`}
                       onClick={() => setSelected("features")}
                     >
                       Features
                     </Link>
                     <a
                       href="#overview"
-                      className={`inline  ${
-                        selected === "overview"
+                      className={`inline  ${selected === "overview"
                           ? "border-b-2 border-indigo-600"
                           : ""
-                      }`}
+                        }`}
                       onClick={() => setSelected("overview")}
                     >
                       Overview
                     </a>
                     <a
                       href="#details"
-                      className={`inline  ${
-                        selected === "details"
+                      className={`inline  ${selected === "details"
                           ? "border-b-2 border-indigo-600"
                           : ""
-                      }`}
+                        }`}
                       onClick={() => setSelected("details")}
                     >
                       Details

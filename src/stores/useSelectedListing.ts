@@ -1,7 +1,7 @@
-import { Coordinate, Listing } from "@prisma/client";
+import type { Coordinate, Listing } from "@prisma/client";
 import create from "zustand";
 
-type ListingWithLocation = Listing & {
+export type ListingWithLocation = Listing & {
   location: Coordinate;
 };
 
