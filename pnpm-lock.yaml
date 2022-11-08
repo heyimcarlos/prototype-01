@@ -28,6 +28,7 @@ specifiers:
   '@types/lodash': ^4.14.188
   '@types/mapbox__mapbox-gl-draw': ^1.3.2
   '@types/node': 18.11.9
+  '@types/nodemailer': ^6.4.6
   '@types/react': 18.0.25
   '@types/react-dom': 18.0.8
   '@typescript-eslint/eslint-plugin': ^5.42.0
@@ -42,6 +43,7 @@ specifiers:
   next: ^13.0.2
   next-auth: ^4.16.3
   next-superjson: ^0.0.4
+  nodemailer: ^6.8.0
   postcss: ^8.4.18
   prisma: ^4.5.0
   react: 18.2.0
@@ -84,8 +86,9 @@ dependencies:
   mapbox-gl: 2.10.0
   mapbox-gl-draw-circle: 1.1.2_mapbox-gl@2.10.0
   next: 13.0.2_biqbaboplfbrettd7655fr4n2y
-  next-auth: 4.16.3_pknogjuzx4bv7zxtatcb2ahtsq
+  next-auth: 4.16.3_vo2mwhatbdlbtvmnsv5k22xfpu
   next-superjson: 0.0.4_jsy5umf36xuivefxrlicf4e4nu
+  nodemailer: 6.8.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-hook-form: 7.39.1_react@18.2.0
@@ -102,6 +105,7 @@ devDependencies:
   '@types/lodash': 4.14.188
   '@types/mapbox__mapbox-gl-draw': 1.3.2
   '@types/node': 18.11.9
+  '@types/nodemailer': 6.4.6
   '@types/react': 18.0.25
   '@types/react-dom': 18.0.8
   '@typescript-eslint/eslint-plugin': 5.42.0_n2s2dbqilupifq2xgcu4m4ie5i
@@ -769,7 +773,7 @@ packages:
       next-auth: ^4
     dependencies:
       '@prisma/client': 4.5.0_prisma@4.5.0
-      next-auth: 4.16.3_pknogjuzx4bv7zxtatcb2ahtsq
+      next-auth: 4.16.3_vo2mwhatbdlbtvmnsv5k22xfpu
     dev: false
 
   /@next/env/13.0.2:
@@ -2135,6 +2139,12 @@ packages:
 
   /@types/node/18.11.9:
     resolution: {integrity: sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==}
+
+  /@types/nodemailer/6.4.6:
+    resolution: {integrity: sha512-pD6fL5GQtUKvD2WnPmg5bC2e8kWCAPDwMPmHe/ohQbW+Dy0EcHgZ2oCSuPlWNqk74LS5BVMig1SymQbFMPPK3w==}
+    dependencies:
+      '@types/node': 18.11.9
+    dev: true
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
@@ -4541,7 +4551,7 @@ packages:
   /neo-async/2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  /next-auth/4.16.3_pknogjuzx4bv7zxtatcb2ahtsq:
+  /next-auth/4.16.3_vo2mwhatbdlbtvmnsv5k22xfpu:
     resolution: {integrity: sha512-xDQHQJRpB/pjBDj53r4Br03jvhM1TI73J9OCX0afBTOHZEfpQ6ZrjsBFdSrdx6NeQSEMq6R/ZRny2Y6Nt/XqrA==}
     engines: {node: ^12.19.0 || ^14.15.0 || ^16.13.0 || ^18.12.0}
     peerDependencies:
@@ -4558,6 +4568,7 @@ packages:
       cookie: 0.5.0
       jose: 4.10.4
       next: 13.0.2_biqbaboplfbrettd7655fr4n2y
+      nodemailer: 6.8.0
       oauth: 0.9.15
       openid-client: 5.2.1
       preact: 10.11.2
@@ -4631,6 +4642,11 @@ packages:
 
   /node-releases/2.0.6:
     resolution: {integrity: sha512-PiVXnNuFm5+iYkLBNeq5211hvO38y63T0i2KKh2KnUs3RpzJ+JtODFjkD8yjLwnDkTYF1eKXheUwdssR+NRZdg==}
+
+  /nodemailer/6.8.0:
+    resolution: {integrity: sha512-EjYvSmHzekz6VNkNd12aUqAco+bOkRe3Of5jVhltqKhEsjw/y0PYPJfp83+s9Wzh1dspYAkUW/YNQ350NATbSQ==}
+    engines: {node: '>=6.0.0'}
+    dev: false
 
   /nomnom/1.8.1:
     resolution: {integrity: sha512-5s0JxqhDx9/rksG2BTMVN1enjWSvPidpoSgViZU4ZXULyTe+7jxcCRLB6f42Z0l1xYJpleCBtSyY6Lwg3uu5CQ==}
