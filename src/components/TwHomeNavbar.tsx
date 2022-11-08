@@ -2,8 +2,9 @@ import React from "react";
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
+// import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
+import Image from "next/image";
 
 const navigation = [
   { name: "Sell", href: "#" },
@@ -30,43 +31,41 @@ const TwHomeNavbar = () => {
               </div>
 
               <Link href="/" className="-mt-1">
-                <a>
-                  <span className="sr-only">ntornos</span>
-                  <div className="font-['Libre_Baskerville'] text-2xl ml-2 inline md:text-3xl md:-ml-1">
-                    <span className="text-indigo-600">n</span>
-                    <span className="text-white">tornos</span>
-                  </div>
-                </a>
+                <span className="sr-only">ntornos</span>
+                <div className="font-['Libre_Baskerville'] text-2xl ml-2 inline md:text-3xl md:-ml-1">
+                  <span className="text-indigo-600">n</span>
+                  <span className="text-white">tornos</span>
+                </div>
               </Link>
 
               <div className="w-full flex justify-end md:hidden -mt-1">
-                <a
+                <Link
                   href="#"
                   className="text-base font-medium text-white hover:text-gray-300 px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
                 >
                   Register/Sign In
-                </a>
+                </Link>
               </div>
             </div>
             <div className="hidden md:w-full md:flex md:justify-end">
               {navigation.map((item) => (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className="text-base font-medium text-white px-3 py-2 hover:text-indigo-600 hover:bg-white hover:rounded-md"
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
             </div>
           </div>
           <div className="hidden md:flex md:items-center">
-            <a
+            <Link
               href="#"
               className="text-base font-medium text-white hover:text-gray-300 px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
             >
               Register/Sign In
-            </a>
+            </Link>
           </div>
         </nav>
       </div>
@@ -87,7 +86,7 @@ const TwHomeNavbar = () => {
           <div className="overflow-hidden rounded-lg bg-white shadow-md ring-1 ring-black ring-opacity-5">
             <div className="flex items-center justify-between px-5 pt-4">
               <div>
-                <img
+                <Image
                   className="h-8 w-auto"
                   src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                   alt=""
@@ -103,29 +102,29 @@ const TwHomeNavbar = () => {
             <div className="pt-5 pb-6">
               <div className="space-y-1 px-2">
                 {navigation.map((item) => (
-                  <a
+                  <Link
                     key={item.name}
                     href={item.href}
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-50"
                   >
                     {item.name}
-                  </a>
+                  </Link>
                 ))}
               </div>
               <div className="mt-6 px-5">
-                <a
+                <Link
                   href="#"
                   className="block w-full rounded-md bg-indigo-600 py-3 px-4 text-center font-medium text-white shadow hover:bg-indigo-700"
                 >
                   Start free trial
-                </a>
+                </Link>
               </div>
               <div className="mt-6 px-5">
                 <p className="text-center text-base font-medium text-gray-500">
                   Existing customer?{" "}
-                  <a href="#" className="text-gray-900 hover:underline">
+                  <Link href="#" className="text-gray-900 hover:underline">
                     Login
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>

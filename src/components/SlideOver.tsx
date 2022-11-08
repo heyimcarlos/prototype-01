@@ -1,33 +1,30 @@
-import React, { Dispatch, SetStateAction, Fragment } from "react";
+import React, { type Dispatch, type SetStateAction, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import Image from "next/image";
 import house from "../../public/assets/images/house1.jpeg";
-import { useState } from "react";
-import { SelectedListingState } from "@/stores/useSelectedListing";
+import type { ListingWithLocation } from "@/stores/useSelectedListing";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { capitalize } from "lodash";
 
 type Props = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  listing: SelectedListingState["listing"];
+  listing: ListingWithLocation;
 };
 
 const SlideOver = ({ open, setOpen, listing }: Props) => {
-  const [selected, setSelected] = useState("");
+  const router = useRouter();
 
-  if (!listing) {
-    return <div>Loading...</div>;
-  }
+  const onClose = () => {
+    router.push(router.pathname, undefined, { shallow: true });
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-10"
-        onClose={() => setSelected("")}
-        // onClose={setOpen}
-      >
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
         <div className="fixed inset-0 ml-[60rem] mt-[20rem]" />
 
         <div className="fixed inset-0 overflow-hidden ml-[60rem] mt-[20rem]">
@@ -52,7 +49,10 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         <button
                           type="button"
                           className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
-                          onClick={() => setOpen(false)}
+                          onClick={() => {
+                            onClose();
+                            setOpen(false);
+                          }}
                         >
                           <span className="sr-only">Close panel</span>
                           <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -148,49 +148,27 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         </div>
                       </div>
 
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-
-                      <div className="inline flex justify-evenly">
-                        <a
-                          href="#features"
-                          className={`inline ${
-                            selected === "features"
-                              ? "border-b-2 border-indigo-600"
-                              : ""
-                          }`}
-                          onClick={() => setSelected("features")}
-                        >
-                          Features
-                        </a>
-                        <a
-                          href="#overview"
-                          className={`inline  ${
-                            selected === "overview"
-                              ? "border-b-2 border-indigo-600"
-                              : ""
-                          }`}
-                          onClick={() => setSelected("overview")}
-                        >
-                          Overview
-                        </a>
-                        <a
-                          href="#details"
-                          className={`inline  ${
-                            selected === "details"
-                              ? "border-b-2 border-indigo-600"
-                              : ""
-                          }`}
-                          onClick={() => setSelected("details")}
-                        >
-                          Details
-                        </a>
+                      <div className="flex justify-evenly">
+                        {[
+                          { href: "features" },
+                          { href: "overview" },
+                          { href: "details" },
+                        ].map((item) => {
+                          const currRoute = router.asPath.split("#")[1];
+                          const isActive = currRoute === item.href;
+                          return (
+                            <Link
+                              key={`key-${item.href}`}
+                              href={"#" + item.href}
+                              className={`${
+                                isActive ? "border-b-2 border-indigo-600" : ""
+                              } inline`}
+                            >
+                              {capitalize(item.href)}
+                            </Link>
+                          );
+                        })}
                       </div>
-
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
-                      {/* ---------------------------------------------------------------------------------------------------------------------------------------------- */}
 
                       <div className="h-[10.6rem] w-full overflow-auto scroll-smooth">
                         <div className="px-4 py-5 sm:px-0 sm:py-0 overflow-auto ">

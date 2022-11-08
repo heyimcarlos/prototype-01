@@ -2,7 +2,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useControl } from "react-map-gl";
 
 import type { MapRef, ControlPosition } from "react-map-gl";
-import { Feature, Polygon } from "geojson";
+import type { Feature, Polygon } from "geojson";
 
 export type DrawControlCallbackEvent = {
   features: Feature<Polygon>[];

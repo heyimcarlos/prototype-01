@@ -1,14 +1,14 @@
 import Head from "next/head";
 import Map from "@/components/Map";
 import { useJsApiLoader } from "@react-google-maps/api";
-import { GetServerSidePropsContext } from "next";
+import type { GetServerSidePropsContext } from "next";
 import { env } from "@/env/client.mjs";
 import { prisma } from "@/server/db/client";
-import { inferSSRProps } from "@/lib/types/inferSSRProps";
+import type { inferSSRProps } from "@/lib/types/inferSSRProps";
 import { useRef, useState } from "react";
-import { MapRef } from "react-map-gl";
+import type { MapRef } from "react-map-gl";
 import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
-import { NextPageWithLayout } from "./_app";
+import type { NextPageWithLayout } from "./_app";
 import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
 import ListingCard from "@/components/ListingCard";
@@ -58,16 +58,19 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
             setOpen={setOpen}
           />
         </div>
+        {listing && (
+          <SlideOver open={open} setOpen={setOpen} listing={listing} />
+        )}
 
-        <SlideOver open={open} setOpen={setOpen} listing={listing} />
+        {leftListing && (
+          <LeftSlideOver
+            open={leftSlideOver}
+            setOpen={setLeftSlideOver}
+            listing={leftListing}
+          />
+        )}
 
-        <LeftSlideOver
-          open={leftSlideOver}
-          setOpen={setLeftSlideOver}
-          listing={leftListing}
-        />
-
-        <div className=" min-w-[310px] max-w-[310px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
+        <div className="min-w-[310px] max-w-[310px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
           {listings.length < 1 && sectors.length < 1 && (
             <div>No listing to show move the map</div>
           )}

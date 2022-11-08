@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { transformIntToMoney } from "@/lib/transformInt";
-import { Listing } from "@prisma/client";
+import type { Listing } from "@prisma/client";
 
 const ListingCard = ({ name, description, price }: Listing) => {
   return (
