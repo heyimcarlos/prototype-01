@@ -24,16 +24,16 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
+    GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+    }),
     EmailProvider({
       type: "email",
       // @INFO: Magic links are valid for 10 minutes.
       maxAge: 10 * 60 * 60,
-      sendVerificationRequest: ({ identifier, url, provider, theme }) => {
+      sendVerificationRequest: ({ identifier, url, theme }) => {
         const { host } = new URL(url);
-        console.log(identifier, "identifier");
-        console.log(url, "url");
-        console.log("provider: ", provider);
-        console.log("theme: ", theme);
         transporter.sendMail({
           from: `${env.EMAIL_FROM}` || "ntornos.com",
           to: identifier,
