@@ -2,18 +2,28 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useControl } from "react-map-gl";
 
 import type { MapRef, ControlPosition } from "react-map-gl";
+import type { Feature, Polygon } from "geojson";
+
+export type DrawControlCallbackEvent = {
+  features: Feature<Polygon>[];
+  target: MapRef;
+  type: string;
+};
 
 type DrawControlProps = ConstructorParameters<typeof MapboxDraw>[0] & {
   position?: ControlPosition;
-
-  onCreate: (evt: { features: { id: number | string }[] }) => void;
-  onUpdate: (evt: { features: { id: number | string }[]; action: string }) => void;
-  onDelete: (evt: { features: { id: number | string }[] }) => void;
+  onCreate: (evt: DrawControlCallbackEvent) => void;
+  onUpdate: (evt: DrawControlCallbackEvent & { action: string }) => void;
+  onDelete: (evt: DrawControlCallbackEvent) => void;
 };
 
 export default function DrawControl(props: DrawControlProps) {
   useControl<MapboxDraw>(
-    () => new MapboxDraw(props),
+    () => {
+      const newMap = new MapboxDraw(props);
+      return newMap;
+    },
+
     ({ map }: { map: MapRef }) => {
       map.on("draw.create", props.onCreate);
       map.on("draw.update", props.onUpdate);

@@ -9,7 +9,10 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import PreferenceInput from "./PreferenceInput";
 import Button from "./Button";
 import Divider from "./Divider";
-import { MapPreferenceKeys, mapPreferenceKeysArray } from "@/lib/types/mapPreferences";
+import {
+  type MapPreferenceKeys,
+  mapPreferenceKeysArray,
+} from "@/lib/types/mapPreferences";
 import FlyoutMenu from "./FlyoutMenu";
 
 type FormKeysSchema = {
@@ -36,7 +39,8 @@ const PreferenceForm = () => {
   const deactivatePreference = useMapPreferences((state) => state.deactivate);
   const updatePreference = useMapPreferences((state) => state.update);
 
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete>();
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete>();
 
   const { register, handleSubmit, watch, unregister } = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -98,7 +102,10 @@ const PreferenceForm = () => {
         >
           {active.length > 0 &&
             active.map((preference, idx) => (
-              <div key={`preferenceInput-${idx}`} className="mb-2 flex items-center">
+              <div
+                key={`preferenceInput-${idx}`}
+                className="mb-2 flex items-center"
+              >
                 {preference.key === "work" ? (
                   <>
                     <Autocomplete
@@ -107,7 +114,10 @@ const PreferenceForm = () => {
                       onLoad={onLoad}
                       onPlaceChanged={() => onPlaceChanged(preference.key)}
                     >
-                      <PreferenceInput name={preference.key} value={preference.value || ""} />
+                      <PreferenceInput
+                        name={preference.key}
+                        value={preference.value || ""}
+                      />
                     </Autocomplete>
                     <div
                       onClick={() => {
