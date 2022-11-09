@@ -1,5 +1,5 @@
 import AuthForm from "@/components/AuthForm";
-import DownArrowIcon from "@/components/icons/downArrow";
+import DownArrowIcon from "@/components/icons/down-arrow";
 import type { InferGetServerSidePropsType } from "next";
 import Link from "next/link";
 import React, { type HTMLAttributes, type ReactNode } from "react";
