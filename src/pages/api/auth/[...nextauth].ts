@@ -16,6 +16,7 @@ export const authOptions: NextAuthOptions = {
   // Include user.id on session
   callbacks: {
     session({ session, user }) {
+      console.log("a session has started: ", session, "user: ", user);
       if (session.user) {
         session.user.id = user.id;
       }
@@ -44,9 +45,13 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  // pages: {
-  //   signIn: "/auth/signin",
-  // },
+  pages: {
+    signIn: "/auth/sign-in",
+    signOut: "/auth/sign-out",
+    error: "/auth/error",
+    verifyRequest: "/auth/verify-request",
+  },
+  secret: env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);
