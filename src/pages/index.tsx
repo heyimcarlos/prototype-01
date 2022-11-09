@@ -2,7 +2,7 @@
 
 import Head from "next/head";
 import Image from "next/image";
-import { useState } from "react";
+// import { useState } from "react";
 import cityScape from "../../public/assets/images/2nd.jpg";
 import TwHomeNavbar from "@/components/TwHomeNavbar";
 import TwHomeSearchbar from "@/components/TwHomeSearchbar";
@@ -11,7 +11,7 @@ import { env } from "@/env/client.mjs";
 import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 
 const Home = () => {
-  const [searchType, setSearchType] = useState("buy");
+  // const [searchType, setSearchType] = useState("buy");
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
