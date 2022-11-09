@@ -29,7 +29,7 @@ const lineLayer: LineLayer = {
 };
 
 // Make a copy of the map style
-export default {
+const obj = {
   ...MAP_STYLE,
   sources: {
     ...MAP_STYLE.sources,
@@ -37,3 +37,5 @@ export default {
   },
   layers: [...MAP_STYLE.layers, fillLayer, lineLayer],
 };
+
+export default obj;

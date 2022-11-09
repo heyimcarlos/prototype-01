@@ -1,6 +1,6 @@
-import { GetPlaceOutput } from "@/server/router/map";
-import { Feature, Position, FeatureCollection } from "geojson";
-import { JSONArray } from "superjson/dist/types";
+import type { GetPlaceOutput } from "@/server/router/map";
+import type { Feature, Position, FeatureCollection } from "geojson";
+import type { JSONArray } from "superjson/dist/types";
 
 export const transformPlaceToFeature = (place: GetPlaceOutput) => {
   const feature: Feature = {

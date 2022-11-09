@@ -1,4 +1,4 @@
-import { Theme } from "next-auth";
+import type { Theme } from "next-auth";
 
 /**
  * Email HTML body
