@@ -1,6 +1,6 @@
 import {
-  MapPreference,
-  MapPreferenceKeys,
+  type MapPreference,
+  type MapPreferenceKeys,
   mapPreferenceKeysArray,
 } from "@/lib/types/mapPreferences";
 import create from "zustand";
@@ -14,7 +14,9 @@ type MapPreferencesState = {
   update: (preference: MapPreference) => void;
 };
 
-const initState = (preferenceKeysArray: MapPreferenceKeys[]): MapPreference[] => {
+const initState = (
+  preferenceKeysArray: MapPreferenceKeys[]
+): MapPreference[] => {
   return preferenceKeysArray.map((key) => ({
     key,
   }));
@@ -22,7 +24,7 @@ const initState = (preferenceKeysArray: MapPreferenceKeys[]): MapPreference[] =>
 
 export const useMapPreferences = create<MapPreferencesState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       active: [],
       inactive: initState(mapPreferenceKeysArray),
       activate: (preference: MapPreference) => {
@@ -36,14 +38,23 @@ export const useMapPreferences = create<MapPreferencesState>()(
           active: state.active.filter((p) => p.key !== preference.key),
           inactive: [
             ...state.inactive,
-            { ...preference, value: "", latitude: undefined, longitude: undefined },
+            {
+              ...preference,
+              value: "",
+              latitude: undefined,
+              longitude: undefined,
+            },
           ],
         }));
       },
       update: (preference: MapPreference) => {
         set((state) => ({
-          active: state.active.map((p) => (p.key === preference.key ? preference : p)),
-          inactive: state.inactive.map((p) => (p.key === preference.key ? preference : p)),
+          active: state.active.map((p) =>
+            p.key === preference.key ? preference : p
+          ),
+          inactive: state.inactive.map((p) =>
+            p.key === preference.key ? preference : p
+          ),
         }));
       },
     }),

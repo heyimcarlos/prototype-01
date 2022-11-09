@@ -1,11 +1,12 @@
-import React, { ButtonHTMLAttributes } from "react";
+import React from "react";
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 // import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import Image from "next/image";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 const navigation = [
   { name: "Sell", href: "#" },
   { name: "Favorites", href: "#" },
@@ -13,23 +14,17 @@ const navigation = [
   { name: "Dashboard", href: "#" },
 ];
 
-function AuthButton({
-  children,
-  ...props
-}: { children: React.ReactNode } & ButtonHTMLAttributes<HTMLButtonElement>) {
-  props.onClick;
-  return (
-    <button
-      {...props}
-      className="text-base font-medium text-white px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
-    >
-      {children}
-    </button>
-  );
-}
-
 const TwHomeNavbar = () => {
   const { data: session } = useSession();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    const data = await signOut({ redirect: false, callbackUrl: "/" });
+    router.push(data.url);
+  };
+
+  const handleSignIn = () =>
+    router.push(`/auth/sign-in?callbackUrl=${router.asPath}`);
 
   return (
     <Popover as="header" className="absolute z-20 w-full">
@@ -58,7 +53,7 @@ const TwHomeNavbar = () => {
               <div className="w-full flex justify-end md:hidden -mt-1">
                 <Link
                   href="#"
-                  className="text-base font-medium text-white hover:text-gray-300 px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
+                  className="text-base font-medium text-white px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
                 >
                   Register/Sign In
                 </Link>
@@ -78,12 +73,19 @@ const TwHomeNavbar = () => {
           </div>
           <div className="hidden md:flex md:items-center">
             {session ? (
-              <AuthButton onClick={() => signOut()}>Sign out</AuthButton>
+              <button
+                className="text-base font-medium text-white px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
+                onClick={handleSignOut}
+              >
+                Sign out
+              </button>
             ) : (
-              <>
-                <AuthButton onClick={() => signIn()}>Sign in</AuthButton>
-                <AuthButton>Sign up</AuthButton>
-              </>
+              <button
+                className="text-base font-semibold leading-none p-3 border rounded-2xl hover:rounded-md transition-all duration-300 text-indigo-600 bg-white"
+                onClick={handleSignIn}
+              >
+                Sign in
+              </button>
             )}
           </div>
         </nav>
@@ -109,6 +111,7 @@ const TwHomeNavbar = () => {
                   className="h-8 w-auto"
                   src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                   alt=""
+                  layout="fill"
                 />
               </div>
               <div className="-mr-2">

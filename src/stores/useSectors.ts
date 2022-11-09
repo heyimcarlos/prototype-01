@@ -1,5 +1,5 @@
-import { Coordinate, Listing } from "@prisma/client";
-import { JSONValue } from "superjson/dist/types";
+import type { Coordinate, Listing } from "@prisma/client";
+import type { JSONValue } from "superjson/dist/types";
 import create from "zustand";
 
 type SectorsState = {
