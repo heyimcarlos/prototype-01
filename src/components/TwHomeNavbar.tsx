@@ -1,11 +1,11 @@
-import React from "react";
+import React, { ButtonHTMLAttributes } from "react";
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 // import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import Image from "next/image";
-
+import { signIn, signOut, useSession } from "next-auth/react";
 const navigation = [
   { name: "Sell", href: "#" },
   { name: "Favorites", href: "#" },
@@ -13,7 +13,24 @@ const navigation = [
   { name: "Dashboard", href: "#" },
 ];
 
+function AuthButton({
+  children,
+  ...props
+}: { children: React.ReactNode } & ButtonHTMLAttributes<HTMLButtonElement>) {
+  props.onClick;
+  return (
+    <button
+      {...props}
+      className="text-base font-medium text-white px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
+    >
+      {children}
+    </button>
+  );
+}
+
 const TwHomeNavbar = () => {
+  const { data: session } = useSession();
+
   return (
     <Popover as="header" className="absolute z-20 w-full">
       <div className="pt-2 h-[5rem] bg-gradient-to-b from-black opacity-90">
@@ -60,12 +77,14 @@ const TwHomeNavbar = () => {
             </div>
           </div>
           <div className="hidden md:flex md:items-center">
-            <Link
-              href="#"
-              className="text-base font-medium text-white hover:text-gray-300 px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
-            >
-              Register/Sign In
-            </Link>
+            {session ? (
+              <AuthButton onClick={() => signOut()}>Sign out</AuthButton>
+            ) : (
+              <>
+                <AuthButton onClick={() => signIn()}>Sign in</AuthButton>
+                <AuthButton>Sign up</AuthButton>
+              </>
+            )}
           </div>
         </nav>
       </div>
@@ -135,4 +154,10 @@ const TwHomeNavbar = () => {
   );
 };
 
+// <Link
+//   href="#"
+//   className="text-base font-medium text-white hover:text-gray-300 px-3 py-2 mt-[0.2rem] hover:text-indigo-600 hover:bg-white hover:rounded-md"
+// >
+//   Register/Sign In
+// </Link>
 export default TwHomeNavbar;
