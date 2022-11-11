@@ -7,16 +7,7 @@ import type {
   InferGetServerSidePropsType,
 } from "next";
 import AuthForm from "@/components/AuthForm";
-
-export const Logo = () => (
-  <Link href="/">
-    <span className="sr-only">ntornos</span>
-    <h2 className="font-['Libre_Baskerville'] text-custom-white font-semibold tracking-tighter p-2 lg:pl-0 text-2xl sm:text-3xl">
-      <span className="text-indigo-700">n</span>
-      <span>tornos</span>
-    </h2>
-  </Link>
-);
+import Logo from "@/components/Logo";
 
 export default function SignInPage({
   csrfToken,
@@ -24,7 +15,7 @@ export default function SignInPage({
   return (
     <div className="flex min-h-screen flex-col justify-center bg-custom-white py-12 sm:px-6 lg:px-8">
       <div className="mb-auto h-4 mx-auto">
-        <Logo />
+        <Logo className="text-black" />
       </div>
       <div className="text-center sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="text-center text-3xl text-neutral-900">Welcome back</h2>

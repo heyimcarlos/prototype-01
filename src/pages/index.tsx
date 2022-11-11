@@ -1,15 +1,11 @@
-/* eslint-disable @next/next/no-page-custom-font */
-
 import Head from "next/head";
-import Image from "next/image";
-// import { useState } from "react";
-import cityScape from "../../public/assets/images/2nd.jpg";
-import TwHomeSearchbar from "@/components/TwHomeSearchbar";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { env } from "@/env/client.mjs";
 import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 import type { NextPageWithLayout } from "@/pages/_app";
-import AppLayout from "@/components/layouts/AppLayout";
+import Section1 from "@/components/home/section-1";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function Home({}: NextPageWithLayout) {
   // const [searchType, setSearchType] = useState("buy");
@@ -35,17 +31,16 @@ export default function Home({}: NextPageWithLayout) {
           rel="stylesheet"
         />
       </Head>
-      <div className="w-full h-[20rem] sm:h-[30rem] lg:h-[45rem] xl:h-[49rem]">
-        <TwHomeSearchbar />
-        <div
-          id="BackgroundImage"
-          className="absolute z-0 top-0 w-full h-80 sm:h-[30rem] lg:h-[45rem] xl:h-[49rem]"
-        >
-          <Image src={cityScape} alt="cityScape" layout="fill" />
+      <main className="bg-custom-white lg:overflow-x-hidden">
+        <div className="z-20 absolute inset-0 h-20">
+          <Navbar />
         </div>
-      </div>
+        <>
+          <Section1 />
+          <div>Check this cool houses</div>
+        </>
+        <Footer />
+      </main>
     </>
   );
 }
-
-Home.layout = AppLayout;
