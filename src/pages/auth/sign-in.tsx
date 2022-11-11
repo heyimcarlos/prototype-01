@@ -11,10 +11,10 @@ import AuthForm from "@/components/AuthForm";
 export const Logo = () => (
   <Link href="/">
     <span className="sr-only">ntornos</span>
-    <h1 className="font-['Libre_Baskerville'] ml-2 md:-ml-1 inline text-2xl md:text-3xl ">
-      <span className="text-indigo-600">n</span>
+    <h2 className="font-['Libre_Baskerville'] text-custom-white font-semibold tracking-tighter p-2 lg:pl-0 text-2xl sm:text-3xl">
+      <span className="text-indigo-700">n</span>
       <span>tornos</span>
-    </h1>
+    </h2>
   </Link>
 );
 
@@ -22,7 +22,7 @@ export default function SignInPage({
   csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-[#f3f4f6] py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center bg-custom-white py-12 sm:px-6 lg:px-8">
       <div className="mb-auto h-4 mx-auto">
         <Logo />
       </div>
