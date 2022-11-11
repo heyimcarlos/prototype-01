@@ -1,7 +1,4 @@
 import Head from "next/head";
-import { useJsApiLoader } from "@react-google-maps/api";
-import { env } from "@/env/client.mjs";
-import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 import type { NextPageWithLayout } from "@/pages/_app";
 import Section1 from "@/components/home/section-1";
 import Navbar from "@/components/Navbar";
@@ -9,13 +6,6 @@ import Footer from "@/components/Footer";
 
 export default function Home({}: NextPageWithLayout) {
   // const [searchType, setSearchType] = useState("buy");
-
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    libraries: GOOGLE_MAP_LIBRARIES,
-  });
-
-  if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <>

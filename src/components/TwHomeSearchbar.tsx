@@ -2,10 +2,17 @@ import { useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Autocomplete } from "@react-google-maps/api";
 import { useRouter } from "next/router";
+import { useJsApiLoader } from "@react-google-maps/api";
+import { env } from "@/env/client.mjs";
+import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 
 const TwHomeSearchbar = () => {
   const router = useRouter();
   const [searchType, setSearchType] = useState("buy");
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    libraries: GOOGLE_MAP_LIBRARIES,
+  });
 
   const [autocomplete, setAutocomplete] =
     useState<google.maps.places.Autocomplete>();
@@ -27,6 +34,8 @@ const TwHomeSearchbar = () => {
     }
     return 123;
   };
+
+  if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <div className="relative z-10 w-full h-[600px] flex flex-col justify-center items-center">
