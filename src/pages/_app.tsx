@@ -2,10 +2,10 @@
 import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
 import { loggerLink } from "@trpc/client/links/loggerLink";
 import { withTRPC } from "@trpc/next";
-import { NextPage } from "next";
-import { Session } from "next-auth";
+import type { NextPage } from "next";
+import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import { AppProps } from "next/app";
+import type { AppProps } from "next/app";
 import React from "react";
 import superjson from "superjson";
 import type { AppRouter } from "../server/router";
@@ -22,12 +22,14 @@ type AppPropsWithLayout = AppProps<{ session: Session }> & {
   Component: NextPageWithLayout;
 };
 
-// : AppType<{ session: Session }>
-const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
+const MyApp = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppPropsWithLayout) => {
   const Layout = Component.layout ?? React.Fragment;
 
   return (
-    <SessionProvider session={pageProps.session}>
+    <SessionProvider session={session}>
       <Layout>
         <Component {...pageProps} />
       </Layout>

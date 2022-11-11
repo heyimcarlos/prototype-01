@@ -1,25 +1,24 @@
 import React, {
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  useCallback,
+  type Dispatch,
+  type RefObject,
+  type SetStateAction,
   useEffect,
   useState,
 } from "react";
 import MapboxMap, {
   Source,
   Layer,
-  MapRef,
-  MapLayerMouseEvent,
+  type MapRef,
+  type MapLayerMouseEvent,
   Marker,
 } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
-import { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
+import type { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
 
-import { Coordinate, Listing, Place } from "@prisma/client";
+import type { Coordinate, Listing, Place } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import slugify from "@/lib/slugify";
 import { transformIntToMoney } from "@/lib/transformInt";
@@ -34,15 +33,8 @@ import { useGlobalHide } from "@/stores/useGlobalHide";
 
 import DrawControl from "@/components/DrawControl";
 
-import {
-  NavigationControl,
-  FullscreenControl,
-  ScaleControl,
-} from "react-map-gl";
+import { NavigationControl } from "react-map-gl";
 import Head from "next/head.js";
-import { Features } from "@headlessui/react/dist/utils/render.js";
-import { JSONValue } from "superjson/dist/types.js";
-import { custom } from "zod";
 import { useDrawShow } from "@/stores/useDrawShow";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 import { useDrawControls } from "@/stores/useDrawControls";
@@ -74,13 +66,13 @@ type MapProps = {
   })[];
 };
 
-type Props = {
-  place: unknown;
-  placeMutation: unknown;
-  names: string;
+type CustomMarkerProps = {
+  place: MapProps["places"][number];
+  onClick: ({ slug }: { slug: string }) => void;
+  names: string[];
 };
 
-const CustomMarker = ({ place, placeMutation, names }) => {
+const CustomMarker = ({ place, onClick, names }: CustomMarkerProps) => {
   const [show, setShow] = useState(true);
   const globalShow = useGlobalShow((state) => state.globalShow);
   const globalHide = useGlobalHide((state) => state.globalHide);
@@ -96,7 +88,7 @@ const CustomMarker = ({ place, placeMutation, names }) => {
             // e.originalEvent.cancelBubble
             e.originalEvent.preventDefault();
             e.originalEvent.stopPropagation();
-            placeMutation.mutate({ slug: place.slug });
+            onClick({ slug: place.slug });
             setShow(false);
             setGlobalShowFalse();
           }}
@@ -117,10 +109,11 @@ const CustomMarker = ({ place, placeMutation, names }) => {
   );
 };
 
-const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
-  const [selectedListing, setSelectedListing] = useState("");
+const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
+  const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
+
   const [curListingId, setCurListingId] = useState("");
-  const [customPolyBounds, setCustomPolyBounds] = useState([] as Position[][]);
+
   const [drawPolyToolTip, setDrawPolyToolTip] = useState(false);
 
   const setListings = useSidebar((state) => state.setListings);
@@ -136,10 +129,10 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
     (state) => state.setShowCustomSearchTrue
   );
 
-  const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
-
   const setGlobalHideTrue = useGlobalHide((state) => state.setGlobalHideTrue);
   const setGlobalHideFalse = useGlobalHide((state) => state.setGlobalHideFalse);
+
+  const [customPolyBounds, setCustomPolyBounds] = useState<Position[][]>();
 
   const drawShow = useDrawShow((state) => state.drawShow);
   const setDrawShowFalse = useDrawShow((state) => state.setDrawShowFalse);
@@ -175,7 +168,6 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
 
   const placeMutation = trpc.useMutation(["map.place"], {
     onSuccess: (data) => {
-      // console.log("listing data find", data);
       if (!names.includes(data.name)) {
         addSector({
           name: data.name,
@@ -223,10 +215,6 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
   const handleListingClick = (
     listing: MapProps["places"][number]["listing"][number]
   ) => {
-    setSelectedListing(
-      `${listing.location.longitude},${listing.location.latitude}`
-    );
-
     setCurListingId(listing.id);
   };
 
@@ -323,14 +311,13 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
       }
     }
 
-    if (!names.includes("Custom Boundary")) {
+    if (customPolyBounds && !names.includes("Custom Boundary")) {
       addSector({
         name: "Custom Boundary",
-        bounds: customPolyBounds[0] as JSONValue,
+        bounds: customPolyBounds[0],
         listings: customListings,
       });
     }
-    // setShowMapboxDraw(false);
     setDrawShowFalse();
   };
 
@@ -348,7 +335,6 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
             showVisibleMarkers();
           }}
           onClick={(e) => {
-            setSelectedListing("");
             setCurListingId("");
             onClickMap(e);
           }}
@@ -473,9 +459,6 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
             style={{ marginBottom: "2rem" }}
           /> */}
 
-          {/* <FullscreenControl position="top-left" /> */}
-          {/* <ScaleControl position="top-left" /> */}
-
           {drawShow && (
             <DrawControl
               position="bottom-right"
@@ -483,18 +466,14 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
               defaultMode="draw_polygon"
               styles={mapBoxDrawStyles}
               onCreate={(e) => {
-                console.log("onCreate is firing in Map.tsx", e);
-                setSearchTrue();
                 setGlobalHideTrue();
                 setCustomPolyBounds(e.features[0]?.geometry.coordinates);
                 setShowCustomSearchTrue();
               }}
               onUpdate={(e) => {
-                console.log("onUpdate is firing in Map.tsx", e);
                 setCustomPolyBounds(e.features[0]?.geometry.coordinates);
               }}
-              onDelete={(e) => {
-                console.log("onDelete is firing in Map.tsx", e);
+              onDelete={() => {
                 setGlobalHideFalse();
                 setSearchFalse();
                 setDrawShowFalse();
@@ -509,7 +488,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
             <CustomMarker
               key={`marker-${place.id}`}
               place={place}
-              placeMutation={placeMutation}
+              onClick={placeMutation.mutate}
               names={names}
             />
           ))}

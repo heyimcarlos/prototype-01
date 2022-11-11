@@ -2,7 +2,7 @@ import React from "react";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useSectors } from "@/stores/useSectors";
 import SectorsFlyoutMenu from "../components/SectorsFlyoutMenu";
@@ -14,13 +14,10 @@ import { useDrawControls } from "@/stores/useDrawControls";
 import useWindowSize from "@/hooks/useWindowSize";
 import Image from "next/image";
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 const TwTopbar = () => {
   const sectors = useSectors((state) => state.sectors);
   const deleteThisSector = useSectors((state) => state.deleteThisSector);
+  // const globalShow = useGlobalShow((state) => state.globalShow);
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
   const setDrawShowTrue = useDrawShow((state) => state.setDrawShowTrue);
   const setDrawShowFalse = useDrawShow((state) => state.setDrawShowFalse);
@@ -38,29 +35,50 @@ const TwTopbar = () => {
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
         <>
-          <div className="flex h-[3rem] justify-between bg-white fixed">
-            <div className="flex flex-shrink-0 items-center justify-start cursor-pointer ml-[0.6rem] -mt-[0.3rem]">
-              <Link href="/" className="">
-                <a>
-                  <span className="sr-only">ntornos</span>
-                  <div className="font-['Libre_Baskerville'] text-3xl ml-0 inline md:text-3xl md:-ml-1">
-                    <span className="text-indigo-600">n</span>
-                    <span className="text-black">tornos</span>
-                  </div>
-                </a>
-              </Link>
-            </div>
-
-            <div className="flex flex-1 items-center px-2 justify-start">
-              <div className="w-[15rem] max-w-lg lg:max-w-xs">
-                <label htmlFor="search" className="sr-only">
-                  Search
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <MagnifyingGlassIcon
-                      className="h-5 w-5 text-gray-400"
-                      aria-hidden="true"
+          <div
+            className=""
+            style={{
+              marginTop: "-0.5rem",
+              marginBottom: "-0.5rem",
+            }}
+          >
+            <div className="flex h-16 justify-between">
+              <div className="flexpx-2 lg:px-0 relative">
+                <div
+                  className="flex flex-shrink-0 items-center justify-start cursor-pointer"
+                  style={{
+                    marginLeft: "1.1rem",
+                    marginBottom: "0.2rem",
+                    marginTop: "0.7rem",
+                  }}
+                >
+                  <Link href="/" className="-mt-1">
+                    <span className="sr-only">ntornos</span>
+                    <div className="font-['Libre_Baskerville'] text-2xl ml-2 inline md:text-3xl md:-ml-1">
+                      <span className="text-indigo-600">n</span>
+                      <span className="text-black">tornos</span>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+              <div className="flex flex-1 items-center px-2 justify-start">
+                <div className="w-[17rem] max-w-lg lg:max-w-xs">
+                  <label htmlFor="search" className="sr-only">
+                    Search
+                  </label>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <MagnifyingGlassIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <input
+                      id="search"
+                      name="search"
+                      className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 leading-5 placeholder-gray-500 focus:border-indigo-500 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                      placeholder="Search"
+                      type="search"
                     />
                   </div>
                   <input
@@ -167,7 +185,7 @@ const TwTopbar = () => {
                 className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 <span className="sr-only">View notifications</span>
-                <BellIcon className="h-6 w-6" aria-hidden="true" />
+                {/* <BellIcon className="h-6 w-6" aria-hidden="true" /> */}
               </button>
 
               {/* Profile dropdown */}
@@ -196,7 +214,7 @@ const TwTopbar = () => {
                 >
                   <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <Menu.Item>
-                      {({ active }) => (
+                      {/* {({ active }) => (
                         <a
                           href="#"
                           className={classNames(
@@ -206,10 +224,10 @@ const TwTopbar = () => {
                         >
                           Your Profile
                         </a>
-                      )}
+                      )} */}
                     </Menu.Item>
                     <Menu.Item>
-                      {({ active }) => (
+                      {/* {({ active }) => (
                         <a
                           href="#"
                           className={classNames(
@@ -219,10 +237,10 @@ const TwTopbar = () => {
                         >
                           Settings
                         </a>
-                      )}
+                      )} */}
                     </Menu.Item>
                     <Menu.Item>
-                      {({ active }) => (
+                      {/* {({ active }) => (
                         <a
                           href="#"
                           className={classNames(
@@ -232,7 +250,7 @@ const TwTopbar = () => {
                         >
                           Sign out
                         </a>
-                      )}
+                      )} */}
                     </Menu.Item>
                   </Menu.Items>
                 </Transition>

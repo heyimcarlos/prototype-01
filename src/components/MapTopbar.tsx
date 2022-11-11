@@ -1,6 +1,5 @@
 // import PreferenceForm from "./PreferenceForm";
 import { useSectors } from "@/stores/useSectors";
-import SectorsFlyoutMenu from "./SectorsFlyoutMenu";
 import SectorsSelected from "./SectorsSelected";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/20/solid";
 
