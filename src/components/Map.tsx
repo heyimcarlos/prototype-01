@@ -51,6 +51,11 @@ import Image from "next/image.js";
 import toolTip from "../../public/assets/images/tooltip.png";
 import polyGif from "../../public/assets/images/ezgif.com-gif-maker (1).gif";
 import { useSelectedListing } from "@/stores/useSelectedListing";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { BackspaceIcon } from "@heroicons/react/24/outline";
+import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, ListBulletIcon } from "@heroicons/react/20/solid";
+import MobileListingsSlideOver from "@/components/MobileListingsSlideOver";
 
 type MapProps = {
   initialViewport: {
@@ -113,63 +118,36 @@ const CustomMarker = ({ place, placeMutation, names }) => {
 };
 
 const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
-  const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
-
   const [selectedListing, setSelectedListing] = useState("");
-
   const [curListingId, setCurListingId] = useState("");
+  const [customPolyBounds, setCustomPolyBounds] = useState([] as Position[][]);
+  const [drawPolyToolTip, setDrawPolyToolTip] = useState(false);
 
   const setListings = useSidebar((state) => state.setListings);
 
-  const addSector = useSectors((state) => state.addSector);
-
   // const deleteAllSectors = useSectors((state) => state.deleteAllSectors);
-
+  const addSector = useSectors((state) => state.addSector);
   const names: string[] = [];
-
   const sectors = useSectors((state) => state.sectors);
-
   sectors.forEach((sector) => names.push(sector.name));
-
-  // const showCustomSearch = useShowCustomSearch(
-  //   (state) => state.showCustomSearch
-  // );
+  const deleteThisSector = useSectors((state) => state.deleteThisSector);
 
   const setShowCustomSearchTrue = useShowCustomSearch(
     (state) => state.setShowCustomSearchTrue
   );
 
-  // const setShowCustomSearchFalse = useShowCustomSearch(
-  //   (state) => state.setShowCustomSearchFalse
-  // );
+  const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
 
   const setGlobalHideTrue = useGlobalHide((state) => state.setGlobalHideTrue);
-
   const setGlobalHideFalse = useGlobalHide((state) => state.setGlobalHideFalse);
 
-  const [customPolyBounds, setCustomPolyBounds] = useState([] as Position[][]);
-
   const drawShow = useDrawShow((state) => state.drawShow);
-
   const setDrawShowFalse = useDrawShow((state) => state.setDrawShowFalse);
-
   const setDrawShowTrue = useDrawShow((state) => state.setDrawShowTrue);
 
-  const deleteThisSector = useSectors((state) => state.deleteThisSector);
-
   const search = useDrawControls((state) => state.search);
-
   const setSearchTrue = useDrawControls((state) => state.setSearchTrue);
-
   const setSearchFalse = useDrawControls((state) => state.setSearchFalse);
-
-  // const drawDefault = useDrawControls((state) => state.drawDefault);
-
-  // const setDrawDefaultPoly = useDrawControls(
-  //   (state) => state.setDrawDefaultPoly
-  // );
-
-  const [drawPolyToolTip, setDrawPolyToolTip] = useState(false);
 
   const setListing = useSelectedListing((state) => state.setListing);
 
@@ -297,11 +275,12 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
           return turf.booleanPointInPolygon(point, poly);
         })
       ) {
+        setListing("");
         return;
       } else {
       }
-
-      const test = mapRef.current.getCenter();
+      setListing("");
+      // const test = mapRef.current.getCenter();
       // mapRef.current.flyTo({
       //   center: [test.lng, test.lat],
       //   zoom: 14,
@@ -355,19 +334,11 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
     setDrawShowFalse();
   };
 
+  const [listSlide, setListSlide] = useState(false);
+
+  console.log("listSlide", listSlide);
   return (
     <>
-      <Head>
-        <link
-          href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css"
-          rel="stylesheet"
-        />
-        <link
-          rel="stylesheet"
-          href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.3.0/mapbox-gl-draw.css"
-          type="text/css"
-        />
-      </Head>
       <div className="w-full h-full">
         <MapboxMap
           id="mapa"
@@ -384,9 +355,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
           mapStyle="mapbox://styles/mapbox/streets-v11"
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
         >
-          {/* space comment */}
-
-          <div className="h-full w-full flex justify-start items-start">
+          <div className="h-full w-full flex justify-center items-start">
             <button
               onClick={() => {
                 setDrawShowTrue();
@@ -403,7 +372,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
                 }
               }}
               className={
-                "absolute z-19 p-2 px-3 bg-[#ffffff] text-black m-2 rounded-lg border-2 border-black"
+                "absolute z-19 p-2 px-3 bg-[#ffffff] text-black m-2 rounded-lg border-2 border-black text-xs"
               }
             >
               {search ? "Search this area" : "Draw"}
@@ -413,14 +382,14 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
               if (sector.name === "Custom Boundary") {
                 return (
                   <button
-                    className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mb-10 ml-[8rem] rounded-lg border-2 border-black"
+                    className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 ml-[7.4rem] rounded-lg border-2 border-black"
                     key={sector.name}
                     onClick={() => {
                       deleteThisSector(sector);
                       setGlobalHideFalse();
                     }}
                   >
-                    Delete
+                    <TrashIcon className="h-4 w-4" />
                   </button>
                 );
               }
@@ -428,8 +397,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
 
             {drawShow && (
               <button
-                className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mb-10 ml-[12rem] rounded-lg border-2 border-black"
-                // className="h-10 w-20 bg-black ml-[15rem] mb-10 fixed"
+                className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 mr-[11rem] rounded-lg border-2 border-black"
                 onClick={() => {
                   setDrawShowFalse();
                   setTimeout(() => {
@@ -444,22 +412,38 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
                   setGlobalHideFalse();
                 }}
               >
-                Reset
+                <ArrowPathIcon className="h-4 w-4" />
               </button>
             )}
             {drawShow && (
               <button
-                className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mb-10 mr-[12rem] rounded-lg border-2 border-black"
+                className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 ml-[11rem] rounded-lg border-2 border-black"
                 onClick={() => {
                   setSearchFalse();
                   setGlobalHideFalse();
                   setDrawShowFalse();
                 }}
               >
-                Exit
+                <ArrowUturnLeftIcon className="h-4 w-4" />
               </button>
             )}
+
+            <div
+              className="absolute z-19 bottom-0 p-2 px-3 bg-[#ffffff] text-black m-2 rounded-lg border-2 border-black text-xs"
+              // className="bg-white w-full h-10 absolute bottom-0 z-10 rounded-tr-2xl rounded-tl-2xl flex justify-center items-center"
+              onClick={() => {
+                setListSlide(true);
+              }}
+            >
+              <ListBulletIcon className="h-6 w-6" />
+            </div>
           </div>
+
+          <MobileListingsSlideOver
+            listSlide={listSlide}
+            setListSlide={setListSlide}
+            setOpen={setOpen}
+          />
 
           {/* <div className="h-full w-full">
             <div
@@ -496,14 +480,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
             <DrawControl
               position="bottom-right"
               displayControlsDefault={false}
-              controls={
-                {
-                  // polygon: true,
-                  // trash: true,
-                }
-              }
               defaultMode="draw_polygon"
-              // defaultMode={drawDefault}
               styles={mapBoxDrawStyles}
               onCreate={(e) => {
                 console.log("onCreate is firing in Map.tsx", e);
@@ -545,7 +522,7 @@ const Map = ({ places, mapRef, initialViewport, open, setOpen }: MapProps) => {
                 onClick={(e) => {
                   e.originalEvent.stopPropagation();
                   handleListingClick(listing);
-                  setOpen(true);
+
                   setListing(listing);
                 }}
                 latitude={listing.location.latitude}

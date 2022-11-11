@@ -13,10 +13,11 @@ import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
 import ListingCard from "@/components/ListingCard";
 import { useSectors } from "@/stores/useSectors";
-import SlideOver from "@/components/SlideOver";
+import SingleViewSlideOver from "@/components/SingleViewSlideOver";
 import LeftSlideOver from "@/components/LeftSlideOver";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import SectorsSelected from "@/components/SectorsSelected";
+import MobilePreviewListing from "@/components/MobilePreviewListing";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   places,
@@ -60,6 +61,8 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           />
         </div>
 
+        <SingleViewSlideOver open={open} setOpen={setOpen} listing={listing} />
+
         {/* <SlideOver open={open} setOpen={setOpen} listing={listing} /> */}
 
         {/* <LeftSlideOver
@@ -68,7 +71,9 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           leftListing={leftListing}
         /> */}
 
-        <div className="h-[8.5rem] w-10/12 rounded-xl bg-black fixed bottom-0 mb-[4rem]"></div>
+        {listing && (
+          <MobilePreviewListing listing={listing} setOpen={setOpen} />
+        )}
 
         <div className="hidden min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
           {listings.length < 1 && sectors.length < 1 && (
@@ -110,6 +115,7 @@ MapPage.layout = MapLayout;
 
 // @INFO: Server side fetching of places
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 export const getServerSideProps = async ({
   query,
 }: GetServerSidePropsContext) => {
@@ -148,5 +154,7 @@ export const getServerSideProps = async ({
     },
   };
 };
+
+// console.log("serverSideProps", getServerSideProps);
 
 export default MapPage;

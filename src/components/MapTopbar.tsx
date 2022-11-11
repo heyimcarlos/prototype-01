@@ -2,6 +2,7 @@
 import { useSectors } from "@/stores/useSectors";
 import SectorsFlyoutMenu from "./SectorsFlyoutMenu";
 import SectorsSelected from "./SectorsSelected";
+import { AdjustmentsHorizontalIcon } from "@heroicons/react/20/solid";
 
 const MapTopbar = () => {
   const sectors = useSectors((state) => state.sectors);
@@ -10,7 +11,9 @@ const MapTopbar = () => {
       <div className="w-full flex justify-start ml-2">
         {sectors.length > 0 && <SectorsSelected />}
       </div>
-      <button className="pt-[0.25rem] fixed right-0 mr-2">Filters</button>
+      <button className="pt-[0.3rem] fixed right-0 mr-4">
+        <AdjustmentsHorizontalIcon className="h-6 w-6" />
+      </button>
     </div>
   );
 };

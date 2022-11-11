@@ -36,8 +36,7 @@ export default function SectorsFlyoutMenu() {
           {({ open }) => (
             <>
               <Popover.Button
-                className={`${open ? "text-gray-900" : "text-gray-500"}
-                  px-3 mr-[0.2rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900 `}
+                className={`text-gray-500 px-3 mr-[0.2rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900`}
               >
                 <span>{`${sectors.length - 1} More`}</span>
               </Popover.Button>
@@ -51,12 +50,9 @@ export default function SectorsFlyoutMenu() {
                 leaveFrom="opacity-100 translate-y-0"
                 leaveTo="opacity-0 translate-y-1"
               >
+                {/* <div className="w-full flex justify-start"> */}
                 <Popover.Panel
-                  className={`absolute z-10 -mt-7 w-[22rem] ${
-                    isMobile
-                      ? "max-w-[24rem] ml-[10.75rem]"
-                      : "max-w-md ml-[12rem]"
-                  }  -translate-x-1/2 transform px-0 sm:px-0 lg:max-w-3xl`}
+                  className={`fixed z-10 -mt-7 w-full transform px-0.5 sm:px-0 lg:max-w-3xl -ml-2`}
                 >
                   <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                     <div className="relative flex flex-wrap bg-white pl-2 gap-1 py-3 sm:p-1 ">
@@ -86,6 +82,7 @@ export default function SectorsFlyoutMenu() {
                     </div>
                   </div>
                 </Popover.Panel>
+                {/* </div> */}
               </Transition>
             </>
           )}

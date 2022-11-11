@@ -180,7 +180,7 @@ export default function NewTwTopbar() {
             </div>
           </div>
 
-          <Disclosure.Panel className="lg:hidden fixed z-20 bg-white w-full">
+          <Disclosure.Panel className="lg:hidden fixed z-40 bg-white w-full border-b-2">
             <div className="space-y-1 pt-2 pb-3">
               {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800" */}
               <Disclosure.Button
