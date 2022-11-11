@@ -6,10 +6,10 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Logo from "@/components/Logo";
-import LogoutIcon from "./icons/logout";
+import LogoutIcon from "@/components/icons/logout";
 import Image from "next/image";
-import defaultAvatar from "../../public/assets/images/user.png";
-import Divider from "./Divider";
+import defaultAvatar from "../../../public/assets/images/user.png";
+import Divider from "@/components/Divider";
 
 // @TODO: Make logo its own component
 
