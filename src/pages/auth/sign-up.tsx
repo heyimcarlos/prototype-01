@@ -1,9 +1,10 @@
 import AuthForm from "@/components/AuthForm";
 import DownArrowIcon from "@/components/icons/down-arrow";
+import Logo from "@/components/Logo";
 import type { InferGetServerSidePropsType } from "next";
 import Link from "next/link";
 import React, { type HTMLAttributes, type ReactNode } from "react";
-import { getServerSideProps, Logo } from "./sign-in";
+import { getServerSideProps } from "./sign-in";
 
 export const Divider = ({
   children,
