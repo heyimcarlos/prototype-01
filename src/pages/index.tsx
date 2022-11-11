@@ -1,7 +1,7 @@
 import Head from "next/head";
 import type { NextPageWithLayout } from "@/pages/_app";
 import Section1 from "@/components/home/section-1";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navigation/navbar";
 import Footer from "@/components/Footer";
 
 export default function Home({}: NextPageWithLayout) {
