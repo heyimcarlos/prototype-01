@@ -103,7 +103,6 @@ const Navbar = () => {
     router.push(`/auth/sign-in?callbackUrl=${router.asPath}`);
 
   //@INFO: shadow for header -> bg-gradient-to-b from-black opacity-95
-
   return (
     <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 ">
       <Popover as="header" className="relative">
@@ -149,7 +148,7 @@ const Navbar = () => {
                   >
                     Dashboard
                   </Link>
-                  <Avatar avatarUrl={session.user?.image || ""} />
+                  <Avatar avatarUrl={session.user?.avatar || ""} />
                   {/*
                   <button
                     className="text-base font-medium text-white px-3 py-2 hover:text-indigo-600 hover:bg-white hover:rounded-md"

@@ -5,12 +5,16 @@ import defaultAvatar from "../../../public/assets/images/user.png";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { prisma } from "@/server/db/client";
 import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
 import GridIcon from "@/components/icons/grid";
 import { ListBulletIcon } from "@heroicons/react/24/outline";
+import type { GetServerSidePropsContext } from "next";
+import randomImage from "../../../public/assets/images/house1.jpeg";
+import type { inferSSRProps } from "@/lib/types/inferSSRProps";
 
 const Card = ({
   children,
@@ -39,16 +43,14 @@ const ProfileOverview = () => {
       </h2>
       <div className=" sm:flex sm:items-center sm:justify-between">
         <div className="sm:flex sm:space-x-5">
-          <div className="shrink-0">
-            <div className="relative mx-auto h-20 w-20">
-              <Image
-                className="inline-flex rounded-full overflow-hidden aspect-square bg-indigo-500 h-full w-full"
-                src={session?.user?.image || defaultAvatar}
-                alt="Avatar"
-                width={720}
-                height={720}
-              />
-            </div>
+          <div className="flex-shrink-0">
+            <Image
+              className="mx-auto rounded-full h-20 w-20"
+              src={session?.user?.avatar || defaultAvatar}
+              alt="Avatar"
+              width={720}
+              height={720}
+            />
           </div>
           <div className=" text-center mt-4 sm:my-auto  sm:pt-1 sm:text-left">
             <p className="text-sm font-medium text-gray-400">Welcome back,</p>
@@ -62,14 +64,16 @@ const ProfileOverview = () => {
   );
 };
 
-export default function DashboardPage({}: NextPageWithLayout) {
+const DashboardPage: NextPageWithLayout<
+  inferSSRProps<typeof getServerSideProps>
+> = ({ listings }) => {
   return (
     <div className="p-6 space-y-6 max-w-5xl mx-auto ">
       <ProfileOverview />
       <div className="flex items-center gap-2">
         {/* Search */}
-        <div className="min-w-0 flex-1 md:px-8 lg:px-0 xl:col-span-6">
-          <div className="flex items-center px-6 py-4 md:mx-auto md:max-w-3xl lg:mx-0 lg:max-w-none xl:px-0">
+        <div className="min-w-0 flex-1 xl:col-span-6">
+          <div className="flex items-center py-4 md:mx-auto md:max-w-3xl lg:mx-0 lg:max-w-none ">
             <div className="w-full">
               <label htmlFor="search" className="sr-only">
                 Search
@@ -111,21 +115,25 @@ export default function DashboardPage({}: NextPageWithLayout) {
         role="list"
         className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
       >
-        {[
-          { name: "Listing 1", slug: "listing-1" },
-          { name: "Listing 2", slug: "listing-2" },
-          { name: "Listing 3", slug: "listing-3" },
-          { name: "Listing 4", slug: "listing-4" },
-        ].map((listing) => (
+        {listings.map((listing) => (
           <li
-            key={listing.name}
+            key={listing.id}
             className="col-span-1 divide-y divide-gray-200 rounded-md bg-white shadow"
           >
             <Link href={`/listing/${listing.slug}`}>
-              <div className="flex h-full p-4">
-                <div className="">section 1</div>
-                <div className="">section 2</div>
-                <div className="">section 3</div>
+              <div className="flex">
+                <div className="mr-4 flex-shrink-0 self-center">
+                  <Image
+                    src={randomImage}
+                    alt="Listing"
+                    width={150}
+                    height={150}
+                  />
+                </div>
+                <div className="">
+                  <h4 className="text-lg font-bold">{listing.name}</h4>
+                  <p className="mt-1">{listing.description}</p>
+                </div>
               </div>
             </Link>
           </li>
@@ -133,6 +141,18 @@ export default function DashboardPage({}: NextPageWithLayout) {
       </ul>
     </div>
   );
-}
+};
 
 DashboardPage.layout = DashboardLayout;
+
+export default DashboardPage;
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const listings = await prisma.listing.findMany();
+
+  return {
+    props: {
+      listings,
+    },
+  };
+}

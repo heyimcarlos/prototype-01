@@ -6,15 +6,9 @@ const load = async () => {
     // Seed Users
     const user = await prisma.user.findFirst({
       where: {
-        email: "renzik@mail.com",
+        email: "carlos.cruz1500@gmail.com",
       },
     });
-    // const user = await prisma.user.create({
-    //   data: {
-    //     email: "renzik@mail.com",
-    //     name: "Renzik",
-    //   },
-    // });
 
     if (!user) return;
 

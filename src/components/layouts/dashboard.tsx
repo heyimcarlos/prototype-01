@@ -3,20 +3,16 @@ import { Dialog, Transition } from "@headlessui/react";
 import {
   ArrowLeftOnRectangleIcon,
   Bars3BottomLeftIcon,
-  BriefcaseIcon,
-  ChatBubbleOvalLeftEllipsisIcon,
   CogIcon,
-  DocumentMagnifyingGlassIcon,
   HomeIcon,
   QuestionMarkCircleIcon,
-  UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import Logo from "@/components/Logo";
 import { useRouter } from "next/router";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+  { name: "Overview", href: "/dashboard", icon: HomeIcon },
   { name: "Settings", href: "/settings", icon: CogIcon },
 ];
 
