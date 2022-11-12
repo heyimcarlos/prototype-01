@@ -1,6 +1,7 @@
-import { IncomingMessage } from "http";
+/* eslint-disable @typescript-eslint/no-var-requires */
+import type { IncomingMessage } from "http";
 import parser from "accept-language-parser";
-import { Maybe } from "@trpc/server";
+import type { Maybe } from "@trpc/server";
 const { i18 } = require("../../next-i18next.config");
 
 export function getLocaleFromHeaders(req: IncomingMessage): string {
