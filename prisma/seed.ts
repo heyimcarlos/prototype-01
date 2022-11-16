@@ -124,61 +124,61 @@ const load = async () => {
 
     if (!place) return;
 
-    // // Seed Listings
-    await prisma.listing.createMany({
-      data: [
-        {
-          name: "renzik Casa 1",
-          slug: "renzik-casa-1",
-          description: "renzik Casa 1",
-          price: 50,
-          currency: "USD",
-          locationId: 1,
-          placeId: place.id,
-          userId: user.id,
-        },
-        {
-          name: "renzik Casa 2",
-          slug: "renzik-casa-2",
-          description: "renzik Casa 2",
-          price: 12000,
-          currency: "USD",
-          locationId: 1,
-          placeId: place.id,
-          userId: user.id,
-        },
-        {
-          name: "renzik Casa 3",
-          slug: "renzik-casa-3",
-          description: "renzik Casa 3",
-          price: 7234,
-          currency: "USD",
-          locationId: 1,
-          placeId: place.id,
-          userId: user.id,
-        },
-        {
-          name: "renzik Casa 4",
-          slug: "renzik-casa-4",
-          description: "renzik Casa 4",
-          price: 12345,
-          currency: "USD",
-          locationId: 1,
-          placeId: place.id,
-          userId: user.id,
-        },
-        // {
-        //   name: "renzik Casa 5",
-        //   slug: "renzik-casa-5",
-        //   description: "renzik Casa 5",
-        //   price: 532,
-        //   currency: "USD",
-        //   locationId: "cl7t8mjex0011usv8cvg9onlb",
-        //   placeId: place.id,
-        //   userId: user.id,
-        // },
-      ],
-    });
+    // Seed Listings
+    // await prisma.listing.createMany({
+    //   data: [
+    //     {
+    //       name: "renzik Casa 1",
+    //       slug: "renzik-casa-1",
+    //       description: "renzik Casa 1",
+    //       price: 50,
+    //       currency: "USD",
+    //       locationId: 1,
+    //       placeId: place.id,
+    //       userId: user.id,
+    //     },
+    //     {
+    //       name: "renzik Casa 2",
+    //       slug: "renzik-casa-2",
+    //       description: "renzik Casa 2",
+    //       price: 12000,
+    //       currency: "USD",
+    //       locationId: 1,
+    //       placeId: place.id,
+    //       userId: user.id,
+    //     },
+    //     {
+    //       name: "renzik Casa 3",
+    //       slug: "renzik-casa-3",
+    //       description: "renzik Casa 3",
+    //       price: 7234,
+    //       currency: "USD",
+    //       locationId: 1,
+    //       placeId: place.id,
+    //       userId: user.id,
+    //     },
+    //     {
+    //       name: "renzik Casa 4",
+    //       slug: "renzik-casa-4",
+    //       description: "renzik Casa 4",
+    //       price: 12345,
+    //       currency: "USD",
+    //       locationId: 1,
+    //       placeId: place.id,
+    //       userId: user.id,
+    //     },
+    //     {
+    //       name: "renzik Casa 5",
+    //       slug: "renzik-casa-5",
+    //       description: "renzik Casa 5",
+    //       price: 532,
+    //       currency: "USD",
+    //       locationId: "cl7t8mjex0011usv8cvg9onlb",
+    //       placeId: place.id,
+    //       userId: user.id,
+    //     },
+    //   ],
+    // });
   } catch (error) {
     console.error(error);
     process.exit(1);
