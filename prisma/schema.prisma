@@ -36,17 +36,17 @@ model Session {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
+  id            Int                @id @default(autoincrement())
   name          String?
-  email         String?   @unique
+  email         String?            @unique
   emailVerified DateTime?
   avatar        String?
-  role          User_role @default(USER)
-  plan          User_plan @default(FREE)
+  role          UserPermissionRole @default(USER)
+  plan          UserPlan           @default(FREE)
   bio           String?
   locale        String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
   accounts      Account[]
   sessions      Session[]
   listings      Listing[]
@@ -62,57 +62,98 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Place {
-  id          Int        @id @default(autoincrement())
-  name        String
-  slug        String     @unique
-  brderCoords Json
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  centerId    Int        @unique
-  bounds      Json
-  center      Coordinate @relation(fields: [centerId], references: [id])
-  listing     Listing[]
+model ListingLocation {
+  id               Int           @id @default(autoincrement())
+  name             String
+  city             String
+  state            String
+  country          String
+  lat              String
+  lng              String
+  formattedAddress String
+  googlePlaceId    String        @unique
+  neighborhood     Neighborhood? @relation(fields: neighborhoodId, references: [id])
+  neighborhoodId   Int?
+  listings         Listing[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 }
 
-model Coordinate {
-  id        Int       @id @default(autoincrement())
-  latitude  Float
-  longitude Float
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  place     Place?
-  listing   Listing[]
+model Neighborhood {
+  id               Int               @id @default(autoincrement())
+  name             String
+  slug             String            @unique
+  bounds           Json
+  lat              String
+  lng              String
+  listingLocations ListingLocation[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model Listing {
-  id          Int        @id @default(autoincrement())
-  name        String
-  slug        String     @unique
-  description String
-  price       Int
-  currency    String
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  placeId     Int
-  userId      Int
-  locationId  Int
-  place       Place      @relation(fields: [placeId], references: [id])
-  location    Coordinate @relation(fields: [locationId], references: [id])
-  user        User       @relation(fields: [userId], references: [id])
+  id                Int             @id @default(autoincrement())
+  name              String
+  slug              String          @unique
+  bio               String
+  price             Int
+  currency          Currency        @default(DOP)
+  bedrooms          Int
+  fullBathrooms     Int
+  halfBathrooms     Int
+  squareFeet        Int
+  listingType       ListingType
+  propertyType      PropertyType
+  listingLocation   ListingLocation @relation(fields: [listingLocationId], references: [id])
+  listingLocationId Int
+  userId            Int
+  user              User            @relation(fields: [userId], references: [id])
+  listingDetail     ListingDetail?  @relation(fields: [listingDetailId], references: [id])
+  listingDetailId   Int?            @unique
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 }
 
-enum User_role {
+model ListingDetail {
+  id                Int      @id @default(autoincrement())
+  listing           Listing?
+  yearBuilt         Int?
+  yearRemodeled     Int?
+  lotSquareFeet     Int?
+  interiorAmenities Json?
+  exteriorAmenities Json?
+  buildingAmenities Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+enum PropertyType {
+  HOUSE
+  APARTMENT
+  TOWNHOUSE
+  WAREHOUSE
+  COMMERCIAL
+  LAND
+  OTHER
+}
+
+enum ListingType {
+  RENT
+  SALE
+}
+
+enum Currency {
+  DOP
+  USD
+}
+
+enum UserPermissionRole {
   USER
   ADMIN
-
-  @@map("UserRole")
 }
 
-enum User_plan {
+enum UserPlan {
   FREE
   TRIAL
   PRO
-
-  @@map("UserPlan")
 }

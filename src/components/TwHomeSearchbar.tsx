@@ -1,21 +1,26 @@
 import { useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Autocomplete } from "@react-google-maps/api";
+import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
 import { useRouter } from "next/router";
-import { useJsApiLoader } from "@react-google-maps/api";
 import { env } from "@/env/client.mjs";
 import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 
 const TwHomeSearchbar = () => {
   const router = useRouter();
   const [searchType, setSearchType] = useState("buy");
+
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete>();
+
   const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
     googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     libraries: GOOGLE_MAP_LIBRARIES,
   });
 
-  const [autocomplete, setAutocomplete] =
-    useState<google.maps.places.Autocomplete>();
+  if (!isLoaded) return <div>loading...</div>;
+
+  console.log("autocomplete", autocomplete);
 
   const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
     setAutocomplete(autocomplete);
@@ -23,19 +28,18 @@ const TwHomeSearchbar = () => {
 
   const onPlaceChanged = () => {
     if (autocomplete) {
+      console.log("autocomplete", autocomplete?.getPlace());
       const { geometry } = autocomplete?.getPlace();
 
-      if (geometry) {
-        router.push(
-          `/map?lat=${geometry.location?.lat()}&lng=${geometry.location?.lng()}&type=${searchType}`
-        );
-      }
-      setAutocomplete(undefined);
+      // if (geometry) {
+      //   router.push(
+      //     `/map?lat=${geometry.location?.lat()}&lng=${geometry.location?.lng()}&type=${searchType}`
+      //   );
+      // }
+      // setAutocomplete(undefined);
     }
-    return 123;
+    // return 123;
   };
-
-  if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <div className="relative z-10 w-full h-[600px] flex flex-col justify-center items-center">
@@ -51,22 +55,20 @@ const TwHomeSearchbar = () => {
             <div className="flex">
               <label
                 htmlFor="search"
-                className={`${
-                  searchType === "buy"
+                className={`${searchType === "buy"
                     ? "bg-white text-black"
                     : "bg-indigo-600 text-white"
-                } px-5 py-1 rounded-tl-md text-sm`}
+                  } px-5 py-1 rounded-tl-md text-sm`}
                 onClick={() => setSearchType("buy")}
               >
                 Buy
               </label>
               <label
                 htmlFor="search"
-                className={`${
-                  searchType === "rent"
+                className={`${searchType === "rent"
                     ? "bg-white text-black"
                     : "bg-indigo-600 text-white"
-                } px-5 py-1 rounded-tr-md text-sm`}
+                  } px-5 py-1 rounded-tr-md text-sm`}
                 onClick={() => setSearchType("rent")}
               >
                 Rent
@@ -80,7 +82,7 @@ const TwHomeSearchbar = () => {
                 </label>
                 <div
                   className="absolute flex items-center cursor-pointer px-3 py-2 bg-indigo-600 rounded-md mr-[0.4rem]"
-                  onClick={onPlaceChanged}
+                // onClick={onPlaceChanged}
                 >
                   <MagnifyingGlassIcon
                     className="h-5 w-5 text-white"
@@ -89,7 +91,7 @@ const TwHomeSearchbar = () => {
                 </div>
                 <Autocomplete
                   restrictions={{ country: "do" }}
-                  types={["regions"]}
+                  // types={["regions"]}
                   className="w-full"
                   onLoad={onLoad}
                   onPlaceChanged={() => onPlaceChanged()}

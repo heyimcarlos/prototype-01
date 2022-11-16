@@ -26,6 +26,7 @@ const MyApp = ({
   Component,
   pageProps: { session, ...pageProps },
 }: AppPropsWithLayout) => {
+  console.log('pageProps: ' ,pageProps)
   const Layout = Component.layout ?? React.Fragment;
 
   return (

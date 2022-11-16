@@ -1,45 +1,41 @@
 import React, { Fragment, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog as HeadlessUIDialog, Transition } from "@headlessui/react";
 import {
-  ArrowLeftOnRectangleIcon,
   Bars3BottomLeftIcon,
   CogIcon,
   HomeIcon,
-  QuestionMarkCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import Logo from "@/components/Logo";
 import { useRouter } from "next/router";
+import { Avatar } from "../navigation/navbar";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: HomeIcon },
-  { name: "Settings", href: "/settings", icon: CogIcon },
+  { name: "Settings", href: "/account", icon: CogIcon },
 ];
 
-const secondaryNavigation = [
-  { name: "Help", href: "#", icon: QuestionMarkCircleIcon },
-  { name: "Logout", href: "#", icon: ArrowLeftOnRectangleIcon },
-];
-
-const DashboardSidebar = () => {
+const DashboardSidebarContainer = () => {
   const router = useRouter();
 
   return (
-    <nav className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-gray-50 pt-5 pb-4">
+    <div className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-[0.3rem]">
       <div className="flex flex-shrink-0 items-center px-4">
         <Logo />
       </div>
-      <div className="mt-5 flex-grow">
-        <div className="space-y-1">
+      <div className="mt-5 flex flex-grow flex-col">
+        <nav className="space-y-1 flex-1 px-2 pb-4">
           {navigation.map((item) => {
             const isActive = router.pathname === item.href;
             return (
-              <a
+              <Link
                 key={item.name}
                 href={item.href}
                 className={classNames(
                   isActive
-                    ? "bg-purple-50 border-purple-600 text-purple-600"
+                    ? "bg-indigo-50 border-indigo-500 text-indigo-500"
                     : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50",
                   "group border-l-4 py-2 px-3 flex items-center text-sm font-medium"
                 )}
@@ -47,48 +43,45 @@ const DashboardSidebar = () => {
                 <item.icon
                   className={classNames(
                     isActive
-                      ? "text-purple-500"
+                      ? "text-indigo-500"
                       : "text-gray-400 group-hover:text-gray-500",
                     "mr-3 flex-shrink-0 h-6 w-6"
                   )}
                   aria-hidden="true"
                 />
                 {item.name}
-              </a>
+              </Link>
             );
           })}
-        </div>
-      </div>
-      <div className="block w-full flex-shrink-0">
-        {secondaryNavigation.map((item) => (
-          <a
-            key={item.name}
-            href={item.href}
-            className="group flex items-center border-l-4 border-transparent py-2 px-3 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-          >
-            <item.icon
-              className="mr-3 h-6 w-6 text-gray-400 group-hover:text-gray-500"
-              aria-hidden="true"
-            />
-            {item.name}
-          </a>
-        ))}
-      </div>
-    </nav>
-  );
-};
-
-const DashboardNavbar = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="mx-auto flex max-w-4xl flex-col md:px-8 xl:px-0">
-      <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white">
-        {children}
+        </nav>
       </div>
     </div>
   );
 };
 
-const SidebarDialog = ({
+const DashboardNavbar = ({
+  children,
+  openDialog,
+}: {
+  children: React.ReactNode;
+  openDialog: () => void;
+}) => {
+  return (
+    <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white shadow">
+      <button
+        type="button"
+        className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
+        onClick={openDialog}
+      >
+        <span className="sr-only">Open sidebar</span>
+        <Bars3BottomLeftIcon className="h-6 w-6" aria-hidden="true" />
+      </button>
+      <div className="flex flex-1 justify-end px-4">{children}</div>
+    </div>
+  );
+};
+
+const Dialog = ({
   children,
   open,
   closeDialog,
@@ -99,7 +92,7 @@ const SidebarDialog = ({
 }) => {
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog
+      <HeadlessUIDialog
         as="div"
         className="relative z-40 md:hidden"
         onClose={closeDialog}
@@ -126,7 +119,8 @@ const SidebarDialog = ({
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-white pt-5 pb-4">
+            <HeadlessUIDialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-white pt-5 pb-4">
+              {/* Close Button */}
               <Transition.Child
                 as={Fragment}
                 enter="ease-in-out duration-300"
@@ -136,7 +130,7 @@ const SidebarDialog = ({
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <div className="absolute top-5 right-0 z-10 p-1">
+                <div className="absolute top-1 right-1 z-10 p-1">
                   <button
                     type="button"
                     className="flex items-center justify-center h-12 w-12 rounded-full hover:bg-gray-300 focus:outline-none"
@@ -151,13 +145,13 @@ const SidebarDialog = ({
                 </div>
               </Transition.Child>
               {children}
-            </Dialog.Panel>
+            </HeadlessUIDialog.Panel>
           </Transition.Child>
           <div className="w-14 flex-shrink-0" aria-hidden="true">
             {/* Dummy element to force sidebar to shrink to fit close icon */}
           </div>
         </div>
-      </Dialog>
+      </HeadlessUIDialog>
     </Transition.Root>
   );
 };
@@ -171,37 +165,42 @@ type Props = {
 };
 
 export default function DashboardLayout({ children }: Props) {
+  const { data: session } = useSession();
   const [open, setOpen] = useState(false);
 
   return (
-    <main className="min-h-screen bg-custom-white">
+    <div className="min-h-screen bg-custom-white">
       {/* Mobile */}
       <div className="md:hidden">
-        {/* Navbar */}
-        <DashboardNavbar>
-          <button
-            type="button"
-            className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500 md:hidden"
-            onClick={() => setOpen(true)}
-          >
-            <span className="sr-only">Open sidebar</span>
-            <Bars3BottomLeftIcon className="h-6 w-6" aria-hidden="true" />
-          </button>
-        </DashboardNavbar>
-        <SidebarDialog open={open} closeDialog={() => setOpen(false)}>
+        <Dialog open={open} closeDialog={() => setOpen(false)}>
           <div className="fixed inset-y-0 flex w-full flex-col">
-            <DashboardSidebar />
+            <DashboardSidebarContainer />
           </div>
-        </SidebarDialog>
+        </Dialog>
       </div>
 
       {/* Desktop */}
       <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
-        <DashboardSidebar />
+        <DashboardSidebarContainer />
       </div>
 
-      {/* Content area */}
-      <div className="md:pl-64">{children}</div>
-    </main>
+      <div className="flex flex-1 flex-col md:pl-64">
+        {/* Navbar */}
+        <DashboardNavbar openDialog={() => setOpen(true)}>
+          <div className="ml-4 flex items-center md:ml-6">
+            <Avatar avatarUrl={session?.user.avatar || ""} />
+          </div>
+        </DashboardNavbar>
+
+        {/* Content area */}
+        <main className="flex-1">
+          <div className="py-6">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+              {children}
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }
