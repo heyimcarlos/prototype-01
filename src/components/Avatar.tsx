@@ -1,3 +1,5 @@
+import { type User } from "@prisma/client";
+
 import { Menu, Transition } from "@headlessui/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,7 +8,6 @@ import React, { Fragment } from "react";
 import classNames from "@/lib/classNames";
 import { signOut } from "next-auth/react";
 import LogoutIcon from "./icons/logout";
-import { User } from "@prisma/client";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
 type AvatarProps = (
@@ -47,13 +48,11 @@ export function Avatar(props: AvatarProps) {
   );
   const avatar = imgSrc ? (
     <Image
-      // className="inline-flex h-8 w-8 rounded-full overflow-hidden aspect-square bg-indigo-500 p-[2px]"
       src={imgSrc}
       alt={alt}
-      className={className}
-      // width={720}
-      // height={720}
-      fill
+      className={`inline-flex overflow-hidden aspect-square p-[2px] ${className}`}
+      width={720}
+      height={720}
     />
   ) : null;
 
@@ -72,7 +71,7 @@ export function Avatar(props: AvatarProps) {
   );
 }
 
-export function AvatarMenu({ avatarUrl }: { avatarUrl: string }) {
+export function AvatarMenu(props: AvatarProps) {
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -85,7 +84,7 @@ export function AvatarMenu({ avatarUrl }: { avatarUrl: string }) {
       <div>
         <Menu.Button className="flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
           <span className="sr-only">Open user menu</span>
-          <Avatar imageSrc={avatarUrl || ""} />
+          <Avatar {...props} size={10} />
         </Menu.Button>
       </div>
       <Transition

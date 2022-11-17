@@ -8,9 +8,9 @@ import {
 } from "@heroicons/react/24/outline";
 import Logo from "@/components/Logo";
 import { useRouter } from "next/router";
-import { Avatar } from "../navigation/navbar";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { trpc } from "@/utils/trpc";
+import { AvatarMenu } from "@/components/Avatar";
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: HomeIcon },
@@ -165,8 +165,12 @@ type Props = {
 };
 
 export default function DashboardLayout({ children }: Props) {
-  const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+  const { data, isLoading } = trpc.user.me.useQuery();
+
+  if (!data || isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-custom-white">
@@ -188,7 +192,7 @@ export default function DashboardLayout({ children }: Props) {
         {/* Navbar */}
         <DashboardNavbar openDialog={() => setOpen(true)}>
           <div className="ml-4 flex items-center md:ml-6">
-            <Avatar avatarUrl={session?.user.avatar || ""} />
+            <AvatarMenu user={data} alt={`${data.name} avatar`} />
           </div>
         </DashboardNavbar>
 
