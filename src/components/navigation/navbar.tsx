@@ -1,15 +1,15 @@
 import React from "react";
 import { Fragment } from "react";
-import { Menu, Popover, Transition } from "@headlessui/react";
+import { Popover, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Logo from "@/components/Logo";
-import LogoutIcon from "./icons/logout";
 import Image from "next/image";
-import defaultAvatar from "../../public/assets/images/user.png";
-import Divider from "./Divider";
+import defaultAvatar from "../../../public/assets/images/user.png";
+import Divider from "@/components/Divider";
+import { AvatarMenu } from "../Avatar";
 
 // @TODO: Make logo its own component
 
@@ -23,73 +23,6 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export function Avatar({ avatarUrl }: { avatarUrl: string }) {
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    const data = await signOut({ redirect: false, callbackUrl: "/" });
-    router.push(data.url);
-  };
-
-  return (
-    <Menu as="div" className="relative ml-3">
-      <div>
-        <Menu.Button className="flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-          <span className="sr-only">Open user menu</span>
-          <Image
-            className="inline-flex h-8 w-8 rounded-full overflow-hidden aspect-square bg-indigo-500 p-[2px]"
-            src={avatarUrl || defaultAvatar}
-            alt="Avatar"
-            width={720}
-            height={720}
-          />
-        </Menu.Button>
-      </div>
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <Menu.Items className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          <Menu.Item>
-            {({ active }) => (
-              <a
-                href="#"
-                className={classNames(
-                  active ? "bg-gray-100" : "",
-                  "block px-4 py-2 text-sm text-gray-700"
-                )}
-              >
-                Settings
-              </a>
-            )}
-          </Menu.Item>
-          <Menu.Item>
-            {({ active }) => (
-              <button
-                className={classNames(
-                  active ? "bg-gray-100" : "",
-                  "flex group items-center w-full px-4 py-2 text-sm text-gray-700 first:pt-3 last:pb-3"
-                )}
-                onClick={handleSignOut}
-              >
-                <span className="mr-2 h-5 w-5">
-                  <LogoutIcon />
-                </span>
-                Sign out
-              </button>
-            )}
-          </Menu.Item>
-        </Menu.Items>
-      </Transition>
-    </Menu>
-  );
-}
-
 const Navbar = () => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -101,8 +34,6 @@ const Navbar = () => {
 
   const handleSignIn = () =>
     router.push(`/auth/sign-in?callbackUrl=${router.asPath}`);
-
-  //@INFO: shadow for header -> bg-gradient-to-b from-black opacity-95
 
   return (
     <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 ">
@@ -149,7 +80,7 @@ const Navbar = () => {
                   >
                     Dashboard
                   </Link>
-                  <Avatar avatarUrl={session.user?.image || ""} />
+                  <AvatarMenu />
                   {/*
                   <button
                     className="text-base font-medium text-white px-3 py-2 hover:text-indigo-600 hover:bg-white hover:rounded-md"

@@ -1,0 +1,9 @@
+{
+  "room-details": {
+    "appliances": {
+      "fridge": true,
+      "microwave": false,
+      "dishwasher": false
+    }
+  }
+}

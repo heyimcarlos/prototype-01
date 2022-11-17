@@ -215,7 +215,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
   const handleListingClick = (
     listing: MapProps["places"][number]["listing"][number]
   ) => {
-    setCurListingId(listing.id);
+    setCurListingId(String(listing.id));
   };
 
   const showVisibleMarkers = () => {
@@ -514,7 +514,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
                   className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
                   style={{
                     opacity: curListingId
-                      ? curListingId === listing.id
+                      ? Number(curListingId) === listing.id
                         ? 1
                         : 0.4
                       : 1,

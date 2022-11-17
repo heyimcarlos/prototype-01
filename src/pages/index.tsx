@@ -1,11 +1,9 @@
 import Head from "next/head";
 import type { NextPageWithLayout } from "@/pages/_app";
 import Section1 from "@/components/home/section-1";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import AppLayout from "@/components/layouts/AppLayout";
 
-export default function Home({}: NextPageWithLayout) {
-  // const [searchType, setSearchType] = useState("buy");
+const Home: NextPageWithLayout = () => {
 
   return (
     <>
@@ -21,16 +19,14 @@ export default function Home({}: NextPageWithLayout) {
           rel="stylesheet"
         />
       </Head>
-      <main className="bg-custom-white lg:overflow-x-hidden">
-        <div className="z-20 absolute inset-0 h-20">
-          <Navbar />
-        </div>
-        <>
+      <>
           <Section1 />
           <div>Check this cool houses</div>
         </>
-        <Footer />
-      </main>
     </>
   );
 }
+
+Home.layout = AppLayout;
+
+export default Home;
