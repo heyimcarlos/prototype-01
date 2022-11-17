@@ -1,17 +1,21 @@
-import { createRouter } from "./context";
+import { mergeRouters, publicProcedure, router } from "@/server/trpc/trpc";
 import { z } from "zod";
-import { inferMutationOutput } from "@/utils/trpc";
 import * as trpc from "@trpc/server";
 import * as turf from "@turf/turf";
 import { env } from "@/env/client.mjs";
 import { mapPreference } from "@/lib/types/mapPreferences";
+import { TRPCError } from "@trpc/server";
 
 const mapboxApiUrl = "https://api.mapbox.com/directions/v5/mapbox";
 const PreferenceObjectValidator = z.object({
   value: z.string().optional(),
   lat: z.number().optional(),
   lng: z.number().optional(),
-  key: z.union([z.literal("work"), z.literal("pharmacy"), z.literal("supermarket")]),
+  key: z.union([
+    z.literal("work"),
+    z.literal("pharmacy"),
+    z.literal("supermarket"),
+  ]),
 });
 
 const nearbySearchValidator = z.object({
@@ -53,72 +57,110 @@ const directionsResponseValidator = z.object({
   code: z.string(),
   uuid: z.string(),
   waypoints: z.array(
-    z.object({ distance: z.number(), name: z.string(), location: z.array(z.number()) })
+    z.object({
+      distance: z.number(),
+      name: z.string(),
+      location: z.array(z.number()),
+    })
   ),
 });
 
-export const mapRouter = createRouter()
-  .mutation("placeAsGeoJson", {
-    input: z.object({
-      slug: z.string(),
-    }),
-    async resolve({ ctx, input }) {
-      const place = await ctx.prisma.place.findFirst({
-        where: {
-          slug: input.slug,
-        },
-        include: {
-          listing: true,
-        },
-      });
+const publicMapRouter = router({
+  matrix: publicProcedure
+    .input(
+      z.object({
+        origin: z.string(),
+        destinations: z.array(PreferenceObjectValidator),
+      })
+    )
+    .query(async ({ input }) => {
+      // calculate matrix in parallel.
+      const matrix = await Promise.all(
+        input.destinations.map(async (destination) => {
+          const res = await fetch(
+            `${mapboxApiUrl}/driving/${input.origin};${destination.lng},${destination.lat}?geometries=geojson&access_token=${env.NEXT_PUBLIC_MAPBOX_TOKEN}`
+          );
 
-      if (!place) {
+          const json: {
+            routes: {
+              country_crossed: boolean;
+              weight_name: string;
+              weight: number;
+              duration: number;
+              distance: number;
+              legs: { distance: number; name: string; location: number[] }[];
+              geometry: turf.Feature<turf.LineString>;
+            }[];
+            waypoints: { distance: number; name: string; location: number[] }[];
+            code: string;
+            uuid: string;
+          } = await res.json();
+          return json;
+        })
+      );
+
+      if (matrix.length < 1) {
         throw new trpc.TRPCError({
           code: "NOT_FOUND",
           message: "place-not-found-motherfucker",
         });
       }
-    },
-  })
-  .mutation("place", {
-    input: z.object({
-      slug: z.string(),
-    }),
-    async resolve({ ctx, input }) {
-      const place = await ctx.prisma.place.findFirst({
-        where: {
-          slug: input.slug,
-        },
-        include: {
-          center: true,
-          listing: {
-            include: {
-              location: true,
-            },
+
+      const featureList: turf.helpers.Feature<
+        turf.helpers.LineString,
+        turf.helpers.Properties
+      >[] = [];
+
+      for (const key in matrix) {
+        const route = matrix[key]?.routes[0];
+        if (!route) continue;
+
+        const feature: turf.helpers.Feature<
+          turf.helpers.LineString,
+          turf.helpers.Properties
+        > = {
+          ...route.geometry,
+          properties: {
+            duration: matrix[key]?.routes[0]?.duration,
+            distance: matrix[key]?.routes[0]?.distance,
           },
+        };
+
+        featureList.push(feature);
+      }
+
+      return turf.featureCollection(featureList);
+    }),
+  getNeighborhood: publicProcedure
+    .input(z.object({ slug: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const neighborhood = await ctx.prisma.neighborhood.findFirst({
+        where: {
+          slug: input.slug,
         },
       });
 
-      if (!place) {
-        throw new trpc.TRPCError({
+      if (!neighborhood) {
+        throw new TRPCError({
           code: "NOT_FOUND",
-          message: "place-not-found-motherfucker",
+          message: "neighborhood-not-found",
         });
       }
 
-      return place;
-    },
-  })
-  .mutation("nearby", {
-    input: z.object({
-      preferences: z.array(mapPreference),
-      origin: z.object({
-        lat: z.number(),
-        lng: z.number(),
-      }),
-      rankBy: z.union([z.literal("distance"), z.literal("prominence")]),
+      return neighborhood;
     }),
-    async resolve({ input }) {
+  getNearby: publicProcedure
+    .input(
+      z.object({
+        preferences: z.array(mapPreference),
+        origin: z.object({
+          lat: z.number(),
+          lng: z.number(),
+        }),
+        rankBy: z.union([z.literal("distance"), z.literal("prominence")]),
+      })
+    )
+    .mutation(async ({ input }) => {
       const { preferences, rankBy, origin } = input;
 
       if (!preferences.length) {
@@ -169,67 +211,14 @@ export const mapRouter = createRouter()
       } catch (error) {
         console.log(error);
       }
-    },
-  })
-  .query("matrix", {
-    input: z.object({
-      origin: z.string(),
-      destinations: z.array(PreferenceObjectValidator),
     }),
-    async resolve({ input }) {
-      // calculate matrix in parallel.
-      const matrix = await Promise.all(
-        input.destinations.map(async (destination) => {
-          const res = await fetch(
-            `${mapboxApiUrl}/driving/${input.origin};${destination.lng},${destination.lat}?geometries=geojson&access_token=${env.NEXT_PUBLIC_MAPBOX_TOKEN}`
-          );
+});
 
-          const json: {
-            routes: {
-              country_crossed: boolean;
-              weight_name: string;
-              weight: number;
-              duration: number;
-              distance: number;
-              legs: { distance: number; name: string; location: number[] }[];
-              geometry: turf.Feature<turf.LineString>;
-            }[];
-            waypoints: { distance: number; name: string; location: number[] }[];
-            code: string;
-            uuid: string;
-          } = await res.json();
-          return json;
-        })
-      );
+const loggedInMapRouter = router({});
 
-      if (matrix.length < 1) {
-        throw new trpc.TRPCError({
-          code: "NOT_FOUND",
-          message: "place-not-found-motherfucker",
-        });
-      }
-
-      const featureList: turf.helpers.Feature<turf.helpers.LineString, turf.helpers.Properties>[] =
-        [];
-
-      for (const key in matrix) {
-        const route = matrix[key]?.routes[0];
-        if (!route) continue;
-
-        const feature: turf.helpers.Feature<turf.helpers.LineString, turf.helpers.Properties> = {
-          ...route.geometry,
-          properties: {
-            duration: matrix[key]?.routes[0]?.duration,
-            distance: matrix[key]?.routes[0]?.distance,
-          },
-        };
-
-        featureList.push(feature);
-      }
-
-      return turf.featureCollection(featureList);
-    },
-  });
-
-export type GetPlaceAsGeoJson = inferMutationOutput<"map.placeAsGeoJson">;
-export type GetPlaceOutput = inferMutationOutput<"map.place">;
+export const mapRouter = mergeRouters(
+  loggedInMapRouter,
+  router({
+    public: publicMapRouter,
+  })
+);

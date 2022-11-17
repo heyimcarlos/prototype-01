@@ -31,12 +31,12 @@ const TwHomeSearchbar = () => {
       console.log("autocomplete", autocomplete?.getPlace());
       const { geometry } = autocomplete?.getPlace();
 
-      // if (geometry) {
-      //   router.push(
-      //     `/map?lat=${geometry.location?.lat()}&lng=${geometry.location?.lng()}&type=${searchType}`
-      //   );
-      // }
-      // setAutocomplete(undefined);
+      if (geometry) {
+        router.push(
+          `/map?lat=${geometry.location?.lat()}&lng=${geometry.location?.lng()}&type=${searchType}`
+        );
+      }
+      setAutocomplete(undefined);
     }
     // return 123;
   };
@@ -55,20 +55,22 @@ const TwHomeSearchbar = () => {
             <div className="flex">
               <label
                 htmlFor="search"
-                className={`${searchType === "buy"
+                className={`${
+                  searchType === "buy"
                     ? "bg-white text-black"
                     : "bg-indigo-600 text-white"
-                  } px-5 py-1 rounded-tl-md text-sm`}
+                } px-5 py-1 rounded-tl-md text-sm`}
                 onClick={() => setSearchType("buy")}
               >
                 Buy
               </label>
               <label
                 htmlFor="search"
-                className={`${searchType === "rent"
+                className={`${
+                  searchType === "rent"
                     ? "bg-white text-black"
                     : "bg-indigo-600 text-white"
-                  } px-5 py-1 rounded-tr-md text-sm`}
+                } px-5 py-1 rounded-tr-md text-sm`}
                 onClick={() => setSearchType("rent")}
               >
                 Rent
@@ -82,7 +84,7 @@ const TwHomeSearchbar = () => {
                 </label>
                 <div
                   className="absolute flex items-center cursor-pointer px-3 py-2 bg-indigo-600 rounded-md mr-[0.4rem]"
-                // onClick={onPlaceChanged}
+                  // onClick={onPlaceChanged}
                 >
                   <MagnifyingGlassIcon
                     className="h-5 w-5 text-white"
