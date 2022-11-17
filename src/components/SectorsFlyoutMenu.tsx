@@ -52,7 +52,7 @@ export default function SectorsFlyoutMenu() {
               >
                 {/* <div className="w-full flex justify-start"> */}
                 <Popover.Panel
-                  className={`fixed z-10 -mt-7 w-full transform px-0.5 sm:px-0 lg:max-w-3xl -ml-2`}
+                  className={`fixed z-[51] -mt-7 w-full transform px-0.5 sm:px-0 lg:max-w-3xl -ml-2`}
                 >
                   <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                     <div className="relative flex flex-wrap bg-white pl-2 gap-1 py-3 sm:p-1 ">

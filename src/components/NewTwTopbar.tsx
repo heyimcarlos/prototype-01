@@ -33,13 +33,11 @@ export default function NewTwTopbar() {
               <div className="flex px-2 lg:px-0">
                 <div className="flex flex-shrink-0 items-center -ml-[0.5rem] -mt-[0.1rem] -mr-[0.5rem]">
                   <Link href="/" className="">
-                    <a>
-                      <span className="sr-only">ntornos</span>
-                      <div className="font-['Libre_Baskerville'] text-3xl ml-0 inline md:text-3xl md:-ml-1">
-                        <span className="text-indigo-600">n</span>
-                        <span className="text-black">tornos</span>
-                      </div>
-                    </a>
+                    <span className="sr-only">ntornos</span>
+                    <div className="font-['Libre_Baskerville'] text-3xl ml-0 inline md:text-3xl md:-ml-1">
+                      <span className="text-indigo-600">n</span>
+                      <span className="text-black">tornos</span>
+                    </div>
                   </Link>
                 </div>
 
@@ -180,7 +178,7 @@ export default function NewTwTopbar() {
             </div>
           </div>
 
-          <Disclosure.Panel className="lg:hidden fixed z-40 bg-white w-full border-b-2">
+          <Disclosure.Panel className="lg:hidden fixed z-[52] bg-white w-full border-b-2">
             <div className="space-y-1 pt-2 pb-3">
               {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800" */}
               <Disclosure.Button

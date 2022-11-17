@@ -12,20 +12,24 @@ const MobilePreviewListing = ({ listing, setOpen }) => {
       }}
       className="h-[8rem] w-[90%] rounded-xl bg-white fixed bottom-0 mb-[4rem] flex overflow-hidden shadow-2xl"
     >
-      <div className="h-[8.5rem] w-[8rem] absolute">
-        <Image src={house} alt="" layout="fill" />
+      <div className="h-[8.5rem] w-[40%] flex">
+        <Image src={house} alt="" />
       </div>
-      <div className="absolute right-0 mr-[1.4rem] mt-3 text-black leading-5 text-[15px]">
-        <span className="">Santo Domingo</span>
-        <HeartIcon className="h-5 w-5 inline ml-12" />
-        <span className="block">Dominican Republic</span>
-      </div>
-      <div className="absolute right-0 bottom-0 mr-[1.8rem] mb-[1rem] text-black leading-5 text-[15px]">
-        <span className="block">
-          <b>4</b> bd | <b>3.5</b> ba | <b>1600</b> sqft
-        </span>
+      <div className="h-full w-[60%] ml-2 mt-2 flex">
+        <div className="h-auto w-[85%]">
+          <span className="">Bella Vista</span>
+          <span className="block">Santo Domingo</span>
+        </div>
+        <div className="h-auto w-[15%] flex justify-end">
+          <HeartIcon className="h-5 w-5 mr-2" />
+        </div>
+        <div className="absolute bottom-0  mb-2 text-black leading-5 text-[15px]">
+          <span className="block">
+            <b>4</b> bd | <b>3.5</b> ba | <b>1600</b> sqft
+          </span>
 
-        <span className="block">${listing.price}</span>
+          <span className="block">${listing.price}</span>
+        </div>
       </div>
     </div>
   );

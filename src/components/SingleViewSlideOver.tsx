@@ -35,7 +35,7 @@ const SingleViewSlideOver = ({ open, setOpen, listing }) => {
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-full mt-[5.1rem]">
+                <Dialog.Panel className="pointer-events-auto w-full h-[calc(100vh-48px-33.4px)] bottom-0 fixed">
                   <div className="flex h-full w-full flex-col bg-white">
                     <div className="w-full h-auto">
                       <div className="fixed z-10 right-0 mt-3 mr-3 flex h-7 items-center">
@@ -58,7 +58,7 @@ const SingleViewSlideOver = ({ open, setOpen, listing }) => {
                             <div>
                               <div className="flex justify-end">
                                 <div className="flex justify-start w-full">
-                                  <h3 className="text-xl font-bold text-gray-900 sm:text-2xl">
+                                  <h3 className="text-xl font-bold text-gray-900 sm:text-2xl mt-[0.15rem]">
                                     ${listing.price}
                                   </h3>
                                   <h3 className="ml-4 pt-2 text-sm flex">

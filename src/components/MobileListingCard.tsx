@@ -4,7 +4,7 @@ import { Listing } from "@prisma/client";
 
 const MobileListingCard = ({ name, description, price }: Listing) => {
   return (
-    <div className="card w-full h-[16.5rem] shadow-md rounded border-black/[.1] border-[1px] ">
+    <div className="card w-full h-auto shadow-md rounded border-black/[.1] border-[1px]">
       <div className="">
         <Image
           src="https://placeimg.com/400/225/arch"

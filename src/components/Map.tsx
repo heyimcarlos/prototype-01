@@ -401,6 +401,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
                 <ArrowPathIcon className="h-4 w-4" />
               </button>
             )}
+
             {drawShow && (
               <button
                 className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 ml-[11rem] rounded-lg border-2 border-black"
@@ -469,6 +470,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
                 setGlobalHideTrue();
                 setCustomPolyBounds(e.features[0]?.geometry.coordinates);
                 setShowCustomSearchTrue();
+                setSearchTrue();
               }}
               onUpdate={(e) => {
                 setCustomPolyBounds(e.features[0]?.geometry.coordinates);

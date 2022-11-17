@@ -30,7 +30,7 @@ const SectorsSelected = () => {
   return (
     <>
       {isMobile && (
-        <div className=" pt-[0.16rem] fixed z-30">
+        <div className=" pt-[0.16rem] fixed z-[51]">
           {sectors.length > 0 && (
             <div className={`flex ${isMobile ? "" : "ml-1"}`}>
               <SectorsFlyoutMenu />

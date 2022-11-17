@@ -61,19 +61,25 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
             setOpen={setOpen}
           />
         </div>
-        {listing && (
+        {/* {listing && (
           <SlideOver open={open} setOpen={setOpen} listing={listing} />
-        )}
+        )} */}
 
-        {leftListing && (
+        {/* {leftListing && (
           <LeftSlideOver
             open={leftSlideOver}
             setOpen={setLeftSlideOver}
             listing={leftListing}
           />
-        )}
+        )} */}
 
-        <SingleViewSlideOver open={open} setOpen={setOpen} listing={listing} />
+        {listing && (
+          <SingleViewSlideOver
+            open={open}
+            setOpen={setOpen}
+            listing={listing}
+          />
+        )}
 
         {/* <SlideOver open={open} setOpen={setOpen} listing={listing} /> */}
 
