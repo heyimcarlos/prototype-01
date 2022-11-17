@@ -63,7 +63,7 @@ model VerificationToken {
 }
 
 model ListingLocation {
-  id               Int           @id @default(autoincrement())
+  id               Int                       @id @default(autoincrement())
   name             String
   city             String
   state            String
@@ -71,12 +71,14 @@ model ListingLocation {
   lat              String
   lng              String
   formattedAddress String
-  googlePlaceId    String        @unique
-  neighborhood     Neighborhood? @relation(fields: neighborhoodId, references: [id])
+  googlePlaceId    String                    @unique
+  neighborhood     Neighborhood?             @relation(fields: neighborhoodId, references: [id])
   neighborhoodId   Int?
   listings         Listing[]
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  status           ListingLocationStatus     @default(PUBLISHED)
+  visibility       ListingLocationVisibility @default(PUBLIC)
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
 }
 
 model Neighborhood {
@@ -87,31 +89,54 @@ model Neighborhood {
   lat              String
   lng              String
   listingLocations ListingLocation[]
+  status           Boolean           @default(true)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 }
 
 model Listing {
-  id                Int             @id @default(autoincrement())
+  id                Int               @id @default(autoincrement())
   name              String
-  slug              String          @unique
+  slug              String            @unique
   bio               String
   price             Int
-  currency          Currency        @default(DOP)
+  currency          Currency          @default(DOP)
   bedrooms          Int
   fullBathrooms     Int
   halfBathrooms     Int
   squareFeet        Int
   listingType       ListingType
   propertyType      PropertyType
-  listingLocation   ListingLocation @relation(fields: [listingLocationId], references: [id])
+  listingLocation   ListingLocation   @relation(fields: [listingLocationId], references: [id])
   listingLocationId Int
   userId            Int
-  user              User            @relation(fields: [userId], references: [id])
-  listingDetail     ListingDetail?  @relation(fields: [listingDetailId], references: [id])
-  listingDetailId   Int?            @unique
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  user              User              @relation(fields: [userId], references: [id])
+  listingDetail     ListingDetail?    @relation(fields: [listingDetailId], references: [id])
+  listingDetailId   Int?              @unique
+  status            ListingStatus     @default(ARCHIVED)
+  visibility        ListingVisibility @default(PUBLIC)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}
+
+enum ListingVisibility {
+  PUBLIC
+  HIDDEN
+}
+
+enum ListingStatus {
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ListingLocationVisibility {
+  PUBLIC
+  HIDDEN
+}
+
+enum ListingLocationStatus {
+  PUBLISHED
+  ARCHIVED
 }
 
 model ListingDetail {
