@@ -10,23 +10,17 @@ import Divider from "@/components/Divider";
 import { Avatar, AvatarMenu } from "../Avatar";
 import { trpc } from "@/utils/trpc";
 
-// @TODO: Make logo its own component
-
 const navigation = [
   { name: "Sell", href: "#" },
   { name: "Favorites", href: "#" },
   { name: "Agents", href: "#" },
 ];
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 const Navbar = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const { data, isLoading } = trpc.user.me.useQuery();
-  
+
   if (!data || isLoading) {
     return <div>Loading...</div>;
   }
