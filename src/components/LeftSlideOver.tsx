@@ -234,7 +234,7 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
                           </dt>
                           <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 sm:ml-6">
                             <span>{listing.name}</span>
-                            <p>{listing.description}</p>
+                            {/*<p>{listing.description}</p>*/}
                           </dd>
                         </div>
                         <div id="overview" className="sm:flex sm:px-6 sm:py-5">
