@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-import { classNames } from "@/lib/classNames";
+import classNames from "@/lib/classNames";
 
 const FlyoutMenu: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
