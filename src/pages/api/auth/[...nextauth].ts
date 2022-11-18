@@ -11,7 +11,7 @@ import { env } from "../../../env/server.mjs";
 import nodemailer, { type TransportOptions } from "nodemailer";
 import { smtpConfig } from "@/lib/smtpConfig";
 import { html, text } from "@/lib/emailTemplate";
-import type { User_role } from "@prisma/client";
+import type { UserPermissionRole } from "@prisma/client";
 
 const transporter = nodemailer.createTransport<TransportOptions>(
   smtpConfig.transport as TransportOptions
@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport<TransportOptions>(
 
 type NtornosSessionUser = User & {
   avatar?: string;
-  role: User_role;
+  role: UserPermissionRole;
   id: number;
 };
 

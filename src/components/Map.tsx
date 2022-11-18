@@ -50,6 +50,7 @@ import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { ArrowPathIcon, ListBulletIcon } from "@heroicons/react/20/solid";
 import MobileListingsSlideOver from "@/components/MobileListingsSlideOver";
 import type { NeighborhoodsType } from "@/pages/map";
+import Trpc from "@/pages/api/trpc/[trpc].js";
 
 type MapProps = {
   initialViewport: {
@@ -184,21 +185,34 @@ const Map = ({
     }
   };
 
-  const placeMutation = trpc.useMutation(["map.place"], {
+  const neighborhoodMutation = trpc.map.public.getNeighborhood.useMutation({
     onSuccess: (data) => {
-      if (!names.includes(data.name)) {
-        addSector({
-          name: data.name,
-          bounds: data.bounds,
-          listings: data.listing,
-        });
-      }
-
-      const placeAsFeature = transformPlaceToFeature(data);
-      if (placeAsFeature) fitBounds(placeAsFeature);
-      setListings(data.listing);
+      console.log("data", data);
+      // if (!names.includes(data.name)) {
+      // addSector({
+      //   name: data.name,
+      //   bounds: data.bounds,
+      //   listings: data.listing,
+      // });
+      // }
     },
   });
+
+  // const placeMutation = trpc.useMutation(["map.place"], {
+  //   onSuccess: (data) => {
+  //     if (!names.includes(data.name)) {
+  //       addSector({
+  //         name: data.name,
+  //         bounds: data.bounds,
+  //         listings: data.listing,
+  //       });
+  //     }
+
+  //     const placeAsFeature = transformPlaceToFeature(data);
+  //     if (placeAsFeature) fitBounds(placeAsFeature);
+  //     setListings(data.listing);
+  //   },
+  // });
 
   useEffect(() => {
     if (sectors.length > 1) {
@@ -263,12 +277,12 @@ const Map = ({
       {}
     );
     const feature = queryRenderedFeatures[0];
-    console.log("feature", feature);
+    // console.log("feature", feature);
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       if (!names.includes(feature.properties.name)) {
         const slug = slugify(feature.properties.name);
-        placeMutation.mutate({ slug });
+        neighborhoodMutation.mutate({ slug });
       }
     } else {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
@@ -512,7 +526,7 @@ const Map = ({
             <CustomMarker
               key={`marker-${neighborhood.id}`}
               neighborhood={neighborhood}
-              onClick={placeMutation.mutate}
+              onClick={neighborhoodMutation.mutate}
               names={names}
             />
           ))}

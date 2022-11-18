@@ -50,6 +50,7 @@ async function getUserFromSession({
   const avatar = user.avatar || defaultAvatarSrc({ email });
   const locale = user.locale || getLocaleFromHeaders(req);
 
+  console.log("locale", locale);
   return {
     ...user,
     avatar,
@@ -64,15 +65,17 @@ async function getUserFromSession({
  **/
 export const createContext = async ({ req, res }: CreateContextOptions) => {
   // Get the session from the server using the unstable_getServerSession wrapper function
+  console.log("Create context function is firing");
   const session = await getServerAuthSession({ req, res });
   const user = await getUserFromSession({ session, req });
-  const locale = user?.locale ?? getLocaleFromHeaders(req);
+  // const locale = user?.locale ?? getLocaleFromHeaders(req);
+  // console.log("locale", locale);
 
   return {
     session,
     prisma,
     user,
-    locale,
+    // locale,
   };
 };
 
