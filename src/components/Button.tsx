@@ -1,4 +1,4 @@
-import { classNames } from "@/lib/classNames";
+import classNames from "@/lib/classNames";
 import React from "react";
 
 type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {

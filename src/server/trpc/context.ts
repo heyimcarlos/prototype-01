@@ -1,16 +1,15 @@
-// src/server/router/context.ts
+import { type inferAsyncReturnType, type Maybe } from "@trpc/server";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { type Session } from "next-auth";
+import { type GetServerSidePropsContext } from "next";
+
 import { getLocaleFromHeaders } from "@/lib/i18n";
 import { defaultAvatarSrc } from "@/lib/profile";
-import * as trpc from "@trpc/server";
-import type { Maybe } from "@trpc/server";
-import type * as trpcNext from "@trpc/server/adapters/next";
-import type { GetServerSidePropsContext } from "next";
-import type { Session } from "next-auth";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
 import { prisma } from "../db/client";
 
-type CreateContextOpts =
-  | trpcNext.CreateNextContextOptions
+type CreateContextOptions =
+  | CreateNextContextOptions
   | GetServerSidePropsContext;
 
 async function getUserFromSession({
@@ -18,7 +17,7 @@ async function getUserFromSession({
   req,
 }: {
   session: Maybe<Session>;
-  req: CreateContextOpts["req"];
+  req: CreateContextOptions["req"];
 }) {
   if (!session?.user?.id) {
     return null;
@@ -37,6 +36,7 @@ async function getUserFromSession({
       bio: true,
       plan: true,
       role: true,
+      createdAt: true,
     },
   });
 
@@ -62,9 +62,7 @@ async function getUserFromSession({
  * This is the actual context you'll use in your router
  * @link https://trpc.io/docs/context
  **/
-export const createContext = async (opts: CreateContextOpts) => {
-  const { req, res } = opts;
-
+export const createContext = async ({ req, res }: CreateContextOptions) => {
   // Get the session from the server using the unstable_getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
   const user = await getUserFromSession({ session, req });
@@ -78,6 +76,4 @@ export const createContext = async (opts: CreateContextOpts) => {
   };
 };
 
-type Context = trpc.inferAsyncReturnType<typeof createContext>;
-
-export const createRouter = () => trpc.router<Context>();
+export type Context = inferAsyncReturnType<typeof createContext>;

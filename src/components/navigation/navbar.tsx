@@ -6,12 +6,9 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Logo from "@/components/Logo";
-import Image from "next/image";
-import defaultAvatar from "../../../public/assets/images/user.png";
 import Divider from "@/components/Divider";
-import { AvatarMenu } from "../Avatar";
-
-// @TODO: Make logo its own component
+import { Avatar, AvatarMenu } from "../Avatar";
+import { trpc } from "@/utils/trpc";
 
 const navigation = [
   { name: "Sell", href: "#" },
@@ -19,13 +16,14 @@ const navigation = [
   { name: "Agents", href: "#" },
 ];
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 const Navbar = () => {
   const { data: session } = useSession();
   const router = useRouter();
+  const { data, isLoading } = trpc.user.me.useQuery();
+
+  if (!data || isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const handleSignOut = async () => {
     const data = await signOut({ redirect: false, callbackUrl: "/" });
@@ -80,7 +78,11 @@ const Navbar = () => {
                   >
                     Dashboard
                   </Link>
-                  <AvatarMenu />
+                  <AvatarMenu
+                    user={data}
+                    alt={`${data.name} avatar`}
+                    size={10}
+                  />
                   {/*
                   <button
                     className="text-base font-medium text-white px-3 py-2 hover:text-indigo-600 hover:bg-white hover:rounded-md"
@@ -164,15 +166,10 @@ const Navbar = () => {
                       <div className="flex items-end justify-between flex-wrap">
                         <div className="inline-flex items-center">
                           <div className="flex-shrink-0">
-                            <Image
-                              className={classNames(
-                                session.user?.image ?? "p-[2px]",
-                                "h-10 w-10 rounded-full overflow-hidden aspect-square bg-indigo-500"
-                              )}
-                              src={session.user?.image || defaultAvatar}
-                              alt="Avatar"
-                              width={720}
-                              height={720}
+                            <Avatar
+                              user={data}
+                              alt={`${data.name} avatar`}
+                              size={12}
                             />
                           </div>
                           <div className="ml-3">
