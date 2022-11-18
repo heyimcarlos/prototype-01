@@ -11,6 +11,7 @@ import MapboxMap, {
   type MapRef,
   type MapLayerMouseEvent,
   Marker,
+  PointLike,
 } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
@@ -18,7 +19,7 @@ import type { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
 
-import type { Coordinate, Listing, Place } from "@prisma/client";
+import type { Listing, ListingLocation } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import slugify from "@/lib/slugify";
 import { transformIntToMoney } from "@/lib/transformInt";
@@ -48,6 +49,7 @@ import { BackspaceIcon } from "@heroicons/react/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { ArrowPathIcon, ListBulletIcon } from "@heroicons/react/20/solid";
 import MobileListingsSlideOver from "@/components/MobileListingsSlideOver";
+import type { NeighborhoodsType } from "@/pages/map";
 
 type MapProps = {
   initialViewport: {
@@ -58,21 +60,16 @@ type MapProps = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   mapRef: RefObject<MapRef>;
-  places: (Place & {
-    center: Coordinate;
-    listing: (Listing & {
-      location: Coordinate;
-    })[];
-  })[];
+  neighborhoods: NeighborhoodsType;
 };
 
 type CustomMarkerProps = {
-  place: MapProps["places"][number];
+  neighborhood: MapProps["neighborhoods"][number];
   onClick: ({ slug }: { slug: string }) => void;
   names: string[];
 };
 
-const CustomMarker = ({ place, onClick, names }: CustomMarkerProps) => {
+const CustomMarker = ({ neighborhood, onClick, names }: CustomMarkerProps) => {
   const [show, setShow] = useState(true);
   const globalShow = useGlobalShow((state) => state.globalShow);
   const globalHide = useGlobalHide((state) => state.globalHide);
@@ -80,28 +77,42 @@ const CustomMarker = ({ place, onClick, names }: CustomMarkerProps) => {
 
   if (globalShow === true && show === false) setShow(true);
 
+  let amount = 0;
+  neighborhood.listingLocations.forEach((listingLocation) => {
+    if (listingLocation.listings.length > 1) {
+      amount += listingLocation.listings.length;
+    } else {
+      amount += 1;
+    }
+  });
+
+  let space;
+  const spaceOne: PointLike = [0, -10];
+  const spaceTwo: PointLike = [0, -19];
+  if (neighborhood.name === "Bella Vista") space = spaceOne;
+  if (neighborhood.name === "Evaristo Morales") space = spaceTwo;
+  if (neighborhood.name === "La Julia") space = spaceOne;
+  if (neighborhood.name === "El Manguito") space = spaceTwo;
+
   return (
     <>
-      {!globalHide && show && !names.includes(place.name) && (
+      {!globalHide && show && !names.includes(neighborhood.name) && (
         <Marker
           onClick={(e) => {
             // e.originalEvent.cancelBubble
             e.originalEvent.preventDefault();
             e.originalEvent.stopPropagation();
-            onClick({ slug: place.slug });
             setShow(false);
             setGlobalShowFalse();
           }}
           anchor="bottom"
-          key={`marker-${place.id}`}
-          longitude={place.center.longitude}
-          latitude={place.center.latitude}
-          offset={[0, -10]}
+          key={`marker-${neighborhood.id}`}
+          latitude={parseFloat(neighborhood.lat)}
+          longitude={parseFloat(neighborhood.lng)}
+          offset={space}
         >
           <div className="bg-indigo-600 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
-            <span className="text-sm font-semibold text-white">
-              {place.listing.length}
-            </span>
+            <span className="text-sm font-semibold text-white">{amount}</span>
           </div>
         </Marker>
       )}
@@ -109,7 +120,13 @@ const CustomMarker = ({ place, onClick, names }: CustomMarkerProps) => {
   );
 };
 
-const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
+const Map = ({
+  // listingLocations,
+  neighborhoods,
+  mapRef,
+  initialViewport,
+  setOpen,
+}: MapProps) => {
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
 
   const [curListingId, setCurListingId] = useState("");
@@ -120,10 +137,11 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
 
   // const deleteAllSectors = useSectors((state) => state.deleteAllSectors);
   const addSector = useSectors((state) => state.addSector);
-  const names: string[] = [];
   const sectors = useSectors((state) => state.sectors);
-  sectors.forEach((sector) => names.push(sector.name));
   const deleteThisSector = useSectors((state) => state.deleteThisSector);
+
+  const names: string[] = [];
+  sectors.forEach((sector) => names.push(sector.name));
 
   const setShowCustomSearchTrue = useShowCustomSearch(
     (state) => state.setShowCustomSearchTrue
@@ -212,29 +230,29 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
     }
   }, [sectors, mapRef]);
 
-  const handleListingClick = (
-    listing: MapProps["places"][number]["listing"][number]
-  ) => {
-    setCurListingId(String(listing.id));
-  };
+  // const handleListingClick = (
+  //   listing: MapProps["places"][number]["listing"][number]
+  // ) => {
+  //   setCurListingId(String(listing.id));
+  // };
 
   const showVisibleMarkers = () => {
     if (!mapRef.current) return;
     const map = mapRef.current.getMap();
     const bounds = map.getBounds();
     const listings = [];
-    for (const place of places) {
-      if (
-        bounds.contains({
-          lat: place.center.latitude,
-          lng: place.center.longitude,
-        })
-      ) {
-        listings.push(place.listing);
-      }
-    }
-    const flattened = listings.flat();
-    setListings(flattened);
+    // for (const place of places) {
+    //   if (
+    //     bounds.contains({
+    //       lat: place.center.latitude,
+    //       lng: place.center.longitude,
+    //     })
+    //   ) {
+    //     listings.push(place.listing);
+    //   }
+    // }
+    // const flattened = listings.flat();
+    // setListings(flattened);
   };
 
   const onClickMap = (event: MapLayerMouseEvent) => {
@@ -245,7 +263,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
       {}
     );
     const feature = queryRenderedFeatures[0];
-
+    console.log("feature", feature);
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       if (!names.includes(feature.properties.name)) {
@@ -268,6 +286,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
       } else {
       }
       setListing("");
+
       // const test = mapRef.current.getCenter();
       // mapRef.current.flyTo({
       //   center: [test.lng, test.lat],
@@ -288,7 +307,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
     const map = mapRef.current.getMap();
     const bounds = map.getBounds();
     const customListings = [] as (Listing & {
-      location: Coordinate;
+      // location: Coordinate;
     })[];
 
     for (const place of places) {
@@ -301,12 +320,12 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
         if (customPolyBounds) {
           const poly = turf.polygon(customPolyBounds as Position[][]);
 
-          place.listing.forEach((list) => {
-            const point = [list.location.longitude, list.location.latitude];
-            if (turf.booleanPointInPolygon(point, poly)) {
-              customListings.push(list);
-            }
-          });
+          // place.listing.forEach((list) => {
+          //   const point = [list.location.longitude, list.location.latitude];
+          //   if (turf.booleanPointInPolygon(point, poly)) {
+          //     customListings.push(list);
+          //   }
+          // });
         }
       }
     }
@@ -323,7 +342,10 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
 
   const [listSlide, setListSlide] = useState(false);
 
-  console.log("listSlide", listSlide);
+  // console.log("listSlide", listSlide);
+
+  // console.log("listingLocations", listingLocations);
+
   return (
     <>
       <div className="w-full h-full">
@@ -341,7 +363,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
           mapStyle="mapbox://styles/mapbox/streets-v11"
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
         >
-          <div className="h-full w-full flex justify-center items-start">
+          {/* <div className="h-full w-full flex justify-center items-start">
             <button
               onClick={() => {
                 setDrawShowTrue();
@@ -424,13 +446,13 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
             >
               <ListBulletIcon className="h-6 w-6" />
             </div>
-          </div>
+          </div> */}
 
-          <MobileListingsSlideOver
+          {/* <MobileListingsSlideOver
             listSlide={listSlide}
             setListSlide={setListSlide}
             setOpen={setOpen}
-          />
+          /> */}
 
           {/* <div className="h-full w-full">
             <div
@@ -460,7 +482,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
             style={{ marginBottom: "2rem" }}
           /> */}
 
-          {drawShow && (
+          {/* {drawShow && (
             <DrawControl
               position="bottom-right"
               displayControlsDefault={false}
@@ -481,15 +503,15 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
                 setDrawShowFalse();
               }}
             />
-          )}
+          )} */}
 
           {/* INFO: Sector main cluster */}
-          {places?.map((place) => (
+          {neighborhoods?.map((neighborhood) => (
             // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
 
             <CustomMarker
-              key={`marker-${place.id}`}
-              place={place}
+              key={`marker-${neighborhood.id}`}
+              neighborhood={neighborhood}
               onClick={placeMutation.mutate}
               names={names}
             />
@@ -497,12 +519,12 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
 
           {/* @INFO: Within bounds listings */}
 
-          {sectors.map((sector) =>
+          {/* {sectors.map((sector) =>
             sector.listings.map((listing) => (
               <Marker
                 onClick={(e) => {
                   e.originalEvent.stopPropagation();
-                  handleListingClick(listing);
+                  // handleListingClick(listing);
 
                   setListing(listing);
                 }}
@@ -526,7 +548,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
                 </div>
               </Marker>
             ))
-          )}
+          )} */}
 
           {sectors.map((sector) => (
             <Source
