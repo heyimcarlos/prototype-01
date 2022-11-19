@@ -1,25 +1,17 @@
-import type { Coordinate, Listing } from "@prisma/client";
+import type { Listing, ListingLocation } from "@prisma/client";
 
 import create from "zustand";
 
 type SidebarState = {
   isOpen: boolean;
-  listings: (Listing & {
-    location: Coordinate;
-  })[];
-  selectedListing: Listing | null;
+  listings: (ListingLocation & { listings: Listing[] })[];
+  selectedListing: (ListingLocation & { listings: Listing[] })[] | null;
   toggle: () => void;
   setListings: (
-    listings: (Listing & {
-      location: Coordinate;
-    })[]
+    listings: (ListingLocation & { listings: Listing[] })[]
   ) => void;
   setSelectedListing: (
-    listing:
-      | (Listing & {
-          location: Coordinate;
-        })
-      | null
+    listing: (ListingLocation & { listings: Listing[] })[] | null
   ) => void;
 };
 
@@ -28,16 +20,9 @@ export const useSidebar = create<SidebarState>((set) => ({
   listings: [],
   selectedListing: null,
   toggle: () => set((state) => ({ isOpen: !state.isOpen })),
-  setListings: (
-    listings: (Listing & {
-      location: Coordinate;
-    })[]
-  ) => set(() => ({ listings })),
+  setListings: (listings: (ListingLocation & { listings: Listing[] })[]) =>
+    set(() => ({ listings })),
   setSelectedListing: (
-    listing:
-      | (Listing & {
-          location: Coordinate;
-        })
-      | null
+    listing: (ListingLocation & { listings: Listing[] })[] | null
   ) => set(() => ({ selectedListing: listing })),
 }));

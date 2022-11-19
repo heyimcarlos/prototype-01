@@ -92,14 +92,17 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         /> */}
 
         {listing && (
-          <MobilePreviewListing listing={listing} setOpen={setOpen} />
+          <MobilePreviewListing
+            listing={listing as ListingLocation & { listings: Listing[] }}
+            setOpen={setOpen}
+          />
         )}
 
         <div className="hidden min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
           {listings.length < 1 && sectors.length < 1 && (
             <div>No listing to show move the map</div>
           )}
-          {sectors.map((sector) =>
+          {/* {sectors.map((sector) =>
             sector.listings.map((listing) => (
               <div
                 key={listing.id}
@@ -111,9 +114,9 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
                 <ListingCard {...listing} />
               </div>
             ))
-          )}
+          )} */}
 
-          {sectors.length < 1 &&
+          {/* {sectors.length < 1 &&
             listings.map((listing) => (
               <div
                 key={listing.id}
@@ -124,7 +127,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
               >
                 <ListingCard {...listing} />
               </div>
-            ))}
+            ))} */}
         </div>
       </main>
     </>

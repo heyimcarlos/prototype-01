@@ -6,6 +6,8 @@ import { useSidebar } from "@/stores/useSidebar";
 import { useSectors } from "@/stores/useSectors";
 import MobileListingCard from "./MobileListingCard";
 import { useSelectedListing } from "@/stores/useSelectedListing";
+import { divide } from "lodash";
+import { Listing } from "@prisma/client";
 // import { getServerSideProps } from "@/pages/map";
 
 const MobileListingsSlideOver = ({ listSlide, setListSlide, setOpen }) => {
@@ -16,7 +18,7 @@ const MobileListingsSlideOver = ({ listSlide, setListSlide, setOpen }) => {
   let num = 0;
   sectors.forEach((sect) => {
     console.log("sect", sect);
-    num += sect.listings.length;
+    num += sect.listingLocations.length;
   });
   console.log("num", num);
   return (
@@ -68,19 +70,49 @@ const MobileListingsSlideOver = ({ listSlide, setListSlide, setOpen }) => {
                       </div>
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                      {/* Replace with your content
-                      <div className="absolute inset-0 px-4 sm:px-6">
-                        <div
-                          className="h-full border-2 border-dashed border-gray-200"
-                          aria-hidden="true"
-                        />
-                      </div>
-                      /End replace */}
-                      {listings.length < 1 && sectors.length < 1 && (
+                      {/* {listings.length < 1 && sectors.length < 1 && (
                         <div>No listing to show move the map</div>
-                      )}
+                      )} */}
+
                       {sectors.map((sector) =>
-                        sector.listings.map((listing) => (
+                        sector.listingLocations.map((listingLocation) => {
+                          if (listingLocation.listings.length === 1) {
+                            let listing: Listing | null;
+
+                            if (listingLocation.listings[0])
+                              listing = listingLocation.listings[0];
+                            else listing = null;
+
+                            if (!listing) return;
+
+                            return (
+                              <div
+                                className="mb-2"
+                                key={listing.id}
+                                onClick={() => {
+                                  setOpen(true);
+                                  setListing(listing);
+                                  // setLeftListing(listing);
+                                  // setLeftSlideOver(true);
+                                }}
+                              >
+                                <MobileListingCard {...listing} />
+                              </div>
+                            );
+                          } else {
+                            return listingLocation.listings.map((property) => {
+                              return (
+                                <div key={property.id}>HELLO FORM NESTED</div>
+                              );
+                            });
+                          }
+                        })
+                      )}
+
+                      {/*PREVIOUS ONE BELOW*/}
+
+                      {/* {sectors.map((sector) =>
+                        sector.listingLocations.map((listing) => (
                           <div
                             className="mb-2"
                             key={listing.id}
@@ -91,11 +123,34 @@ const MobileListingsSlideOver = ({ listSlide, setListSlide, setOpen }) => {
                               // setLeftSlideOver(true);
                             }}
                           >
-                            <MobileListingCard {...listing} />
+                            <MobileListingCard listing={listing} />
                           </div>
                         ))
-                      )}
-                      {sectors.length < 1 &&
+                      )} */}
+
+                      {/*SECOND CALL IF THERE ARE NOT NEIGHBORHOODS SELECTED*/}
+
+                      {/* {sectors.length < 1 &&
+                        listings.forEach((listing) => {
+                          return listing.listings.map((property) => (
+                            <div
+                              className="flex justify-center mb-2"
+                              key={listing.id}
+                              onClick={() => {
+                                setOpen(true);
+                                setListing(property);
+                                // setLeftListing(listing);
+                                // setLeftSlideOver(true);
+                              }}
+                            >
+                              <MobileListingCard {...property} />
+                            </div>
+                          ));
+                        })} */}
+
+                      {/*PREVIOUS ONE BELOW*/}
+
+                      {/* {sectors.length < 1 &&
                         listings.map((listing) => (
                           <div
                             className="flex justify-center mb-2"
@@ -107,9 +162,9 @@ const MobileListingsSlideOver = ({ listSlide, setListSlide, setOpen }) => {
                               // setLeftSlideOver(true);
                             }}
                           >
-                            <MobileListingCard {...listing} />
+                            <MobileListingCard listing={listing} />
                           </div>
-                        ))}
+                        ))} */}
                     </div>
                   </div>
                 </Dialog.Panel>

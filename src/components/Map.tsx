@@ -95,14 +95,18 @@ const CustomMarker = ({ neighborhood, onClick, names }: CustomMarkerProps) => {
   if (neighborhood.name === "La Julia") space = spaceOne;
   if (neighborhood.name === "El Manguito") space = spaceTwo;
 
+  const slug = neighborhood.slug;
+
   return (
     <>
       {!globalHide && show && !names.includes(neighborhood.name) && (
         <Marker
           onClick={(e) => {
             // e.originalEvent.cancelBubble
-            e.originalEvent.preventDefault();
+            // e.originalEvent.preventDefault();
+
             e.originalEvent.stopPropagation();
+            onClick({ slug });
             setShow(false);
             setGlobalShowFalse();
           }}
@@ -188,31 +192,19 @@ const Map = ({
   const neighborhoodMutation = trpc.map.public.getNeighborhood.useMutation({
     onSuccess: (data) => {
       console.log("data", data);
-      // if (!names.includes(data.name)) {
-      // addSector({
-      //   name: data.name,
-      //   bounds: data.bounds,
-      //   listings: data.listing,
-      // });
-      // }
+      if (!names.includes(data.name)) {
+        addSector({
+          name: data.name,
+          bounds: data.bounds,
+          listingLocations: data.listingLocations,
+        });
+      }
+
+      const neighborhoodAsFeature = transformPlaceToFeature(data);
+      if (neighborhoodAsFeature) fitBounds(neighborhoodAsFeature);
+      setListings(data.listingLocations);
     },
   });
-
-  // const placeMutation = trpc.useMutation(["map.place"], {
-  //   onSuccess: (data) => {
-  //     if (!names.includes(data.name)) {
-  //       addSector({
-  //         name: data.name,
-  //         bounds: data.bounds,
-  //         listings: data.listing,
-  //       });
-  //     }
-
-  //     const placeAsFeature = transformPlaceToFeature(data);
-  //     if (placeAsFeature) fitBounds(placeAsFeature);
-  //     setListings(data.listing);
-  //   },
-  // });
 
   useEffect(() => {
     if (sectors.length > 1) {
@@ -295,11 +287,11 @@ const Map = ({
           return turf.booleanPointInPolygon(point, poly);
         })
       ) {
-        setListing("");
+        setListing(null);
         return;
       } else {
       }
-      setListing("");
+      setListing(null);
 
       // const test = mapRef.current.getCenter();
       // mapRef.current.flyTo({
@@ -377,7 +369,7 @@ const Map = ({
           mapStyle="mapbox://styles/mapbox/streets-v11"
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
         >
-          {/* <div className="h-full w-full flex justify-center items-start">
+          <div className="h-full w-full flex justify-center items-start">
             <button
               onClick={() => {
                 setDrawShowTrue();
@@ -460,13 +452,13 @@ const Map = ({
             >
               <ListBulletIcon className="h-6 w-6" />
             </div>
-          </div> */}
+          </div>
 
-          {/* <MobileListingsSlideOver
+          <MobileListingsSlideOver
             listSlide={listSlide}
             setListSlide={setListSlide}
             setOpen={setOpen}
-          /> */}
+          />
 
           {/* <div className="h-full w-full">
             <div
@@ -526,28 +518,35 @@ const Map = ({
             <CustomMarker
               key={`marker-${neighborhood.id}`}
               neighborhood={neighborhood}
-              onClick={neighborhoodMutation.mutate}
+              onClick={() => {
+                console.log("HELLOOOOOOO");
+                const slug = neighborhood.slug;
+                neighborhoodMutation.mutate({ slug });
+              }}
               names={names}
             />
           ))}
 
           {/* @INFO: Within bounds listings */}
 
-          {/* {sectors.map((sector) =>
-            sector.listings.map((listing) => (
+          {sectors.map((sector) =>
+            sector.listingLocations.map((listing) => (
               <Marker
                 onClick={(e) => {
                   e.originalEvent.stopPropagation();
                   // handleListingClick(listing);
 
-                  setListing(listing);
+                  if (listing.listings.length < 2) {
+                    setListing(listing);
+                  } else {
+                  }
                 }}
-                latitude={listing.location.latitude}
-                longitude={listing.location.longitude}
+                latitude={parseFloat(listing.lat)}
+                longitude={parseFloat(listing.lng)}
                 key={`listing-${listing.id}`}
               >
                 <div
-                  className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center`}
+                  className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center border-[0.05rem] border-black`}
                   style={{
                     opacity: curListingId
                       ? Number(curListingId) === listing.id
@@ -557,12 +556,20 @@ const Map = ({
                   }}
                 >
                   <span className="text-sm">
-                    {transformIntToMoney(listing.price)}
+                    {listing.listings.length > 1
+                      ? `${listing.listings.length} Listings`
+                      : listing.listings[0]?.price
+                      ? `$${new Intl.NumberFormat("en-US", {
+                          maximumFractionDigits: 1,
+                          notation: "compact",
+                          compactDisplay: "short",
+                        }).format(listing.listings[0]?.price)}`
+                      : null}
                   </span>
                 </div>
               </Marker>
             ))
-          )} */}
+          )}
 
           {sectors.map((sector) => (
             <Source

@@ -1,15 +1,15 @@
-import type { Coordinate, Listing } from "@prisma/client";
+import type { Listing, ListingLocation } from "@prisma/client";
 import create from "zustand";
 
-export type ListingWithLocation = Listing & {
-  location: Coordinate;
-};
+// export type ListingWithLocation = Listing & {
+//   location: Coordinate;
+// };
 
 export type SelectedListingState = {
-  listing: ListingWithLocation | null;
-  setListing: (listing: ListingWithLocation) => void;
-  leftListing: ListingWithLocation | null;
-  setLeftListing: (listing: ListingWithLocation) => void;
+  listing: Listing | null;
+  setListing: (listing: Listing | null) => void;
+  leftListing: Listing | null;
+  setLeftListing: (listing: Listing | null) => void;
 };
 
 export const useSelectedListing = create<SelectedListingState>((set) => ({

@@ -1,4 +1,4 @@
-import type { Coordinate, Listing } from "@prisma/client";
+import type { Listing, ListingLocation } from "@prisma/client";
 import type { JSONValue } from "superjson/dist/types";
 import create from "zustand";
 
@@ -6,12 +6,13 @@ type SectorsState = {
   sectors: {
     name: string;
     bounds: JSONValue;
-    listings: (Listing & { location: Coordinate })[];
+    listingLocations: (ListingLocation & { listings: Listing[] })[];
+    // listings: (Listing & { location: Coordinate })[];
   }[];
   addSector: (sector: {
     name: string;
     bounds: JSONValue;
-    listings: (Listing & { location: Coordinate })[];
+    listingLocations: (ListingLocation & { listings: Listing[] })[];
   }) => void;
   deleteAllSectors: () => void;
   deleteThisSector: (
@@ -19,7 +20,7 @@ type SectorsState = {
       | {
           name: string;
           bounds: JSONValue;
-          listings: (Listing & { location: Coordinate })[];
+          listings: (ListingLocation & { listings: Listing[] })[];
         }
       | undefined
   ) => void;
@@ -32,6 +33,6 @@ export const useSectors = create<SectorsState>((set) => ({
   deleteAllSectors: () => set(() => ({ sectors: [] })),
   deleteThisSector: (sector) =>
     set((state) => ({
-      sectors: state.sectors.filter((sec) => sec !== sector),
+      sectors: state.sectors.filter((sec) => sec.name !== sector?.name),
     })),
 }));
