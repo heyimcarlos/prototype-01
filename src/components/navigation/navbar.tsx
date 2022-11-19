@@ -7,7 +7,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Logo from "@/components/Logo";
 import Divider from "@/components/Divider";
-import { Avatar, AvatarMenu } from "../Avatar";
+import { Avatar, UserPopover } from "../Avatar";
 import { trpc } from "@/utils/trpc";
 
 const navigation = [
@@ -19,18 +19,12 @@ const navigation = [
 export default function Navbar() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { data, isLoading, error } = trpc.user.me.useQuery(undefined, {
-    enabled: !!session,
+  const { data } = trpc.user.me.useQuery(undefined, {
+    enabled: status !== "loading" && status !== "unauthenticated",
   });
-
-  // if (status !== "authenticated") return null;
-
-  // console.log({ session, status });
-  // console.log({ data, isLoading });
 
   const handleSignOut = async () => {
     const data = await signOut({ redirect: false, callbackUrl: "/" });
-
     router.push(data.url);
   };
 
@@ -75,7 +69,7 @@ export default function Navbar() {
             {/*right side desktop*/}
             {status !== "loading" ? (
               <div className="hidden transition-opacity md:flex md:items-center md:space-x-2">
-                {session ? (
+                {status === "authenticated" ? (
                   <>
                     <Link
                       href={"/dashboard"}
@@ -83,7 +77,7 @@ export default function Navbar() {
                     >
                       Dashboard
                     </Link>
-                    <AvatarMenu />
+                    <UserPopover />
                   </>
                 ) : (
                   <button

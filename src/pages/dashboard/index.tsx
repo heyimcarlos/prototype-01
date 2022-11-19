@@ -46,7 +46,11 @@ const ProfileOverview = ({ user }: { user?: UserMeOutput }) => {
       <div className=" sm:flex sm:items-center sm:justify-between">
         <div className="sm:flex sm:space-x-5">
           <div className="flex-shrink-0 text-center">
-            <Avatar user={user} alt={`${user.name} Avatar`} size={20} />
+            <Avatar
+              user={user}
+              alt={`${user.name} Avatar`}
+              className="h-20 w-20"
+            />
           </div>
           <div className=" text-center mt-4 sm:my-auto  sm:pt-1 sm:text-left">
             <p className="text-sm font-medium text-gray-400">Welcome back,</p>
