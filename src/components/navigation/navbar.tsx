@@ -16,17 +16,21 @@ const navigation = [
   { name: "Agents", href: "#" },
 ];
 
-const Navbar = () => {
-  const { data: session } = useSession();
+export default function Navbar() {
   const router = useRouter();
-  const { data, isLoading } = trpc.user.me.useQuery();
+  const { data: session, status } = useSession();
+  const { data, isLoading, error } = trpc.user.me.useQuery(undefined, {
+    enabled: !!session,
+  });
 
-  if (!data || isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (status !== "authenticated") return null;
+
+  // console.log({ session, status });
+  // console.log({ data, isLoading });
 
   const handleSignOut = async () => {
     const data = await signOut({ redirect: false, callbackUrl: "/" });
+
     router.push(data.url);
   };
 
@@ -69,37 +73,28 @@ const Navbar = () => {
               </div>
             </div>
             {/*right side desktop*/}
-            <div className="hidden transition-opacity md:flex md:items-center md:space-x-2">
-              {session ? (
-                <>
-                  <Link
-                    href={"/dashboard"}
-                    className="text-base font-medium text-white px-3 py-2 hover:text-indigo-600 hover:bg-white hover:rounded-md"
-                  >
-                    Dashboard
-                  </Link>
-                  <AvatarMenu
-                    user={data}
-                    alt={`${data.name} avatar`}
-                    size={10}
-                  />
-                  {/*
+            {status !== "loading" ? (
+              <div className="hidden transition-opacity md:flex md:items-center md:space-x-2">
+                {session ? (
+                  <>
+                    <Link
+                      href={"/dashboard"}
+                      className="text-base font-medium text-white px-3 py-2 hover:text-indigo-600 hover:bg-white hover:rounded-md"
+                    >
+                      Dashboard
+                    </Link>
+                    <AvatarMenu />
+                  </>
+                ) : (
                   <button
-                    className="text-base font-medium text-white px-3 py-2 hover:text-indigo-600 hover:bg-white hover:rounded-md"
-                    onClick={handleSignOut}
+                    className="text-base font-semibold leading-none p-3 border rounded-2xl hover:rounded-md transition-all duration-300 text-indigo-600 bg-white"
+                    onClick={handleSignIn}
                   >
-                    Sign out
-                  </button>*/}
-                </>
-              ) : (
-                <button
-                  className="text-base font-semibold leading-none p-3 border rounded-2xl hover:rounded-md transition-all duration-300 text-indigo-600 bg-white"
-                  onClick={handleSignIn}
-                >
-                  Sign in
-                </button>
-              )}
-            </div>
+                    Sign in
+                  </button>
+                )}
+              </div>
+            ) : null}
           </nav>
         </div>
 
@@ -164,24 +159,25 @@ const Navbar = () => {
                   {session ? (
                     <div>
                       <div className="flex items-end justify-between flex-wrap">
-                        <div className="inline-flex items-center">
-                          <div className="flex-shrink-0">
-                            <Avatar
-                              user={data}
-                              alt={`${data.name} avatar`}
-                              size={12}
-                            />
-                          </div>
-                          <div className="ml-3">
-                            <div className="text-base font-medium">
-                              {session.user?.name ??
-                                session.user?.email?.split("@")[0]}
+                        {data ? (
+                          <div className="inline-flex items-center">
+                            <div className="flex-shrink-0">
+                              <Avatar
+                                user={data}
+                                alt={`${data.name} avatar`}
+                                size={12}
+                              />
                             </div>
-                            <div className="text-sm font-medium text-gray-400">
-                              {session.user?.email}
+                            <div className="ml-3">
+                              <div className="text-base font-medium">
+                                {data.name ?? data.email?.split("@")[0]}
+                              </div>
+                              <div className="text-sm font-medium text-gray-400">
+                                {data.email}
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        ) : null}
                         <Link
                           href={"/dashboard"}
                           className="text-base mt-4 font-medium relative px-4 py-2 rounded-md hover:text-indigo-600 shadow-sm bg-custom-white hover:bg-white hover:rounded-md border border-gray-700"
@@ -215,6 +211,4 @@ const Navbar = () => {
       </Popover>
     </div>
   );
-};
-
-export default Navbar;
+}

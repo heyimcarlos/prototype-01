@@ -134,9 +134,13 @@ const publicMapRouter = router({
   getNeighborhood: publicProcedure
     .input(z.object({ slug: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      console.log("context", ctx);
       const neighborhood = await ctx.prisma.neighborhood.findFirst({
         where: {
           slug: input.slug,
+        },
+        include: {
+          listingLocations: { include: { listings: true } },
         },
       });
 

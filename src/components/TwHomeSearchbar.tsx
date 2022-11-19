@@ -20,15 +20,12 @@ const TwHomeSearchbar = () => {
 
   if (!isLoaded) return <div>loading...</div>;
 
-  console.log("autocomplete", autocomplete);
-
   const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
     setAutocomplete(autocomplete);
   };
 
   const onPlaceChanged = () => {
     if (autocomplete) {
-      console.log("autocomplete", autocomplete?.getPlace());
       const { geometry } = autocomplete?.getPlace();
 
       if (geometry) {
@@ -55,22 +52,20 @@ const TwHomeSearchbar = () => {
             <div className="flex">
               <label
                 htmlFor="search"
-                className={`${
-                  searchType === "buy"
+                className={`${searchType === "buy"
                     ? "bg-white text-black"
                     : "bg-indigo-600 text-white"
-                } px-5 py-1 rounded-tl-md text-sm`}
+                  } px-5 py-1 rounded-tl-md text-sm`}
                 onClick={() => setSearchType("buy")}
               >
                 Buy
               </label>
               <label
                 htmlFor="search"
-                className={`${
-                  searchType === "rent"
+                className={`${searchType === "rent"
                     ? "bg-white text-black"
                     : "bg-indigo-600 text-white"
-                } px-5 py-1 rounded-tr-md text-sm`}
+                  } px-5 py-1 rounded-tr-md text-sm`}
                 onClick={() => setSearchType("rent")}
               >
                 Rent
@@ -84,7 +79,7 @@ const TwHomeSearchbar = () => {
                 </label>
                 <div
                   className="absolute flex items-center cursor-pointer px-3 py-2 bg-indigo-600 rounded-md mr-[0.4rem]"
-                  // onClick={onPlaceChanged}
+                // onClick={onPlaceChanged}
                 >
                   <MagnifyingGlassIcon
                     className="h-5 w-5 text-white"

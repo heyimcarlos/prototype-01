@@ -1,16 +1,13 @@
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { useSectors } from "@/stores/useSectors";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XCircleIcon } from "@heroicons/react/20/solid";
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useDrawShow } from "@/stores/useDrawShow";
 import { useGlobalHide } from "@/stores/useGlobalHide";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 import { useDrawControls } from "@/stores/useDrawControls";
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import useWindowSize from "@/hooks/useWindowSize";
 
 export default function SectorsFlyoutMenu() {
   const sectors = useSectors((state) => state.sectors);
@@ -22,23 +19,24 @@ export default function SectorsFlyoutMenu() {
     (state) => state.setShowCustomSearchFalse
   );
 
-  const setRedrawFalse = useDrawControls((state) => state.setRedrawFalse);
+  const setSearchFalse = useDrawControls((state) => state.setSearchFalse);
 
   const setDrawDefaultSimple = useDrawControls(
     (state) => state.setDrawDefaultSimple
   );
 
+  const width = useWindowSize();
+
+  const isMobile = width! < 425;
+
   return (
     <>
       {sectors.length > 1 && (
-        <Popover className="relative ml-3">
+        <Popover className={`${isMobile ? "inline" : "ml-3"}`}>
           {({ open }) => (
             <>
               <Popover.Button
-                className={classNames(
-                  open ? "text-gray-900" : "text-gray-500",
-                  "px-3 mr-[0.1rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900 "
-                )}
+                className={`text-gray-500 px-3 mr-[0.2rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900`}
               >
                 <span>{`${sectors.length - 1} More`}</span>
               </Popover.Button>
@@ -52,43 +50,39 @@ export default function SectorsFlyoutMenu() {
                 leaveFrom="opacity-100 translate-y-0"
                 leaveTo="opacity-0 translate-y-1"
               >
-                <Popover.Panel className="fixed z-10 -mt-8 ml-[12rem] w-[25rem] max-w-md -translate-x-1/2 transform px-2 sm:px-0 lg:max-w-3xl">
+                {/* <div className="w-full flex justify-start"> */}
+                <Popover.Panel
+                  className={`fixed z-[51] -mt-7 w-full transform px-0.5 sm:px-0 lg:max-w-3xl -ml-2`}
+                >
                   <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                    <div className="relative flex flex-wrap bg-white px-5 py-6 sm:p-3 ">
+                    <div className="relative flex flex-wrap bg-white pl-2 gap-1 py-3 sm:p-1 ">
                       {sectors.map((sector) => (
                         <div
-                          className="mr-1 border-2 rounded-xl w-max pr-10 my-1 inline py-[0.1rem]"
+                          className="pr-3 border-2 rounded-xl bg-white flex justify-center items-center py-[0.03rem]"
                           key={sector.name}
                         >
                           <span className="pl-3">{sector.name}</span>
                           <div
-                            style={{
-                              display: "inline",
-                              position: "absolute",
-                              border: "0.15rem solid black",
-                              marginTop: "1.5px",
-                              marginLeft: "7px",
-                              borderRadius: "100%",
-                            }}
                             onClick={() => {
                               if (sector.name === "Custom Boundary") {
                                 setDrawShowTrue();
                                 setGlobalHideFalse();
                                 setShowCustomSearchFalse();
-                                setRedrawFalse();
+                                setSearchFalse();
                                 setDrawDefaultSimple();
                               }
                               deleteThisSector(sector);
                               setGlobalShowTrue();
                             }}
                           >
-                            <XMarkIcon className="h-4 w-4" aria-hidden="true" />
+                            <XCircleIcon className="h-5 w-5 text-black ml-1" />
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 </Popover.Panel>
+                {/* </div> */}
               </Transition>
             </>
           )}

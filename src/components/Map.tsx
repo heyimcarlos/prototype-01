@@ -11,6 +11,7 @@ import MapboxMap, {
   type MapRef,
   type MapLayerMouseEvent,
   Marker,
+  PointLike,
 } from "react-map-gl";
 import { env } from "../env/client.mjs";
 import { trpc } from "@/utils/trpc";
@@ -18,7 +19,7 @@ import type { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
 
-import type { Coordinate, Listing, Place } from "@prisma/client";
+import type { Listing, ListingLocation } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import slugify from "@/lib/slugify";
 import { transformIntToMoney } from "@/lib/transformInt";
@@ -43,6 +44,13 @@ import Image from "next/image.js";
 import toolTip from "../../public/assets/images/tooltip.png";
 import polyGif from "../../public/assets/images/ezgif.com-gif-maker (1).gif";
 import { useSelectedListing } from "@/stores/useSelectedListing";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { BackspaceIcon } from "@heroicons/react/24/outline";
+import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, ListBulletIcon } from "@heroicons/react/20/solid";
+import MobileListingsSlideOver from "@/components/MobileListingsSlideOver";
+import type { NeighborhoodsType } from "@/pages/map";
+import Trpc from "@/pages/api/trpc/[trpc].js";
 
 type MapProps = {
   initialViewport: {
@@ -53,21 +61,16 @@ type MapProps = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   mapRef: RefObject<MapRef>;
-  places: (Place & {
-    center: Coordinate;
-    listing: (Listing & {
-      location: Coordinate;
-    })[];
-  })[];
+  neighborhoods: NeighborhoodsType;
 };
 
 type CustomMarkerProps = {
-  place: MapProps["places"][number];
+  neighborhood: MapProps["neighborhoods"][number];
   onClick: ({ slug }: { slug: string }) => void;
   names: string[];
 };
 
-const CustomMarker = ({ place, onClick, names }: CustomMarkerProps) => {
+const CustomMarker = ({ neighborhood, onClick, names }: CustomMarkerProps) => {
   const [show, setShow] = useState(true);
   const globalShow = useGlobalShow((state) => state.globalShow);
   const globalHide = useGlobalHide((state) => state.globalHide);
@@ -75,26 +78,42 @@ const CustomMarker = ({ place, onClick, names }: CustomMarkerProps) => {
 
   if (globalShow === true && show === false) setShow(true);
 
+  let amount = 0;
+  neighborhood.listingLocations.forEach((listingLocation) => {
+    if (listingLocation.listings.length > 1) {
+      amount += listingLocation.listings.length;
+    } else {
+      amount += 1;
+    }
+  });
+
+  let space;
+  const spaceOne: PointLike = [0, -10];
+  const spaceTwo: PointLike = [0, -19];
+  if (neighborhood.name === "Bella Vista") space = spaceOne;
+  if (neighborhood.name === "Evaristo Morales") space = spaceTwo;
+  if (neighborhood.name === "La Julia") space = spaceOne;
+  if (neighborhood.name === "El Manguito") space = spaceTwo;
+
   return (
     <>
-      {!globalHide && show && !names.includes(place.name) && (
+      {!globalHide && show && !names.includes(neighborhood.name) && (
         <Marker
           onClick={(e) => {
+            // e.originalEvent.cancelBubble
+            e.originalEvent.preventDefault();
             e.originalEvent.stopPropagation();
-            onClick({ slug: place.slug });
             setShow(false);
             setGlobalShowFalse();
           }}
           anchor="bottom"
-          key={`marker-${place.id}`}
-          longitude={place.center.longitude}
-          latitude={place.center.latitude}
-          offset={[0, -10]}
+          key={`marker-${neighborhood.id}`}
+          latitude={parseFloat(neighborhood.lat)}
+          longitude={parseFloat(neighborhood.lng)}
+          offset={space}
         >
           <div className="bg-indigo-600 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
-            <span className="text-sm font-semibold text-white">
-              {place.listing.length}
-            </span>
+            <span className="text-sm font-semibold text-white">{amount}</span>
           </div>
         </Marker>
       )}
@@ -102,62 +121,45 @@ const CustomMarker = ({ place, onClick, names }: CustomMarkerProps) => {
   );
 };
 
-const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
+const Map = ({
+  // listingLocations,
+  neighborhoods,
+  mapRef,
+  initialViewport,
+  setOpen,
+}: MapProps) => {
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
 
   const [curListingId, setCurListingId] = useState("");
 
+  const [drawPolyToolTip, setDrawPolyToolTip] = useState(false);
+
   const setListings = useSidebar((state) => state.setListings);
 
-  const addSector = useSectors((state) => state.addSector);
-
   // const deleteAllSectors = useSectors((state) => state.deleteAllSectors);
+  const addSector = useSectors((state) => state.addSector);
+  const sectors = useSectors((state) => state.sectors);
+  const deleteThisSector = useSectors((state) => state.deleteThisSector);
 
   const names: string[] = [];
-
-  const sectors = useSectors((state) => state.sectors);
-
   sectors.forEach((sector) => names.push(sector.name));
-
-  const showCustomSearch = useShowCustomSearch(
-    (state) => state.showCustomSearch
-  );
 
   const setShowCustomSearchTrue = useShowCustomSearch(
     (state) => state.setShowCustomSearchTrue
   );
 
-  const setShowCustomSearchFalse = useShowCustomSearch(
-    (state) => state.setShowCustomSearchFalse
-  );
-
   const setGlobalHideTrue = useGlobalHide((state) => state.setGlobalHideTrue);
-
   const setGlobalHideFalse = useGlobalHide((state) => state.setGlobalHideFalse);
 
   const [customPolyBounds, setCustomPolyBounds] = useState<Position[][]>();
 
   const drawShow = useDrawShow((state) => state.drawShow);
-
   const setDrawShowFalse = useDrawShow((state) => state.setDrawShowFalse);
-
   const setDrawShowTrue = useDrawShow((state) => state.setDrawShowTrue);
 
-  const deleteThisSector = useSectors((state) => state.deleteThisSector);
-
-  const redraw = useDrawControls((state) => state.redraw);
-
-  const setRedrawTrue = useDrawControls((state) => state.setRedrawTrue);
-
-  const setRedrawFalse = useDrawControls((state) => state.setRedrawFalse);
-
-  const drawDefault = useDrawControls((state) => state.drawDefault);
-
-  const setDrawDefaultPoly = useDrawControls(
-    (state) => state.setDrawDefaultPoly
-  );
-
-  const [drawPolyToolTip, setDrawPolyToolTip] = useState(false);
+  const search = useDrawControls((state) => state.search);
+  const setSearchTrue = useDrawControls((state) => state.setSearchTrue);
+  const setSearchFalse = useDrawControls((state) => state.setSearchFalse);
 
   const setListing = useSelectedListing((state) => state.setListing);
 
@@ -183,21 +185,34 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
     }
   };
 
-  const placeMutation = trpc.useMutation(["map.place"], {
+  const neighborhoodMutation = trpc.map.public.getNeighborhood.useMutation({
     onSuccess: (data) => {
-      if (!names.includes(data.name)) {
-        addSector({
-          name: data.name,
-          bounds: data.bounds,
-          listings: data.listing,
-        });
-      }
-
-      const placeAsFeature = transformPlaceToFeature(data);
-      if (placeAsFeature) fitBounds(placeAsFeature);
-      setListings(data.listing);
+      console.log("data", data);
+      // if (!names.includes(data.name)) {
+      // addSector({
+      //   name: data.name,
+      //   bounds: data.bounds,
+      //   listings: data.listing,
+      // });
+      // }
     },
   });
+
+  // const placeMutation = trpc.useMutation(["map.place"], {
+  //   onSuccess: (data) => {
+  //     if (!names.includes(data.name)) {
+  //       addSector({
+  //         name: data.name,
+  //         bounds: data.bounds,
+  //         listings: data.listing,
+  //       });
+  //     }
+
+  //     const placeAsFeature = transformPlaceToFeature(data);
+  //     if (placeAsFeature) fitBounds(placeAsFeature);
+  //     setListings(data.listing);
+  //   },
+  // });
 
   useEffect(() => {
     if (sectors.length > 1) {
@@ -229,29 +244,29 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
     }
   }, [sectors, mapRef]);
 
-  const handleListingClick = (
-    listing: MapProps["places"][number]["listing"][number]
-  ) => {
-    setCurListingId(String(listing.id));
-  };
+  // const handleListingClick = (
+  //   listing: MapProps["places"][number]["listing"][number]
+  // ) => {
+  //   setCurListingId(String(listing.id));
+  // };
 
   const showVisibleMarkers = () => {
     if (!mapRef.current) return;
     const map = mapRef.current.getMap();
     const bounds = map.getBounds();
     const listings = [];
-    for (const place of places) {
-      if (
-        bounds.contains({
-          lat: place.center.latitude,
-          lng: place.center.longitude,
-        })
-      ) {
-        listings.push(place.listing);
-      }
-    }
-    const flattened = listings.flat();
-    setListings(flattened);
+    // for (const place of places) {
+    //   if (
+    //     bounds.contains({
+    //       lat: place.center.latitude,
+    //       lng: place.center.longitude,
+    //     })
+    //   ) {
+    //     listings.push(place.listing);
+    //   }
+    // }
+    // const flattened = listings.flat();
+    // setListings(flattened);
   };
 
   const onClickMap = (event: MapLayerMouseEvent) => {
@@ -262,12 +277,12 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
       {}
     );
     const feature = queryRenderedFeatures[0];
-
+    // console.log("feature", feature);
     // @INFO: Below is the fetch db for the clicked place.
     if (feature?.sourceLayer === "place_label" && feature.properties?.name) {
       if (!names.includes(feature.properties.name)) {
         const slug = slugify(feature.properties.name);
-        placeMutation.mutate({ slug });
+        neighborhoodMutation.mutate({ slug });
       }
     } else {
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
@@ -280,18 +295,20 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
           return turf.booleanPointInPolygon(point, poly);
         })
       ) {
+        setListing("");
         return;
       } else {
       }
+      setListing("");
 
-      const test = mapRef.current.getCenter();
-      mapRef.current.flyTo({
-        center: [test.lng, test.lat],
-        zoom: 14,
-        duration: 1000,
-        animate: true,
-        easing: (t) => t,
-      });
+      // const test = mapRef.current.getCenter();
+      // mapRef.current.flyTo({
+      //   center: [test.lng, test.lat],
+      //   zoom: 14,
+      //   duration: 1000,
+      //   animate: true,
+      //   easing: (t) => t,
+      // });
 
       // deleteAllSectors();
     }
@@ -304,7 +321,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
     const map = mapRef.current.getMap();
     const bounds = map.getBounds();
     const customListings = [] as (Listing & {
-      location: Coordinate;
+      // location: Coordinate;
     })[];
 
     for (const place of places) {
@@ -317,12 +334,12 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
         if (customPolyBounds) {
           const poly = turf.polygon(customPolyBounds as Position[][]);
 
-          place.listing.forEach((list) => {
-            const point = [list.location.longitude, list.location.latitude];
-            if (turf.booleanPointInPolygon(point, poly)) {
-              customListings.push(list);
-            }
-          });
+          // place.listing.forEach((list) => {
+          //   const point = [list.location.longitude, list.location.latitude];
+          //   if (turf.booleanPointInPolygon(point, poly)) {
+          //     customListings.push(list);
+          //   }
+          // });
         }
       }
     }
@@ -337,20 +354,15 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
     setDrawShowFalse();
   };
 
+  const [listSlide, setListSlide] = useState(false);
+
+  // console.log("listSlide", listSlide);
+
+  // console.log("listingLocations", listingLocations);
+
   return (
     <>
-      <Head>
-        <link
-          href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css"
-          rel="stylesheet"
-        />
-        <link
-          rel="stylesheet"
-          href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.3.0/mapbox-gl-draw.css"
-          type="text/css"
-        />
-      </Head>
-      <div className="h-full w-full">
+      <div className="w-full h-full">
         <MapboxMap
           id="mapa"
           ref={mapRef}
@@ -365,110 +377,169 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
           mapStyle="mapbox://styles/mapbox/streets-v11"
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
         >
-          <div className="h-full w-full flex justify-center items-end">
-            {showCustomSearch && (
-              <button
-                onClick={() => {
+          {/* <div className="h-full w-full flex justify-center items-start">
+            <button
+              onClick={() => {
+                setDrawShowTrue();
+                if (search) {
                   showVisibleCustomPolygonMarkers();
-                  setRedrawTrue();
-                  if (redraw) {
-                    setDrawShowTrue();
-                    setDrawDefaultPoly();
-                    sectors.filter((sector) => {
-                      if (sector.name === "Custom Boundary") {
-                        deleteThisSector(sector);
-                      }
-                    });
-                    setRedrawFalse();
-                    setGlobalHideFalse();
-                    setShowCustomSearchFalse();
-                  }
-                }}
-                className={
-                  "absolute z-20 p-2 px-3 bg-[#ffffff] text-black mb-10 rounded-lg border-2 border-black"
+                  setSearchFalse();
+                } else {
+                  sectors.filter((sector) => {
+                    if (sector.name === "Custom Boundary") {
+                      deleteThisSector(sector);
+                    }
+                  });
+                  setGlobalHideFalse();
                 }
+              }}
+              className={
+                "absolute z-19 p-2 px-3 bg-[#ffffff] text-black m-2 rounded-lg border-2 border-black text-xs"
+              }
+            >
+              {search ? "Search this area" : "Draw"}
+            </button>
+
+            {sectors.map((sector) => {
+              if (sector.name === "Custom Boundary") {
+                return (
+                  <button
+                    className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 ml-[7.4rem] rounded-lg border-2 border-black"
+                    key={sector.name}
+                    onClick={() => {
+                      deleteThisSector(sector);
+                      setGlobalHideFalse();
+                    }}
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </button>
+                );
+              }
+            })}
+
+            {drawShow && (
+              <button
+                className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 mr-[11rem] rounded-lg border-2 border-black"
+                onClick={() => {
+                  setDrawShowFalse();
+                  setTimeout(() => {
+                    setDrawShowTrue();
+                  }, 100);
+                  sectors.filter((sector) => {
+                    if (sector.name === "Custom Boundary") {
+                      deleteThisSector(sector);
+                    }
+                  });
+                  setSearchFalse();
+                  setGlobalHideFalse();
+                }}
               >
-                {redraw ? "Draw" : "Search this area"}
+                <ArrowPathIcon className="h-4 w-4" />
               </button>
             )}
-          </div>
 
-          {drawShow && (
-            <div className="h-full w-full">
-              <div
-                className="h-5 w-5 fixed left-0 top-0 mt-[12.50rem] ml-[0.95rem]"
-                onMouseOver={() => {
-                  setDrawPolyToolTip(true);
-                }}
-                onMouseOut={() => {
-                  setDrawPolyToolTip(false);
+            {drawShow && (
+              <button
+                className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 ml-[11rem] rounded-lg border-2 border-black"
+                onClick={() => {
+                  setSearchFalse();
+                  setGlobalHideFalse();
+                  setDrawShowFalse();
                 }}
               >
-                <Image alt="" src={toolTip} width={100} height={100} />
-              </div>
-              {drawPolyToolTip && (
-                <div className="h-[26rem] w-[39rem] fixed left-0 top-0 mt-[5.5rem] ml-[4rem] bg-white">
-                  <Image alt="" width={1200} height={900} src={polyGif} />
-                  <div className="bg-white -mt-[0.5rem]">
-                    Edit a created boundary by clicking within its borders and
-                    dragging the mid points
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+                <ArrowUturnLeftIcon className="h-4 w-4" />
+              </button>
+            )}
 
-          <NavigationControl
+            <div
+              className="absolute z-19 bottom-0 p-2 px-3 bg-[#ffffff] text-black m-2 rounded-lg border-2 border-black text-xs"
+              // className="bg-white w-full h-10 absolute bottom-0 z-10 rounded-tr-2xl rounded-tl-2xl flex justify-center items-center"
+              onClick={() => {
+                setListSlide(true);
+              }}
+            >
+              <ListBulletIcon className="h-6 w-6" />
+            </div>
+          </div> */}
+
+          {/* <MobileListingsSlideOver
+            listSlide={listSlide}
+            setListSlide={setListSlide}
+            setOpen={setOpen}
+          /> */}
+
+          {/* <div className="h-full w-full">
+            <div
+              className="h-5 w-5 fixed left-0 top-0 mt-[12.50rem] ml-[0.95rem]"
+              onMouseOver={() => {
+                setDrawPolyToolTip(true);
+              }}
+              onMouseOut={() => {
+                setDrawPolyToolTip(false);
+              }}
+            >
+              <Image alt="" src={toolTip} width={100} height={100} />
+            </div>
+            {drawPolyToolTip && (
+              <div className="h-[26rem] w-[39rem] fixed left-0 top-0 mt-[5.5rem] ml-[4rem] bg-white">
+                <Image alt="" width={1200} height={900} src={polyGif} />
+                <div className="bg-white -mt-[0.5rem]">
+                  Edit a created boundary by clicking within its borders and
+                  dragging the mid points
+                </div>
+              </div>
+            )}
+          </div> */}
+
+          {/* <NavigationControl
             position="top-left"
             style={{ marginBottom: "2rem" }}
-          />
+          /> */}
 
-          {drawShow && (
+          {/* {drawShow && (
             <DrawControl
-              position="top-left"
+              position="bottom-right"
               displayControlsDefault={false}
-              controls={{
-                polygon: true,
-                trash: true,
-              }}
-              defaultMode={drawDefault}
+              defaultMode="draw_polygon"
               styles={mapBoxDrawStyles}
               onCreate={(e) => {
                 setGlobalHideTrue();
-
                 setCustomPolyBounds(e.features[0]?.geometry.coordinates);
                 setShowCustomSearchTrue();
+                setSearchTrue();
               }}
               onUpdate={(e) => {
                 setCustomPolyBounds(e.features[0]?.geometry.coordinates);
               }}
               onDelete={() => {
                 setGlobalHideFalse();
+                setSearchFalse();
+                setDrawShowFalse();
               }}
             />
-          )}
+          )} */}
 
           {/* INFO: Sector main cluster */}
-          {places?.map((place) => (
+          {neighborhoods?.map((neighborhood) => (
             // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
 
             <CustomMarker
-              key={`marker-${place.id}`}
-              place={place}
-              onClick={placeMutation.mutate}
+              key={`marker-${neighborhood.id}`}
+              neighborhood={neighborhood}
+              onClick={neighborhoodMutation.mutate}
               names={names}
             />
           ))}
 
           {/* @INFO: Within bounds listings */}
 
-          {sectors.map((sector) =>
+          {/* {sectors.map((sector) =>
             sector.listings.map((listing) => (
               <Marker
                 onClick={(e) => {
                   e.originalEvent.stopPropagation();
-                  handleListingClick(listing);
-                  setOpen(true);
+                  // handleListingClick(listing);
+
                   setListing(listing);
                 }}
                 latitude={listing.location.latitude}
@@ -491,7 +562,7 @@ const Map = ({ places, mapRef, initialViewport, setOpen }: MapProps) => {
                 </div>
               </Marker>
             ))
-          )}
+          )} */}
 
           {sectors.map((sector) => (
             <Source
@@ -526,7 +597,6 @@ export default Map;
 const mapBoxDrawStyles = [
   // ACTIVE (being drawn)
   // line stroke
-  // { display: "none" },
   {
     id: "gl-draw-line",
     type: "line",

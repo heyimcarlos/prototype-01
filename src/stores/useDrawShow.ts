@@ -7,7 +7,7 @@ type DrawShowState = {
 };
 
 export const useDrawShow = create<DrawShowState>((set) => ({
-  drawShow: true,
+  drawShow: false,
   setDrawShowFalse: () => set(() => ({ drawShow: false })),
   setDrawShowTrue: () => set(() => ({ drawShow: true })),
 }));

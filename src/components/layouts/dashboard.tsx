@@ -9,8 +9,8 @@ import {
 import Logo from "@/components/Logo";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { trpc } from "@/utils/trpc";
 import { AvatarMenu } from "@/components/Avatar";
+import { useSession } from "next-auth/react";
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: HomeIcon },
@@ -19,14 +19,15 @@ const navigation = [
 
 const DashboardSidebarContainer = () => {
   const router = useRouter();
+  const { data: session } = useSession();
 
   return (
-    <div className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-[0.3rem]">
-      <div className="flex flex-shrink-0 items-center px-4">
+    <aside className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-[0.3rem] px-4">
+      <div className="flex flex-shrink-0 items-center">
         <Logo />
       </div>
       <div className="mt-5 flex flex-grow flex-col">
-        <nav className="space-y-1 flex-1 px-2 pb-4">
+        <nav className="space-y-1 flex-1 pb-4">
           {navigation.map((item) => {
             const isActive = router.pathname === item.href;
             return (
@@ -37,7 +38,7 @@ const DashboardSidebarContainer = () => {
                   isActive
                     ? "bg-indigo-50 border-indigo-500 text-indigo-500"
                     : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50",
-                  "group border-l-4 py-2 px-3 flex items-center text-sm font-medium"
+                  "group border-l-4 py-2  flex items-center text-sm font-medium"
                 )}
               >
                 <item.icon
@@ -55,7 +56,21 @@ const DashboardSidebarContainer = () => {
           })}
         </nav>
       </div>
-    </div>
+      <div className="hidden md:inline mb-6">
+        <div className="hover:bg-gray-200 rounded-md p-3">
+          <AvatarMenu>
+            <span className="flex-grow truncate text-sm pl-3">
+              <span className="block truncate font-medium text-gray-900">
+                {session?.user.name || session?.user?.email?.split("@")[0]}
+              </span>
+              <span className="block truncate font-normal text-gray-700">
+                {session?.user.email}
+              </span>
+            </span>
+          </AvatarMenu>
+        </div>
+      </div>
+    </aside>
   );
 };
 
@@ -67,7 +82,7 @@ const DashboardNavbar = ({
   openDialog: () => void;
 }) => {
   return (
-    <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white shadow">
+    <div className="flex sticky top-0 z-10 md:hidden h-16 flex-shrink-0 bg-white shadow">
       <button
         type="button"
         className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
@@ -166,11 +181,6 @@ type Props = {
 
 export default function DashboardLayout({ children }: Props) {
   const [open, setOpen] = useState(false);
-  const { data, isLoading } = trpc.user.me.useQuery();
-
-  if (!data || isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="min-h-screen bg-custom-white">
@@ -192,7 +202,7 @@ export default function DashboardLayout({ children }: Props) {
         {/* Navbar */}
         <DashboardNavbar openDialog={() => setOpen(true)}>
           <div className="ml-4 flex items-center md:ml-6">
-            <AvatarMenu user={data} alt={`${data.name} avatar`} />
+            <AvatarMenu />
           </div>
         </DashboardNavbar>
 

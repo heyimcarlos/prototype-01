@@ -8,16 +8,17 @@ type Props = {
 };
 
 export default function AppLayout({ children }: Props) {
-  const router = useRouter()
-  //@TODO: apply SEO here. Maybe we can use the NextSEO package.
-  let navbar = (<Navbar />)
+  const router = useRouter();
 
-  if (router.pathname === '/') {
+  //@TODO: apply SEO here. Maybe we can use the NextSEO package.
+  let navbar = <Navbar />;
+
+  if (router.pathname === "/") {
     navbar = (
       <div className="z-20 absolute inset-0 h-20">
         <Navbar />
       </div>
-    )
+    );
   }
 
   return (

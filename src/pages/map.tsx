@@ -13,12 +13,17 @@ import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
 import ListingCard from "@/components/ListingCard";
 import { useSectors } from "@/stores/useSectors";
-import SlideOver from "@/components/SlideOver";
+import SingleViewSlideOver from "@/components/SingleViewSlideOver";
 import LeftSlideOver from "@/components/LeftSlideOver";
 import { useSelectedListing } from "@/stores/useSelectedListing";
+import SectorsSelected from "@/components/SectorsSelected";
+import MobilePreviewListing from "@/components/MobilePreviewListing";
+import SlideOver from "@/components/SlideOver";
+import { Listing, ListingLocation, Neighborhood } from "@prisma/client";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
-  places,
+  // listingLocations,
+  neighborhoods,
   initialViewport,
 }) => {
   const { isLoaded } = useJsApiLoader({
@@ -48,29 +53,49 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="w-full h-[calc(100vh-90px)] flex">
+      <main className="w-full h-[calc(100vh-48px-33.6px)] flex justify-center">
         <div className="w-full h-full">
           <Map
             mapRef={mapRef}
-            places={places}
+            neighborhoods={neighborhoods}
             initialViewport={initialViewport}
             open={open}
             setOpen={setOpen}
           />
         </div>
-        {listing && (
+        {/* {listing && (
           <SlideOver open={open} setOpen={setOpen} listing={listing} />
-        )}
+        )} */}
 
-        {leftListing && (
+        {/* {leftListing && (
           <LeftSlideOver
             open={leftSlideOver}
             setOpen={setLeftSlideOver}
             listing={leftListing}
           />
+        )} */}
+
+        {/* {listing && (
+          <SingleViewSlideOver
+            open={open}
+            setOpen={setOpen}
+            listing={listing}
+          />
+        )} */}
+
+        {/* <SlideOver open={open} setOpen={setOpen} listing={listing} /> */}
+
+        {/* <LeftSlideOver
+          leftSlideOver={leftSlideOver}
+          setLeftSlideOver={setLeftSlideOver}
+          leftListing={leftListing}
+        /> */}
+
+        {listing && (
+          <MobilePreviewListing listing={listing} setOpen={setOpen} />
         )}
 
-        <div className="min-w-[310px] max-w-[310px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
+        <div className="hidden min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
           {listings.length < 1 && sectors.length < 1 && (
             <div>No listing to show move the map</div>
           )}
@@ -110,19 +135,35 @@ MapPage.layout = MapLayout;
 
 // @INFO: Server side fetching of places
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+export type NeighborhoodsType = (Neighborhood & {
+  listingLocations: (ListingLocation & {
+    listings: Listing[];
+  })[];
+})[];
+
 export const getServerSideProps = async ({
   query,
 }: GetServerSidePropsContext) => {
-  const places = await prisma.place.findMany({
-    include: {
-      center: true,
-      listing: {
-        include: {
-          location: true,
-        },
-      },
-    },
+  // const listingLocations = await prisma.listingLocation.findMany({
+  //   include: {
+  //     listings: {},
+  //   },
+  // });
+
+  const neighborhoods = await prisma.neighborhood.findMany({
+    include: { listingLocations: { include: { listings: {} } } },
   });
+  // const places = await prisma.place.findMany({
+  //   include: {
+  //     center: true,
+  //     listing: {
+  //       include: {
+  //         location: true,
+  //       },
+  //     },
+  //   },
+  // });
 
   const initialViewport = {
     longitude: -69.94115,
@@ -135,7 +176,7 @@ export const getServerSideProps = async ({
     initialViewport.longitude = Number(query.lng);
   }
 
-  if (!places.length) {
+  if (!neighborhoods.length) {
     return {
       notFound: true,
     };
@@ -143,10 +184,12 @@ export const getServerSideProps = async ({
 
   return {
     props: {
-      places,
+      neighborhoods,
       initialViewport,
     },
   };
 };
+
+// console.log("serverSideProps", getServerSideProps);
 
 export default MapPage;
