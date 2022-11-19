@@ -1,9 +1,7 @@
 import DashboardLayout from "@/components/layouts/dashboard";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import type { NextPageWithLayout } from "../_app";
-import defaultAvatar from "../../../public/assets/images/user.png";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
   ChevronDownIcon,
@@ -12,7 +10,11 @@ import {
 import GridIcon from "@/components/icons/grid";
 import { ListBulletIcon } from "@heroicons/react/24/outline";
 import randomImage from "../../../public/assets/images/house1.jpeg";
-import { listings } from "../../../prisma/data";
+// import { listings } from "../../../prisma/data";
+import { Avatar } from "@/components/Avatar";
+import useMeQuery from "@/hooks/useMeQuery";
+import { type UserMeOutput } from "@/server/trpc/router/user";
+import { trpc } from "@/utils/trpc";
 
 const Card = ({
   children,
@@ -31,8 +33,10 @@ const Card = ({
   );
 };
 
-const ProfileOverview = () => {
-  const { data: session } = useSession();
+const ProfileOverview = ({ user }: { user?: UserMeOutput }) => {
+  if (!user) {
+    return null;
+  }
 
   return (
     <Card label="profile-overview">
@@ -41,19 +45,13 @@ const ProfileOverview = () => {
       </h2>
       <div className=" sm:flex sm:items-center sm:justify-between">
         <div className="sm:flex sm:space-x-5">
-          <div className="flex-shrink-0">
-            <Image
-              className="mx-auto rounded-full h-20 w-20"
-              src={session?.user?.avatar || defaultAvatar}
-              alt="Avatar"
-              width={720}
-              height={720}
-            />
+          <div className="flex-shrink-0 text-center">
+            <Avatar user={user} alt={`${user.name} Avatar`} size={20} />
           </div>
           <div className=" text-center mt-4 sm:my-auto  sm:pt-1 sm:text-left">
             <p className="text-sm font-medium text-gray-400">Welcome back,</p>
             <p className="text-xl font-bold sm:text-2xl">
-              {session?.user?.name}
+              {user.name || user.email?.split("@")[0]}
             </p>
           </div>
         </div>
@@ -62,10 +60,25 @@ const ProfileOverview = () => {
   );
 };
 
-const DashboardPage: NextPageWithLayout = ({}) => {
+const DashboardPage: NextPageWithLayout = () => {
+  const query = useMeQuery();
+  const user = query.data;
+  const { data, isLoading } = trpc.user.getMylistings.useQuery();
+  const [search, setSearch] = useState("");
+
+  const searchResults = useMemo(() => {
+    if (!search) return data;
+
+    return data?.filter((listing) => {
+      if (listing.name.includes(search)) return listing;
+      if (listing.name.toLowerCase().includes(search)) return listing;
+      if (listing.bio.toLowerCase().includes(search)) return listing;
+    });
+  }, [search, data]);
+
   return (
     <div>
-      <ProfileOverview />
+      <ProfileOverview user={user} />
       <div className="flex items-center gap-2">
         {/* Search */}
         <div className="min-w-0 flex-1 xl:col-span-6">
@@ -84,6 +97,8 @@ const DashboardPage: NextPageWithLayout = ({}) => {
                 <input
                   id="search"
                   name="search"
+                  onChange={(e) => setSearch(e.target.value)}
+                  value={search}
                   className="block w-full rounded-md border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-sm placeholder-gray-500 focus:border-indigo-500 focus:text-gray-900 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                   placeholder="Search"
                   type="search"
@@ -107,34 +122,44 @@ const DashboardPage: NextPageWithLayout = ({}) => {
           <ChevronDownIcon className="h-5 w-5" />
         </button>
       </div>
-      <ul
-        role="list"
-        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        {listings.map((listing) => (
-          <li
-            key={listing.name}
-            className="col-span-1 divide-y divide-gray-200 rounded-md bg-white shadow"
-          >
-            <Link href={`/listing/${listing.slug}`}>
-              <div className="flex">
-                <div className="mr-4 flex-shrink-0 self-center">
-                  <Image
-                    src={randomImage}
-                    alt="Listing"
-                    width={150}
-                    height={150}
-                  />
-                </div>
-                <div className="">
-                  <h4 className="text-lg font-bold">{listing.name}</h4>
-                  <p className="mt-1">{listing.description}</p>
-                </div>
-              </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {!isLoading ? (
+        <>
+          {searchResults && searchResults.length > 0 ? (
+            <ul
+              role="list"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {searchResults.map((listing) => (
+                <li
+                  key={listing.name}
+                  className="col-span-1 divide-y divide-gray-200 rounded-md bg-white shadow"
+                >
+                  <Link href={`/listing/${listing.slug}`}>
+                    <div className="flex">
+                      <div className="mr-4 flex-shrink-0 self-center">
+                        <Image
+                          src={randomImage}
+                          alt="Listing"
+                          width={150}
+                          height={150}
+                        />
+                      </div>
+                      <div className="">
+                        <h4 className="text-lg font-bold">{listing.name}</h4>
+                        <p className="mt-1">{listing.bio}</p>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div>
+              <h3 className="text-gray-400">Create your first listing</h3>
+            </div>
+          )}
+        </>
+      ) : null}
     </div>
   );
 };

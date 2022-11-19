@@ -2,15 +2,15 @@
 import type { IncomingMessage } from "http";
 import parser from "accept-language-parser";
 import type { Maybe } from "@trpc/server";
-const { i18 } = require("../../next-i18next.config");
+import nextI18Config from "../../next-i18next.config";
 
 export function getLocaleFromHeaders(req: IncomingMessage): string {
   let preferredLocale: string | null | undefined;
   if (req.headers["accept-language"]) {
     preferredLocale = parser.pick(
-      i18.locales,
+      nextI18Config.i18n.locales,
       req.headers["accept-language"]
     ) as Maybe<string>;
   }
-  return preferredLocale ?? i18.defaultLocale;
+  return preferredLocale ?? nextI18Config.i18n.defaultLocale;
 }
