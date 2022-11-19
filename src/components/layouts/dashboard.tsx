@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { Dialog as HeadlessUIDialog, Transition } from "@headlessui/react";
 import {
   Bars3BottomLeftIcon,
@@ -9,35 +9,35 @@ import {
 import Logo from "@/components/Logo";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { trpc } from "@/utils/trpc";
-import { AvatarMenu } from "@/components/Avatar";
+import { UserDropdown, UserPopover } from "@/components/Avatar";
+import { useSession } from "next-auth/react";
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: HomeIcon },
   { name: "Settings", href: "/account", icon: CogIcon },
 ];
 
-const DashboardSidebarContainer = () => {
+const Sidebar = () => {
   const router = useRouter();
 
   return (
-    <div className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-[0.3rem]">
-      <div className="flex flex-shrink-0 items-center px-4">
+    <aside className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-[0.3rem] px-4">
+      <div className="flex flex-shrink-0 items-center">
         <Logo />
       </div>
       <div className="mt-5 flex flex-grow flex-col">
-        <nav className="space-y-1 flex-1 px-2 pb-4">
+        <nav className="space-y-1 flex-1 pb-4">
           {navigation.map((item) => {
             const isActive = router.pathname === item.href;
             return (
               <Link
                 key={item.name}
-                href={item.href}
+                href={{ pathname: item.href, query: `open=${true}` }}
                 className={classNames(
                   isActive
                     ? "bg-indigo-50 border-indigo-500 text-indigo-500"
                     : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50",
-                  "group border-l-4 py-2 px-3 flex items-center text-sm font-medium"
+                  "group border-l-4 p-2 flex items-center text-sm font-medium rounded-md"
                 )}
               >
                 <item.icon
@@ -55,31 +55,64 @@ const DashboardSidebarContainer = () => {
           })}
         </nav>
       </div>
-    </div>
+      <div className="hidden md:inline mb-6">
+        <UserDropdown />
+      </div>
+    </aside>
   );
 };
 
-const DashboardNavbar = ({
-  children,
-  openDialog,
-}: {
-  children: React.ReactNode;
-  openDialog: () => void;
-}) => {
+const useCloseSidebarOnNavigation = (closeSidebar: () => void) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.query && router.query.open) {
+      router.replace(router.pathname);
+      closeSidebar();
+    }
+  }, [closeSidebar, router]);
+
+  return null;
+};
+
+function TopNavContainer() {
+  const { status } = useSession();
+  if (status !== "authenticated") {
+    return null;
+  }
+  return <TopNav />;
+}
+
+function TopNav() {
+  const [open, setOpen] = useState(false);
+  const closeSidebar = useCallback(() => setOpen(false), []);
+  useCloseSidebarOnNavigation(closeSidebar);
+
   return (
-    <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white shadow">
-      <button
-        type="button"
-        className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
-        onClick={openDialog}
-      >
-        <span className="sr-only">Open sidebar</span>
-        <Bars3BottomLeftIcon className="h-6 w-6" aria-hidden="true" />
-      </button>
-      <div className="flex flex-1 justify-end px-4">{children}</div>
+    <div className="md:hidden">
+      <Dialog open={open} closeDialog={() => setOpen(false)}>
+        <div className="fixed inset-y-0 flex w-full flex-col">
+          <Sidebar />
+        </div>
+      </Dialog>
+      <div className="flex sticky top-0 z-10 h-16 flex-shrink-0 bg-white shadow">
+        <button
+          type="button"
+          className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
+          onClick={() => setOpen(true)}
+        >
+          <span className="sr-only">Open sidebar</span>
+          <Bars3BottomLeftIcon className="h-6 w-6" aria-hidden="true" />
+        </button>
+        <div className="flex flex-1 justify-end px-4">
+          <div className="ml-4 flex items-center md:ml-6">
+            <UserPopover />
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
+}
 
 const Dialog = ({
   children,
@@ -165,36 +198,16 @@ type Props = {
 };
 
 export default function DashboardLayout({ children }: Props) {
-  const [open, setOpen] = useState(false);
-  const { data, isLoading } = trpc.user.me.useQuery();
-
-  if (!data || isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="min-h-screen bg-custom-white">
-      {/* Mobile */}
-      <div className="md:hidden">
-        <Dialog open={open} closeDialog={() => setOpen(false)}>
-          <div className="fixed inset-y-0 flex w-full flex-col">
-            <DashboardSidebarContainer />
-          </div>
-        </Dialog>
-      </div>
-
       {/* Desktop */}
       <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
-        <DashboardSidebarContainer />
+        <Sidebar />
       </div>
 
       <div className="flex flex-1 flex-col md:pl-64">
-        {/* Navbar */}
-        <DashboardNavbar openDialog={() => setOpen(true)}>
-          <div className="ml-4 flex items-center md:ml-6">
-            <AvatarMenu user={data} alt={`${data.name} avatar`} />
-          </div>
-        </DashboardNavbar>
+        {/* Top Nav */}
+        <TopNavContainer />
 
         {/* Content area */}
         <main className="flex-1">

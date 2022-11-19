@@ -47,10 +47,11 @@ async function getUserFromSession({
   if (!email) {
     return null;
   }
+  console.log("user after email sign up: ", user);
   const avatar = user.avatar || defaultAvatarSrc({ email });
+  console.log("user avatar: ", avatar);
   const locale = user.locale || getLocaleFromHeaders(req);
-
-  console.log("locale", locale);
+  console.log("locale hello? ", locale);
   return {
     ...user,
     avatar,
@@ -68,8 +69,8 @@ export const createContext = async ({ req, res }: CreateContextOptions) => {
   console.log("Create context function is firing");
   const session = await getServerAuthSession({ req, res });
   const user = await getUserFromSession({ session, req });
-  // const locale = user?.locale ?? getLocaleFromHeaders(req);
-  // console.log("locale", locale);
+  const locale = user?.locale ?? getLocaleFromHeaders(req);
+  console.log("locale", locale);
 
   return {
     session,

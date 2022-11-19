@@ -1,3 +1,4 @@
+import { type RouterOutputs } from "@/utils/trpc";
 import {
   publicProcedure,
   protectedProcedure,
@@ -27,6 +28,16 @@ const loggedInUserRouter = router({
       createdAt: user.createdAt,
     };
   }),
+  getMylistings: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.listing.findMany({
+      where: {
+        userId: ctx.user.id,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+  }),
 });
 
 export const userRouter = mergeRouters(
@@ -35,3 +46,5 @@ export const userRouter = mergeRouters(
     public: publicUserRouter,
   })
 );
+
+export type UserMeOutput = RouterOutputs["user"]["me"];
