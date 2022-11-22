@@ -5,7 +5,7 @@ import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import house from "../../public/assets/images/house1.jpeg";
 import { useState } from "react";
-import { Listing } from "@prisma/client";
+import type { Listing } from "@prisma/client";
 
 type SingleViewSlideOverTypes = {
   open: boolean;
@@ -93,7 +93,8 @@ const SingleViewSlideOver = ({
                                 sqft
                               </h3>
                               <p className="block text-md text-gray-500 mt-2">
-                                2034 49th St, Kissimmee, FL 34744
+                                {listing.name}
+                                <span className="ml-2">{}</span>
                               </p>
                             </div>
                           </div>

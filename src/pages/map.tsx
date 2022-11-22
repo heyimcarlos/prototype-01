@@ -93,7 +93,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
         {listing && (
           <MobilePreviewListing
-            listing={listing as ListingLocation & { listings: Listing[] }}
+            listing={listing as Listing}
             setOpen={setOpen}
           />
         )}

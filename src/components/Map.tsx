@@ -322,26 +322,24 @@ const Map = ({
     if (!mapRef.current) return;
     const map = mapRef.current.getMap();
     const bounds = map.getBounds();
-    const customListings = [] as (Listing & {
-      // location: Coordinate;
-    })[];
+    const customListings = [] as (ListingLocation & { listings: Listing[] })[];
 
-    for (const place of places) {
+    for (const neighborhood of neighborhoods) {
       if (
         bounds.contains({
-          lat: place.center.latitude,
-          lng: place.center.longitude,
+          lat: parseFloat(neighborhood.lat),
+          lng: parseFloat(neighborhood.lng),
         })
       ) {
         if (customPolyBounds) {
           const poly = turf.polygon(customPolyBounds as Position[][]);
 
-          // place.listing.forEach((list) => {
-          //   const point = [list.location.longitude, list.location.latitude];
-          //   if (turf.booleanPointInPolygon(point, poly)) {
-          //     customListings.push(list);
-          //   }
-          // });
+          neighborhood.listingLocations.forEach((list) => {
+            const point = [parseFloat(list.lng), parseFloat(list.lat)];
+            if (turf.booleanPointInPolygon(point, poly)) {
+              customListings.push(list);
+            }
+          });
         }
       }
     }
@@ -350,7 +348,7 @@ const Map = ({
       addSector({
         name: "Custom Boundary",
         bounds: customPolyBounds[0],
-        listings: customListings,
+        listingLocations: customListings,
       });
     }
     setDrawShowFalse();
@@ -466,7 +464,7 @@ const Map = ({
             setOpen={setOpen}
           />
 
-          {/* <div className="h-full w-full">
+          <div className="h-full w-full">
             <div
               className="h-5 w-5 fixed left-0 top-0 mt-[12.50rem] ml-[0.95rem]"
               onMouseOver={() => {
@@ -487,14 +485,14 @@ const Map = ({
                 </div>
               </div>
             )}
-          </div> */}
+          </div>
 
-          {/* <NavigationControl
+          <NavigationControl
             position="top-left"
             style={{ marginBottom: "2rem" }}
-          /> */}
+          />
 
-          {/* {drawShow && (
+          {drawShow && (
             <DrawControl
               position="bottom-right"
               displayControlsDefault={false}
@@ -515,7 +513,7 @@ const Map = ({
                 setDrawShowFalse();
               }}
             />
-          )} */}
+          )}
 
           {/* INFO: Sector main cluster */}
           {neighborhoods?.map((neighborhood) => (
