@@ -104,7 +104,6 @@ const CustomMarker = ({ neighborhood, onClick, names }: CustomMarkerProps) => {
           onClick={(e) => {
             // e.originalEvent.cancelBubble
             // e.originalEvent.preventDefault();
-
             e.originalEvent.stopPropagation();
             onClick({ slug });
             setShow(false);
@@ -202,7 +201,14 @@ const Map = ({
 
       const neighborhoodAsFeature = transformPlaceToFeature(data);
       if (neighborhoodAsFeature) fitBounds(neighborhoodAsFeature);
-      setListings(data.listingLocations);
+
+      const listings: Listing[] = [];
+      data.listingLocations.map((property) => {
+        property.listings.map((listing) => {
+          listings.push(listing);
+        });
+      });
+      setListings(listings);
     },
   });
 
@@ -246,19 +252,23 @@ const Map = ({
     if (!mapRef.current) return;
     const map = mapRef.current.getMap();
     const bounds = map.getBounds();
-    const listings = [];
-    // for (const place of places) {
-    //   if (
-    //     bounds.contains({
-    //       lat: place.center.latitude,
-    //       lng: place.center.longitude,
-    //     })
-    //   ) {
-    //     listings.push(place.listing);
-    //   }
-    // }
-    // const flattened = listings.flat();
-    // setListings(flattened);
+    const listings: Listing[] = [];
+    for (const neighborhood of neighborhoods) {
+      if (
+        bounds.contains({
+          lat: parseFloat(neighborhood.lat),
+          lng: parseFloat(neighborhood.lng),
+        })
+      ) {
+        neighborhood.listingLocations.forEach((property) => {
+          property.listings.map((listing) => {
+            listings.push(listing);
+          });
+        });
+      }
+    }
+    const flattened = listings.flat();
+    setListings(flattened);
   };
 
   const onClickMap = (event: MapLayerMouseEvent) => {
@@ -347,10 +357,6 @@ const Map = ({
   };
 
   const [listSlide, setListSlide] = useState(false);
-
-  // console.log("listSlide", listSlide);
-
-  // console.log("listingLocations", listingLocations);
 
   return (
     <>
@@ -535,9 +541,9 @@ const Map = ({
                 onClick={(e) => {
                   e.originalEvent.stopPropagation();
                   // handleListingClick(listing);
-
+                  if (!listing.listings[0]) return;
                   if (listing.listings.length < 2) {
-                    setListing(listing);
+                    setListing(listing.listings[0]);
                   } else {
                   }
                 }}

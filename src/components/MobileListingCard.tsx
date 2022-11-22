@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { transformIntToMoney } from "@/lib/transformInt";
-import type { Listing, ListingLocation } from "@prisma/client";
+import type { Listing } from "@prisma/client";
 
 const MobileListingCard = (listing: Listing) => {
-  console.log("listing from mobileListingCard", listing);
+  // console.log("listing from mobileListingCard", listing);
   return (
     <div className="card w-full h-auto shadow-md rounded border-black/[.1] border-[1px]">
       <div className="">

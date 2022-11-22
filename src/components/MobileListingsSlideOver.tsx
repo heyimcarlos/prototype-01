@@ -1,26 +1,37 @@
 import React from "react";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useSidebar } from "@/stores/useSidebar";
 import { useSectors } from "@/stores/useSectors";
 import MobileListingCard from "./MobileListingCard";
 import { useSelectedListing } from "@/stores/useSelectedListing";
-import { divide } from "lodash";
-import { Listing } from "@prisma/client";
-// import { getServerSideProps } from "@/pages/map";
+import type { Listing } from "@prisma/client";
 
-const MobileListingsSlideOver = ({ listSlide, setListSlide, setOpen }) => {
+type MobileListingSlideOverTypes = {
+  listSlide: boolean;
+  setListSlide: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const MobileListingsSlideOver = ({
+  listSlide,
+  setListSlide,
+  setOpen,
+}: MobileListingSlideOverTypes) => {
   const listings = useSidebar((state) => state.listings);
   const sectors = useSectors((state) => state.sectors);
   const setListing = useSelectedListing((state) => state.setListing);
 
   let num = 0;
   sectors.forEach((sect) => {
-    console.log("sect", sect);
-    num += sect.listingLocations.length;
+    sect.listingLocations.forEach((property) => {
+      num += property.listings.length;
+    });
   });
-  console.log("num", num);
+
+  console.log("listings", listings);
+
   return (
     <Transition.Root show={listSlide} as={Fragment}>
       <Dialog
@@ -30,11 +41,8 @@ const MobileListingsSlideOver = ({ listSlide, setListSlide, setOpen }) => {
           return;
         }}
       >
-        {/* <div className="fixed inset-0" /> */}
         <div className="fixed" />
-        {/* <div className="fixed inset-0 overflow-hidden"> */}
         <div className="fixed overflow-hidden">
-          {/* <div className="absolute inset-0 overflow-hidden"> */}
           <div className="absolute overflow-hidden">
             <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pt-[5.1rem]">
               <Transition.Child
@@ -70,9 +78,9 @@ const MobileListingsSlideOver = ({ listSlide, setListSlide, setOpen }) => {
                       </div>
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                      {/* {listings.length < 1 && sectors.length < 1 && (
+                      {listings.length < 1 && sectors.length < 1 && (
                         <div>No listing to show move the map</div>
-                      )} */}
+                      )}
 
                       {sectors.map((sector) =>
                         sector.listingLocations.map((listingLocation) => {
@@ -102,69 +110,43 @@ const MobileListingsSlideOver = ({ listSlide, setListSlide, setOpen }) => {
                           } else {
                             return listingLocation.listings.map((property) => {
                               return (
-                                <div key={property.id}>HELLO FORM NESTED</div>
+                                <div
+                                  className="mb-2"
+                                  key={property.id}
+                                  onClick={() => {
+                                    setOpen(true);
+                                    setListing(property);
+                                    // setLeftListing(listing);
+                                    // setLeftSlideOver(true);
+                                  }}
+                                >
+                                  <MobileListingCard {...property} />
+                                </div>
                               );
                             });
                           }
                         })
                       )}
 
-                      {/*PREVIOUS ONE BELOW*/}
+                      {/*SECOND CALL IF THERE ARE NO NEIGHBORHOODS SELECTED*/}
 
-                      {/* {sectors.map((sector) =>
-                        sector.listingLocations.map((listing) => (
-                          <div
-                            className="mb-2"
-                            key={listing.id}
-                            onClick={() => {
-                              setOpen(true);
-                              setListing(listing);
-                              // setLeftListing(listing);
-                              // setLeftSlideOver(true);
-                            }}
-                          >
-                            <MobileListingCard listing={listing} />
-                          </div>
-                        ))
-                      )} */}
-
-                      {/*SECOND CALL IF THERE ARE NOT NEIGHBORHOODS SELECTED*/}
-
-                      {/* {sectors.length < 1 &&
-                        listings.forEach((listing) => {
-                          return listing.listings.map((property) => (
+                      {sectors.length < 1 &&
+                        listings.map((listing) => {
+                          return (
                             <div
                               className="flex justify-center mb-2"
                               key={listing.id}
                               onClick={() => {
                                 setOpen(true);
-                                setListing(property);
+                                setListing(listing);
                                 // setLeftListing(listing);
                                 // setLeftSlideOver(true);
                               }}
                             >
-                              <MobileListingCard {...property} />
+                              <MobileListingCard {...listing} />
                             </div>
-                          ));
-                        })} */}
-
-                      {/*PREVIOUS ONE BELOW*/}
-
-                      {/* {sectors.length < 1 &&
-                        listings.map((listing) => (
-                          <div
-                            className="flex justify-center mb-2"
-                            key={listing.id}
-                            onClick={() => {
-                              setOpen(true);
-                              setListing(listing);
-                              // setLeftListing(listing);
-                              // setLeftSlideOver(true);
-                            }}
-                          >
-                            <MobileListingCard listing={listing} />
-                          </div>
-                        ))} */}
+                          );
+                        })}
                     </div>
                   </div>
                 </Dialog.Panel>

@@ -97,7 +97,7 @@ model Neighborhood {
 model Listing {
   id                Int               @id @default(autoincrement())
   name              String
-  slug              String            @unique
+  slug              String            
   bio               String
   price             Int
   currency          Currency          @default(DOP)

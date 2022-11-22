@@ -2,20 +2,16 @@ import Image from "next/image";
 import React from "react";
 import house from "../../public/assets/images/house1.jpeg";
 import { HeartIcon } from "@heroicons/react/24/outline";
-import type { Listing, ListingLocation } from "@prisma/client";
+import type { Listing } from "@prisma/client";
 
 type MobilePreviewTypes = {
-  listing: ListingLocation & { listings: Listing[] };
+  listing: Listing;
   setOpen: (arg: boolean) => void;
 };
 
 const MobilePreviewListing = ({ listing, setOpen }: MobilePreviewTypes) => {
-  const property = listing.listings[0];
+  const property = listing;
 
-  // let ba = null;
-  // if (property) ba = property.fullBathrooms + property.halfBathrooms;
-  // console.log("listing", listing);
-  // console.log("property", property);
   console.log("listingLocation", listing);
   return (
     <>
@@ -38,7 +34,7 @@ const MobilePreviewListing = ({ listing, setOpen }: MobilePreviewTypes) => {
           </div>
           <div className="absolute bottom-0  mb-2 text-black leading-5 text-[15px]">
             <span className="block">
-              <b>{property?.bedrooms}</b> bd |{" "}
+              <b>{property.bedrooms}</b> bd |{" "}
               <b>
                 {property
                   ? property.fullBathrooms + property.halfBathrooms
