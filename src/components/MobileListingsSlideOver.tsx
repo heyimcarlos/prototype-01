@@ -7,6 +7,7 @@ import { useSectors } from "@/stores/useSectors";
 import MobileListingCard from "./MobileListingCard";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import type { Listing } from "@prisma/client";
+import { sector } from "@turf/turf";
 
 type MobileListingSlideOverTypes = {
   listSlide: boolean;
@@ -104,7 +105,10 @@ const MobileListingsSlideOver = ({
                                   // setLeftSlideOver(true);
                                 }}
                               >
-                                <MobileListingCard {...listing} />
+                                <MobileListingCard
+                                  listing={listing}
+                                  sectorName={sector.name}
+                                />
                               </div>
                             );
                           } else {
@@ -120,7 +124,10 @@ const MobileListingsSlideOver = ({
                                     // setLeftSlideOver(true);
                                   }}
                                 >
-                                  <MobileListingCard {...property} />
+                                  <MobileListingCard
+                                    listing={property}
+                                    sectorName={sector.name}
+                                  />
                                 </div>
                               );
                             });
@@ -143,7 +150,10 @@ const MobileListingsSlideOver = ({
                                 // setLeftSlideOver(true);
                               }}
                             >
-                              <MobileListingCard {...listing} />
+                              <MobileListingCard
+                                listing={listing}
+                                sectorName={sector.name}
+                              />
                             </div>
                           );
                         })}

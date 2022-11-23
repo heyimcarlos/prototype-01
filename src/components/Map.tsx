@@ -64,13 +64,17 @@ type MapProps = {
   neighborhoods: NeighborhoodsType;
 };
 
-type CustomMarkerProps = {
+type CustomMarkerPropsTypes = {
   neighborhood: MapProps["neighborhoods"][number];
   onClick: ({ slug }: { slug: string }) => void;
   names: string[];
 };
 
-const CustomMarker = ({ neighborhood, onClick, names }: CustomMarkerProps) => {
+const CustomMarker = ({
+  neighborhood,
+  onClick,
+  names,
+}: CustomMarkerPropsTypes) => {
   const [show, setShow] = useState(true);
   const globalShow = useGlobalShow((state) => state.globalShow);
   const globalHide = useGlobalHide((state) => state.globalHide);
@@ -241,12 +245,6 @@ const Map = ({
       );
     }
   }, [sectors, mapRef]);
-
-  // const handleListingClick = (
-  //   listing: MapProps["places"][number]["listing"][number]
-  // ) => {
-  //   setCurListingId(String(listing.id));
-  // };
 
   const showVisibleMarkers = () => {
     if (!mapRef.current) return;
@@ -515,15 +513,12 @@ const Map = ({
             />
           )}
 
-          {/* INFO: Sector main cluster */}
+          {/* INFO: Neighborhoods marker for main clusters */}
           {neighborhoods?.map((neighborhood) => (
-            // @INFO: This show toggler should be inside the marker component or the child component. That way each marker can be toggled individually.
-
             <CustomMarker
               key={`marker-${neighborhood.id}`}
               neighborhood={neighborhood}
               onClick={() => {
-                console.log("HELLOOOOOOO");
                 const slug = neighborhood.slug;
                 neighborhoodMutation.mutate({ slug });
               }}
@@ -531,43 +526,41 @@ const Map = ({
             />
           ))}
 
-          {/* @INFO: Within bounds listings */}
-
+          {/* @INFO: Listing markers withing neighborhood bounds */}
           {sectors.map((sector) =>
-            sector.listingLocations.map((listing) => (
+            sector.listingLocations.map((listingLocation) => (
               <Marker
                 onClick={(e) => {
                   e.originalEvent.stopPropagation();
-                  // handleListingClick(listing);
-                  if (!listing.listings[0]) return;
-                  if (listing.listings.length < 2) {
-                    setListing(listing.listings[0]);
+                  if (!listingLocation.listings[0]) return;
+                  if (listingLocation.listings.length < 2) {
+                    setListing(listingLocation.listings[0]);
                   } else {
                   }
                 }}
-                latitude={parseFloat(listing.lat)}
-                longitude={parseFloat(listing.lng)}
-                key={`listing-${listing.id}`}
+                latitude={parseFloat(listingLocation.lat)}
+                longitude={parseFloat(listingLocation.lng)}
+                key={`listing-${listingLocation.id}`}
               >
                 <div
                   className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center border-[0.05rem] border-black`}
                   style={{
                     opacity: curListingId
-                      ? Number(curListingId) === listing.id
+                      ? Number(curListingId) === listingLocation.id
                         ? 1
                         : 0.4
                       : 1,
                   }}
                 >
                   <span className="text-sm">
-                    {listing.listings.length > 1
-                      ? `${listing.listings.length} Listings`
-                      : listing.listings[0]?.price
+                    {listingLocation.listings.length > 1
+                      ? `${listingLocation.listings.length} Listings`
+                      : listingLocation.listings[0]?.price
                       ? `$${new Intl.NumberFormat("en-US", {
                           maximumFractionDigits: 1,
                           notation: "compact",
                           compactDisplay: "short",
-                        }).format(listing.listings[0]?.price)}`
+                        }).format(listingLocation.listings[0]?.price)}`
                       : null}
                   </span>
                 </div>

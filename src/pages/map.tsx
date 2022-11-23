@@ -83,14 +83,6 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           />
         )}
 
-        {/* <SlideOver open={open} setOpen={setOpen} listing={listing} /> */}
-
-        {/* <LeftSlideOver
-          leftSlideOver={leftSlideOver}
-          setLeftSlideOver={setLeftSlideOver}
-          leftListing={leftListing}
-        /> */}
-
         {listing && (
           <MobilePreviewListing
             listing={listing as Listing}
@@ -148,25 +140,10 @@ export type NeighborhoodsType = (Neighborhood & {
 export const getServerSideProps = async ({
   query,
 }: GetServerSidePropsContext) => {
-  // const listingLocations = await prisma.listingLocation.findMany({
-  //   include: {
-  //     listings: {},
-  //   },
-  // });
-
+  //
   const neighborhoods = await prisma.neighborhood.findMany({
     include: { listingLocations: { include: { listings: {} } } },
   });
-  // const places = await prisma.place.findMany({
-  //   include: {
-  //     center: true,
-  //     listing: {
-  //       include: {
-  //         location: true,
-  //       },
-  //     },
-  //   },
-  // });
 
   const initialViewport = {
     longitude: -69.94115,

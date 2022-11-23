@@ -20,7 +20,7 @@ type SectorsState = {
       | {
           name: string;
           bounds: JSONValue;
-          listings: (ListingLocation & { listings: Listing[] })[];
+          listingLocations: (ListingLocation & { listings: Listing[] })[];
         }
       | undefined
   ) => void;
