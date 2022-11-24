@@ -3,35 +3,40 @@ import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useSidebar } from "@/stores/useSidebar";
-import { useSectors } from "@/stores/useSectors";
+import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import MobileListingCard from "./MobileListingCard";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import type { Listing } from "@prisma/client";
 import { sector } from "@turf/turf";
+import { NeighborhoodsType } from "@/pages/map";
+import { divide } from "lodash";
 
 type MobileListingSlideOverTypes = {
   listSlide: boolean;
   setListSlide: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  neighborhoods: NeighborhoodsType;
 };
 
 const MobileListingsSlideOver = ({
   listSlide,
   setListSlide,
   setOpen,
+  neighborhoods,
 }: MobileListingSlideOverTypes) => {
-  const listings = useSidebar((state) => state.listings);
-  const sectors = useSectors((state) => state.sectors);
+  const listingLocations = useSidebar((state) => state.listingLocations);
+  const neighborhoodsState = useNeighborhoods((state) => state.neighborhoods);
   const setListing = useSelectedListing((state) => state.setListing);
+  const setNeighborhood = useSelectedListing((state) => state.setNeighborhood);
 
   let num = 0;
-  sectors.forEach((sect) => {
-    sect.listingLocations.forEach((property) => {
-      num += property.listings.length;
+  neighborhoodsState.forEach((neighborhood) => {
+    neighborhood.listingLocations.forEach((listingLocation) => {
+      num += listingLocation.listings.length;
     });
   });
 
-  console.log("listings", listings);
+  console.log("listings", listingLocations);
 
   return (
     <Transition.Root show={listSlide} as={Fragment}>
@@ -55,16 +60,19 @@ const MobileListingsSlideOver = ({
                 leaveFrom="translate-y-0"
                 leaveTo="translate-y-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-screen">
+                <Dialog.Panel
+                  className="pointer-events-auto w-screen"
+                  draggable={true}
+                >
                   <div className="flex h-full flex-col overflow-y-scroll bg-white py-2 shadow-xl">
                     <div className="px-4 sm:px-6 -mb-4">
                       <div className="flex items-start justify-between">
                         <Dialog.Title className="text-md font-medium text-gray-900 mt-[0.1rem]">
-                          {`${
+                          {/* {`${
                             listings.length > 0 && sectors.length < 1
                               ? listings.length
                               : num
-                          } Homes in this area`}
+                          } Homes in this area`} */}
                         </Dialog.Title>
                         <div className="ml-3 flex h-7 items-center">
                           <button
@@ -79,12 +87,12 @@ const MobileListingsSlideOver = ({
                       </div>
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                      {listings.length < 1 && sectors.length < 1 && (
+                      {/* {listingLocations.length < 1 && sectors.length < 1 && (
                         <div>No listing to show move the map</div>
-                      )}
+                      )} */}
 
-                      {sectors.map((sector) =>
-                        sector.listingLocations.map((listingLocation) => {
+                      {neighborhoodsState.map((neighborhood) =>
+                        neighborhood.listingLocations.map((listingLocation) => {
                           if (listingLocation.listings.length === 1) {
                             let listing: Listing | null;
 
@@ -94,6 +102,13 @@ const MobileListingsSlideOver = ({
 
                             if (!listing) return;
 
+                            const neighborhoodName = neighborhoods.filter(
+                              (neighborhood) =>
+                                neighborhood.id ===
+                                listingLocation.neighborhoodId
+                            )[0]?.name;
+                            if (!neighborhoodName) return;
+
                             return (
                               <div
                                 className="mb-2"
@@ -101,18 +116,34 @@ const MobileListingsSlideOver = ({
                                 onClick={() => {
                                   setOpen(true);
                                   setListing(listing);
+                                  setNeighborhood(
+                                    neighborhood.name === "Custom Boundary"
+                                      ? neighborhoodName
+                                      : neighborhood.name
+                                  );
                                   // setLeftListing(listing);
                                   // setLeftSlideOver(true);
                                 }}
                               >
                                 <MobileListingCard
                                   listing={listing}
-                                  sectorName={sector.name}
+                                  sectorName={
+                                    neighborhood.name === "Custom Boundary"
+                                      ? neighborhoodName
+                                      : neighborhood.name
+                                  }
                                 />
                               </div>
                             );
                           } else {
                             return listingLocation.listings.map((property) => {
+                              const neighborhoodName = neighborhoods.filter(
+                                (neighborhood) =>
+                                  neighborhood.id ===
+                                  listingLocation.neighborhoodId
+                              )[0]?.name;
+                              if (!neighborhoodName) return;
+
                               return (
                                 <div
                                   className="mb-2"
@@ -120,13 +151,22 @@ const MobileListingsSlideOver = ({
                                   onClick={() => {
                                     setOpen(true);
                                     setListing(property);
+                                    setNeighborhood(
+                                      neighborhood.name === "Custom Boundary"
+                                        ? neighborhoodName
+                                        : neighborhood.name
+                                    );
                                     // setLeftListing(listing);
                                     // setLeftSlideOver(true);
                                   }}
                                 >
                                   <MobileListingCard
                                     listing={property}
-                                    sectorName={sector.name}
+                                    sectorName={
+                                      neighborhood.name === "Custom Boundary"
+                                        ? neighborhoodName
+                                        : neighborhood.name
+                                    }
                                   />
                                 </div>
                               );
@@ -137,25 +177,35 @@ const MobileListingsSlideOver = ({
 
                       {/*SECOND CALL IF THERE ARE NO NEIGHBORHOODS SELECTED*/}
 
-                      {sectors.length < 1 &&
-                        listings.map((listing) => {
-                          return (
-                            <div
-                              className="flex justify-center mb-2"
-                              key={listing.id}
-                              onClick={() => {
-                                setOpen(true);
-                                setListing(listing);
-                                // setLeftListing(listing);
-                                // setLeftSlideOver(true);
-                              }}
-                            >
-                              <MobileListingCard
-                                listing={listing}
-                                sectorName={sector.name}
-                              />
-                            </div>
+                      {neighborhoodsState.length < 1 &&
+                        listingLocations.map((listingLocation) => {
+                          const neighborhood = neighborhoods.filter(
+                            (neighborhood) =>
+                              neighborhood.id === listingLocation.neighborhoodId
                           );
+                          const neighborhoodName = neighborhood[0]?.name;
+                          if (!neighborhoodName) return;
+
+                          return listingLocation.listings.map((listing) => {
+                            return (
+                              <div
+                                className="flex justify-center mb-2"
+                                key={listing.id}
+                                onClick={() => {
+                                  setOpen(true);
+                                  setListing(listing);
+                                  setNeighborhood(neighborhoodName);
+                                  // setLeftListing(listing);
+                                  // setLeftSlideOver(true);
+                                }}
+                              >
+                                <MobileListingCard
+                                  listing={listing}
+                                  sectorName={neighborhoodName}
+                                />
+                              </div>
+                            );
+                          });
                         })}
                     </div>
                   </div>

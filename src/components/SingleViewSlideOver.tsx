@@ -6,6 +6,7 @@ import Image from "next/image";
 import house from "../../public/assets/images/house1.jpeg";
 import { useState } from "react";
 import type { Listing } from "@prisma/client";
+import { useSelectedListing } from "@/stores/useSelectedListing";
 // import { prisma } from "@/server/db/client";
 // import { GetServerSidePropsContext } from "next";
 
@@ -21,20 +22,9 @@ const SingleViewSlideOver = ({
   listing,
 }: SingleViewSlideOverTypes) => {
   const [selected, setSelected] = useState("");
+  const neighborhood = useSelectedListing((state) => state.neighborhood);
+  console.log(neighborhood, "neighborhood from singleViewSlideOver");
 
-  // const myFunc = async () => {
-  //   const neighborhood = await prisma.neighborhood.findFirst({
-  //     include: {
-  //       listingLocations: {
-  //         include: { listings: { where: { id: listing.id } } },
-  //       },
-  //     },
-  //   });
-
-  //   console.log(neighborhood);
-  // };
-
-  // myFunc();
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
@@ -108,7 +98,7 @@ const SingleViewSlideOver = ({
                                 sqft
                               </h3>
                               <p className="block text-md text-gray-500 mt-2">
-                                {listing.name}
+                                {neighborhood} - {listing.name}
                                 <span className="ml-2">{}</span>
                               </p>
                             </div>

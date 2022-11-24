@@ -4,14 +4,14 @@ import create from "zustand";
 
 type SidebarState = {
   isOpen: boolean;
-  listings: Listing[];
-  // listings: (ListingLocation & { listings: Listing[] })[];
+  // listings: Listing[];
+  listingLocations: (ListingLocation & { listings: Listing[] })[];
   selectedListing: (ListingLocation & { listings: Listing[] })[] | null;
   toggle: () => void;
-  setListings: (listings: Listing[]) => void;
-  // setListings: (
-  //   listings: (ListingLocation & { listings: Listing[] })[]
-  // ) => void;
+  // setListings: (listings: Listing[]) => void;
+  setListings: (
+    listings: (ListingLocation & { listings: Listing[] })[]
+  ) => void;
   setSelectedListing: (
     listing: (ListingLocation & { listings: Listing[] })[] | null
   ) => void;
@@ -19,12 +19,13 @@ type SidebarState = {
 
 export const useSidebar = create<SidebarState>((set) => ({
   isOpen: true,
-  listings: [],
+  listingLocations: [],
   selectedListing: null,
   toggle: () => set((state) => ({ isOpen: !state.isOpen })),
-  setListings: (listings: Listing[]) => set(() => ({ listings })),
-  // setListings: (listings: (ListingLocation & { listings: Listing[] })[]) =>
-  //   set(() => ({ listings })),
+  // setListings: (listings: Listing[]) => set(() => ({ listings })),
+  setListings: (
+    listingLocations: (ListingLocation & { listings: Listing[] })[]
+  ) => set(() => ({ listingLocations })),
   setSelectedListing: (
     listing: (ListingLocation & { listings: Listing[] })[] | null
   ) => set(() => ({ selectedListing: listing })),

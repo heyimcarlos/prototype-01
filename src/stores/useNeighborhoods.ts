@@ -2,21 +2,21 @@ import type { Listing, ListingLocation } from "@prisma/client";
 import type { JSONValue } from "superjson/dist/types";
 import create from "zustand";
 
-type SectorsState = {
-  sectors: {
+type NeighborhoodsState = {
+  neighborhoods: {
     name: string;
     bounds: JSONValue;
     listingLocations: (ListingLocation & { listings: Listing[] })[];
     // listings: (Listing & { location: Coordinate })[];
   }[];
-  addSector: (sector: {
+  addNeighborhood: (neighrborhoods: {
     name: string;
     bounds: JSONValue;
     listingLocations: (ListingLocation & { listings: Listing[] })[];
   }) => void;
-  deleteAllSectors: () => void;
-  deleteThisSector: (
-    sectors:
+  deleteAllNeighborhoods: () => void;
+  deleteThisNeighborhood: (
+    neighborhoods:
       | {
           name: string;
           bounds: JSONValue;
@@ -26,13 +26,15 @@ type SectorsState = {
   ) => void;
 };
 
-export const useSectors = create<SectorsState>((set) => ({
-  sectors: [],
-  addSector: (sector) =>
-    set((state) => ({ sectors: [...state.sectors, sector] })),
-  deleteAllSectors: () => set(() => ({ sectors: [] })),
-  deleteThisSector: (sector) =>
+export const useNeighborhoods = create<NeighborhoodsState>((set) => ({
+  neighborhoods: [],
+  addNeighborhood: (neighborhood) =>
+    set((state) => ({ neighborhoods: [...state.neighborhoods, neighborhood] })),
+  deleteAllNeighborhoods: () => set(() => ({ neighborhoods: [] })),
+  deleteThisNeighborhood: (neighborhood) =>
     set((state) => ({
-      sectors: state.sectors.filter((sec) => sec.name !== sector?.name),
+      neighborhoods: state.neighborhoods.filter(
+        (hood) => hood.name !== neighborhood?.name
+      ),
     })),
 }));

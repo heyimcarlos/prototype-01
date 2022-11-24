@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
-import { useSectors } from "@/stores/useSectors";
+import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import { XCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useDrawShow } from "@/stores/useDrawShow";
@@ -10,8 +10,10 @@ import { useDrawControls } from "@/stores/useDrawControls";
 import useWindowSize from "@/hooks/useWindowSize";
 
 export default function SectorsFlyoutMenu() {
-  const sectors = useSectors((state) => state.sectors);
-  const deleteThisSector = useSectors((state) => state.deleteThisSector);
+  const neighborhoods = useNeighborhoods((state) => state.neighborhoods);
+  const deleteThisSector = useNeighborhoods(
+    (state) => state.deleteThisNeighborhood
+  );
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
   const setDrawShowTrue = useDrawShow((state) => state.setDrawShowTrue);
   const setGlobalHideFalse = useGlobalHide((state) => state.setGlobalHideFalse);
@@ -33,13 +35,13 @@ export default function SectorsFlyoutMenu() {
 
   return (
     <>
-      {sectors.length > 1 && (
+      {neighborhoods.length > 1 && (
         <Popover className={`${isMobile ? "inline" : "ml-3"}`}>
           <>
             <Popover.Button
               className={`text-gray-500 px-3 mr-[0.2rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900`}
             >
-              <span>{`${sectors.length - 1} More`}</span>
+              <span>{`${neighborhoods.length - 1} More`}</span>
             </Popover.Button>
 
             <Transition
@@ -60,22 +62,22 @@ export default function SectorsFlyoutMenu() {
 
                 <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="relative flex flex-wrap bg-white pl-2 gap-1 py-3 sm:p-1 ">
-                    {sectors.map((sector) => (
+                    {neighborhoods.map((neighborhood) => (
                       <div
                         className="pr-3 border-2 rounded-xl bg-white flex justify-center items-center py-[0.03rem]"
-                        key={sector.name}
+                        key={neighborhood.name}
                       >
-                        <span className="pl-3">{sector.name}</span>
+                        <span className="pl-3">{neighborhood.name}</span>
                         <div
                           onClick={() => {
-                            if (sector.name === "Custom Boundary") {
+                            if (neighborhood.name === "Custom Boundary") {
                               setDrawShowTrue();
                               setGlobalHideFalse();
                               setShowCustomSearchFalse();
                               setSearchFalse();
                               setDrawDefaultSimple();
                             }
-                            deleteThisSector(sector);
+                            deleteThisSector(neighborhood);
                             setGlobalShowTrue();
                           }}
                         >

@@ -12,7 +12,7 @@ import type { NextPageWithLayout } from "./_app";
 import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
 import ListingCard from "@/components/ListingCard";
-import { useSectors } from "@/stores/useSectors";
+import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import SingleViewSlideOver from "@/components/SingleViewSlideOver";
 import LeftSlideOver from "@/components/LeftSlideOver";
 import { useSelectedListing } from "@/stores/useSelectedListing";
@@ -33,8 +33,8 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
   const mapRef = useRef<MapRef>(null);
 
-  const listings = useSidebar((state) => state.listings);
-  const sectors = useSectors((state) => state.sectors);
+  const listingLocations = useSidebar((state) => state.listingLocations);
+  const neighborhoodsState = useNeighborhoods((state) => state.neighborhoods);
 
   const [open, setOpen] = useState(false);
   const [leftSlideOver, setLeftSlideOver] = useState(false);
@@ -91,9 +91,9 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         )}
 
         <div className="hidden min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
-          {listings.length < 1 && sectors.length < 1 && (
+          {/* {listings.length < 1 && sectors.length < 1 && (
             <div>No listing to show move the map</div>
-          )}
+          )} */}
           {/* {sectors.map((sector) =>
             sector.listings.map((listing) => (
               <div
@@ -128,7 +128,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
 MapPage.layout = MapLayout;
 
-// @INFO: Server side fetching of places
+// @INFO: Server side fetching of neighborhoods
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 export type NeighborhoodsType = (Neighborhood & {
@@ -142,7 +142,9 @@ export const getServerSideProps = async ({
 }: GetServerSidePropsContext) => {
   //
   const neighborhoods = await prisma.neighborhood.findMany({
-    include: { listingLocations: { include: { listings: {} } } },
+    include: {
+      listingLocations: { include: { listings: {}, neighborhood: {} } },
+    },
   });
 
   const initialViewport = {
@@ -169,7 +171,5 @@ export const getServerSideProps = async ({
     },
   };
 };
-
-// console.log("serverSideProps", getServerSideProps);
 
 export default MapPage;

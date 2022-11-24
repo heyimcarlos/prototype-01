@@ -4,7 +4,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { useSectors } from "@/stores/useSectors";
+import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import SectorsFlyoutMenu from "../components/SectorsFlyoutMenu";
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useDrawShow } from "@/stores/useDrawShow";
@@ -15,8 +15,10 @@ import useWindowSize from "@/hooks/useWindowSize";
 import Image from "next/image";
 
 const TwTopbar = () => {
-  const sectors = useSectors((state) => state.sectors);
-  const deleteThisSector = useSectors((state) => state.deleteThisSector);
+  const neighborhoods = useNeighborhoods((state) => state.neighborhoods);
+  const deleteThisNeighborhood = useNeighborhoods(
+    (state) => state.deleteThisNeighborhood
+  );
   // const globalShow = useGlobalShow((state) => state.globalShow);
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
   const setDrawShowTrue = useDrawShow((state) => state.setDrawShowTrue);
@@ -93,19 +95,19 @@ const TwTopbar = () => {
 
               {isNotMobile && <SectorsFlyoutMenu />}
 
-              {isNotMobile && sectors.length > 0 && (
+              {isNotMobile && neighborhoods.length > 0 && (
                 <div className="flex ml-1">
                   <div
                     className="pr-10 mr-1 border-2 rounded-xl"
                     key={
-                      sectors.length > 0
-                        ? sectors[sectors.length - 1]?.name
+                      neighborhoods.length > 0
+                        ? neighborhoods[neighborhoods.length - 1]?.name
                         : ""
                     }
                   >
                     <span className="pl-3">
-                      {sectors.length > 0
-                        ? sectors[sectors.length - 1]?.name
+                      {neighborhoods.length > 0
+                        ? neighborhoods[neighborhoods.length - 1]?.name
                         : ""}
                     </span>
                     <div
@@ -118,9 +120,9 @@ const TwTopbar = () => {
                         borderRadius: "100%",
                       }}
                       onClick={() => {
-                        if (sectors.length < 1) return;
+                        if (neighborhoods.length < 1) return;
                         if (
-                          sectors[sectors.length - 1]?.name ===
+                          neighborhoods[neighborhoods.length - 1]?.name ===
                           "Custom Boundary"
                         ) {
                           setDrawShowTrue();
@@ -130,7 +132,9 @@ const TwTopbar = () => {
                           setDrawShowFalse();
                         }
 
-                        deleteThisSector(sectors[sectors.length - 1]);
+                        deleteThisNeighborhood(
+                          neighborhoods[neighborhoods.length - 1]
+                        );
                         setGlobalShowTrue();
                       }}
                     >

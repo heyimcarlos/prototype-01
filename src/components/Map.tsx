@@ -19,7 +19,11 @@ import type { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
 
-import type { Listing, ListingLocation } from "@prisma/client";
+import {
+  Listing,
+  ListingLocation,
+  ListingLocationStatus,
+} from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import slugify from "@/lib/slugify";
 import { transformIntToMoney } from "@/lib/transformInt";
@@ -27,7 +31,7 @@ import { transformIntToMoney } from "@/lib/transformInt";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import { useSidebar } from "@/stores/useSidebar";
-import { useSectors } from "../stores/useSectors";
+import { useNeighborhoods } from "../stores/useNeighborhoods";
 
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useGlobalHide } from "@/stores/useGlobalHide";
@@ -144,12 +148,14 @@ const Map = ({
   const setListings = useSidebar((state) => state.setListings);
 
   // const deleteAllSectors = useSectors((state) => state.deleteAllSectors);
-  const addSector = useSectors((state) => state.addSector);
-  const sectors = useSectors((state) => state.sectors);
-  const deleteThisSector = useSectors((state) => state.deleteThisSector);
+  const addNeighborhood = useNeighborhoods((state) => state.addNeighborhood);
+  const neighborhoodsState = useNeighborhoods((state) => state.neighborhoods);
+  const deleteThisSector = useNeighborhoods(
+    (state) => state.deleteThisNeighborhood
+  );
 
   const names: string[] = [];
-  sectors.forEach((sector) => names.push(sector.name));
+  neighborhoodsState.forEach((neighborhood) => names.push(neighborhood.name));
 
   const setShowCustomSearchTrue = useShowCustomSearch(
     (state) => state.setShowCustomSearchTrue
@@ -169,13 +175,14 @@ const Map = ({
   const setSearchFalse = useDrawControls((state) => state.setSearchFalse);
 
   const setListing = useSelectedListing((state) => state.setListing);
+  const setNeighborhood = useSelectedListing((state) => state.setNeighborhood);
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
     if (!mapRef.current) return;
 
-    if (sectors.length < 1) {
+    if (neighborhoodsState.length < 1) {
       const [minLng, minLat, maxLng, maxLat] = bbox(feature);
       mapRef.current.fitBounds(
         [
@@ -196,7 +203,7 @@ const Map = ({
     onSuccess: (data) => {
       console.log("data", data);
       if (!names.includes(data.name)) {
-        addSector({
+        addNeighborhood({
           name: data.name,
           bounds: data.bounds,
           listingLocations: data.listingLocations,
@@ -206,22 +213,22 @@ const Map = ({
       const neighborhoodAsFeature = transformPlaceToFeature(data);
       if (neighborhoodAsFeature) fitBounds(neighborhoodAsFeature);
 
-      const listings: Listing[] = [];
-      data.listingLocations.map((property) => {
-        property.listings.map((listing) => {
-          listings.push(listing);
-        });
+      const listings: (ListingLocation & {
+        listings: Listing[];
+      })[] = [];
+      data.listingLocations.map((listingLocation) => {
+        listings.push(listingLocation);
       });
       setListings(listings);
     },
   });
 
   useEffect(() => {
-    if (sectors.length > 1) {
+    if (neighborhoodsState.length > 1) {
       let allCurBounds: [][] = [];
 
-      sectors.forEach((sector) => {
-        allCurBounds = allCurBounds.concat(sector.bounds as [][]);
+      neighborhoodsState.forEach((neighborhood) => {
+        allCurBounds = allCurBounds.concat(neighborhood.bounds as [][]);
       });
 
       allCurBounds.push(allCurBounds[0] as []);
@@ -244,13 +251,13 @@ const Map = ({
         }
       );
     }
-  }, [sectors, mapRef]);
+  }, [neighborhoodsState, mapRef]);
 
   const showVisibleMarkers = () => {
     if (!mapRef.current) return;
     const map = mapRef.current.getMap();
     const bounds = map.getBounds();
-    const listings: Listing[] = [];
+    const listingsLocations: (ListingLocation & { listings: Listing[] })[] = [];
     for (const neighborhood of neighborhoods) {
       if (
         bounds.contains({
@@ -258,14 +265,15 @@ const Map = ({
           lng: parseFloat(neighborhood.lng),
         })
       ) {
-        neighborhood.listingLocations.forEach((property) => {
-          property.listings.map((listing) => {
-            listings.push(listing);
-          });
+        neighborhood.listingLocations.forEach((listingLocation) => {
+          // property.listings.map((listing) => {
+          //   listings.push(listing);
+          // });
+          listingsLocations.push(listingLocation);
         });
       }
     }
-    const flattened = listings.flat();
+    const flattened = listingsLocations.flat();
     setListings(flattened);
   };
 
@@ -288,9 +296,9 @@ const Map = ({
       // @INFO: @mtjosue This code breaks the map fitBounds setup.
       setOpen(false);
       if (
-        sectors.some((sector) => {
+        neighborhoods.some((neighborhood) => {
           const point = [event.lngLat.lng, event.lngLat.lat];
-          const poly = turf.polygon([sector.bounds] as Position[][]);
+          const poly = turf.polygon([neighborhood.bounds] as Position[][]);
 
           return turf.booleanPointInPolygon(point, poly);
         })
@@ -343,7 +351,7 @@ const Map = ({
     }
 
     if (customPolyBounds && !names.includes("Custom Boundary")) {
-      addSector({
+      addNeighborhood({
         name: "Custom Boundary",
         bounds: customPolyBounds[0],
         listingLocations: customListings,
@@ -379,9 +387,9 @@ const Map = ({
                   showVisibleCustomPolygonMarkers();
                   setSearchFalse();
                 } else {
-                  sectors.filter((sector) => {
-                    if (sector.name === "Custom Boundary") {
-                      deleteThisSector(sector);
+                  neighborhoodsState.filter((neighborhood) => {
+                    if (neighborhood.name === "Custom Boundary") {
+                      deleteThisSector(neighborhood);
                     }
                   });
                   setGlobalHideFalse();
@@ -394,14 +402,14 @@ const Map = ({
               {search ? "Search this area" : "Draw"}
             </button>
 
-            {sectors.map((sector) => {
-              if (sector.name === "Custom Boundary") {
+            {neighborhoodsState.map((neighborhood) => {
+              if (neighborhood.name === "Custom Boundary") {
                 return (
                   <button
                     className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 ml-[7.4rem] rounded-lg border-2 border-black"
-                    key={sector.name}
+                    key={neighborhood.name}
                     onClick={() => {
-                      deleteThisSector(sector);
+                      deleteThisSector(neighborhood);
                       setGlobalHideFalse();
                     }}
                   >
@@ -419,9 +427,9 @@ const Map = ({
                   setTimeout(() => {
                     setDrawShowTrue();
                   }, 100);
-                  sectors.filter((sector) => {
-                    if (sector.name === "Custom Boundary") {
-                      deleteThisSector(sector);
+                  neighborhoodsState.filter((neighborhood) => {
+                    if (neighborhood.name === "Custom Boundary") {
+                      deleteThisSector(neighborhood);
                     }
                   });
                   setSearchFalse();
@@ -460,6 +468,7 @@ const Map = ({
             listSlide={listSlide}
             setListSlide={setListSlide}
             setOpen={setOpen}
+            neighborhoods={neighborhoods}
           />
 
           <div className="h-full w-full">
@@ -485,10 +494,11 @@ const Map = ({
             )}
           </div>
 
+          {/* 
           <NavigationControl
             position="top-left"
             style={{ marginBottom: "2rem" }}
-          />
+          /> */}
 
           {drawShow && (
             <DrawControl
@@ -513,7 +523,8 @@ const Map = ({
             />
           )}
 
-          {/* INFO: Neighborhoods marker for main clusters */}
+          {/* INFO: NEIGHBORHOODS MARKERS FOR THE MAIN CLUSTERS */}
+
           {neighborhoods?.map((neighborhood) => (
             <CustomMarker
               key={`marker-${neighborhood.id}`}
@@ -526,15 +537,72 @@ const Map = ({
             />
           ))}
 
-          {/* @INFO: Listing markers withing neighborhood bounds */}
-          {sectors.map((sector) =>
-            sector.listingLocations.map((listingLocation) => (
+          {/* @INFO: LISTINGLOCATIONS MARKERS WITHIN NEIGHBORHOOD BOUNDS */}
+
+          {neighborhoodsState.map((neighborhood) =>
+            neighborhood.listingLocations.map((listingLocation) => {
+              const neighborhoodName = neighborhoods.filter(
+                (neighborhood) =>
+                  neighborhood.id === listingLocation.neighborhoodId
+              )[0]?.name;
+              if (!neighborhoodName) return;
+
+              return (
+                <Marker
+                  onClick={(e) => {
+                    e.originalEvent.stopPropagation();
+                    if (!listingLocation.listings[0]) return;
+                    if (listingLocation.listings.length < 2) {
+                      setListing(listingLocation.listings[0]);
+                      setNeighborhood(
+                        neighborhood.name === "Custom Boundary"
+                          ? neighborhoodName
+                          : neighborhood.name
+                      );
+                      // setNeighborhood(neighborhood.name);
+                    } else {
+                    }
+                  }}
+                  latitude={parseFloat(listingLocation.lat)}
+                  longitude={parseFloat(listingLocation.lng)}
+                  key={`listing-${listingLocation.id}`}
+                >
+                  <div
+                    className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center border-[0.05rem] border-black`}
+                    style={{
+                      opacity: curListingId
+                        ? Number(curListingId) === listingLocation.id
+                          ? 1
+                          : 0.4
+                        : 1,
+                    }}
+                  >
+                    <span className="text-sm">
+                      {listingLocation.listings.length > 1
+                        ? `${listingLocation.listings.length} Listings`
+                        : listingLocation.listings[0]?.price
+                        ? `$${new Intl.NumberFormat("en-US", {
+                            maximumFractionDigits: 1,
+                            notation: "compact",
+                            compactDisplay: "short",
+                          }).format(listingLocation.listings[0]?.price)}`
+                        : null}
+                    </span>
+                  </div>
+                </Marker>
+              );
+            })
+          )}
+
+          {/* {neighborhoodsState.map((neighborhood) =>
+            neighborhood.listingLocations.map((listingLocation) => (
               <Marker
                 onClick={(e) => {
                   e.originalEvent.stopPropagation();
                   if (!listingLocation.listings[0]) return;
                   if (listingLocation.listings.length < 2) {
                     setListing(listingLocation.listings[0]);
+                    setNeighborhood(neighborhood.name);
                   } else {
                   }
                 }}
@@ -566,16 +634,18 @@ const Map = ({
                 </div>
               </Marker>
             ))
-          )}
+          )} */}
 
-          {sectors.map((sector) => (
+          {neighborhoodsState.map((neighborhood) => (
             <Source
-              key={sector.name}
+              key={neighborhood.name}
               type="geojson"
-              data={turf.mask(turf.polygon([sector.bounds] as Position[][]))}
+              data={turf.mask(
+                turf.polygon([neighborhood.bounds] as Position[][])
+              )}
             >
               <Layer
-                id={`linelayer-zoom-out-bounds ${sector.name}`}
+                id={`linelayer-zoom-out-bounds ${neighborhood.name}`}
                 type="line"
                 source="line-source"
                 layout={{

@@ -3,6 +3,7 @@ import React from "react";
 import house from "../../public/assets/images/house1.jpeg";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import type { Listing } from "@prisma/client";
+import { useSelectedListing } from "@/stores/useSelectedListing";
 
 type MobilePreviewTypes = {
   listing: Listing;
@@ -11,6 +12,7 @@ type MobilePreviewTypes = {
 
 const MobilePreviewListing = ({ listing, setOpen }: MobilePreviewTypes) => {
   const property = listing;
+  const neighborhood = useSelectedListing((state) => state.neighborhood);
 
   console.log("listingLocation", listing);
   return (
@@ -26,7 +28,7 @@ const MobilePreviewListing = ({ listing, setOpen }: MobilePreviewTypes) => {
         </div>
         <div className="h-full w-[60%] ml-2 mt-2 flex">
           <div className="h-auto w-[85%]">
-            <span className="">Bella Vista</span>
+            <span className="">{neighborhood}</span>
             <span className="block text-xs">{listing.name}</span>
           </div>
           <div className="h-auto w-[15%] flex justify-end">
