@@ -20,6 +20,8 @@ import SectorsSelected from "@/components/SectorsSelected";
 import MobilePreviewListing from "@/components/MobilePreviewListing";
 import SlideOver from "@/components/SlideOver";
 import { Listing, ListingLocation, Neighborhood } from "@prisma/client";
+import { SwipeableDrawer } from "@material-ui/core";
+import SwipeableSingleView from "@/components/SwipeableSingleView";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   // listingLocations,
@@ -43,33 +45,6 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   const leftListing = useSelectedListing((state) => state.leftListing);
   const setLeftListing = useSelectedListing((state) => state.setLeftListing);
 
-  // ---------------------------------------------------------
-
-  let startingX;
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    startingX = e.touches[0]?.clientX;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    e.preventDefault();
-
-    let touch = e.touches[0];
-    let change = startingX - touch?.clientX;
-
-    singleView.style.right = "-" + change + "px";
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    let change = e.changedTouches[0]?.clientX - startingX;
-    const half = screen.width / 4;
-
-    if (change < half) {
-    }
-  };
-
-  // ---------------------------------------------------------
-
   if (!isLoaded) return <div>Loading...</div>;
 
   return (
@@ -91,20 +66,31 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           />
         </div>
 
-        <div
-          id="sinleView"
-          onTouchStart={(e) => handleTouchStart(e)}
-          onTouchMove={(e) => handleTouchMove(e)}
-          onTouchEnd={(e) => handleTouchEnd(e)}
-        >
-          {listing && (
-            <SingleViewSlideOver
-              open={open}
-              setOpen={setOpen}
-              listing={listing}
-            />
-          )}
-        </div>
+        {/* {listing && (
+          <SwipeableDrawer
+            open={open}
+            onClose={() => setOpen(false)}
+            onOpen={() => {
+              // console.log("hi");
+            }}
+            disableBackdropTransition
+            disableEnforceFocus
+            style={{ height: "500px" }}
+            anchor="left"
+            hideBackdrop
+            hysteresis={0.1}
+          >
+            <SwipeableSingleView listing={listing} />
+          </SwipeableDrawer>
+        )} */}
+
+        {listing && (
+          <SingleViewSlideOver
+            open={open}
+            setOpen={setOpen}
+            listing={listing}
+          />
+        )}
 
         {/* {listing && (
           <SlideOver open={open} setOpen={setOpen} listing={listing} />

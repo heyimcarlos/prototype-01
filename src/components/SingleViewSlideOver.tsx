@@ -31,28 +31,37 @@ const SingleViewSlideOver = ({
         as="div"
         className="relative z-50"
         onClose={() => setSelected("")}
-        // onClose={setOpen}
       >
         <div className="fixed">
           <div className="absolute inset-0 overflow-hidden">
             <div className="pointer-events-none fixed inset-y-0 flex max-w-full">
               <Transition.Child
                 as={Fragment}
+                // enter="transform transition ease-in-out duration-500 sm:duration-700"
+                // enterFrom="translate-x-full"
+                // enterTo="translate-x-0"
+                // leave="transform transition ease-in-out duration-500 sm:duration-700"
+                // leaveFrom="translate-x-0"
+                // leaveTo="translate-x-full"
                 enter="transform transition ease-in-out duration-500 sm:duration-700"
-                enterFrom="translate-x-full"
+                enterFrom="-translate-x-full"
                 enterTo="translate-x-0"
                 leave="transform transition ease-in-out duration-500 sm:duration-700"
                 leaveFrom="translate-x-0"
-                leaveTo="translate-x-full"
+                leaveTo="-translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-full h-[calc(100vh-48px-33.4px)] bottom-0 fixed">
                   <div className="flex h-full w-full flex-col bg-white">
                     <div className="w-full h-auto">
-                      <div className="fixed z-10 right-0 mt-3 mr-3 flex h-7 items-center">
+                      <div className="fixed z-10 right-0 bottom-0 mb-3 mr-3 flex h-7 items-center">
                         <button
                           type="button"
-                          className=" mr-1 rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
-                          onClick={() => setOpen(false)}
+                          className=" mr-1 rounded-md bg-white text-gray-400 hover:text-gray-500 border-2 border-black focus:ring-black"
+                          // className=" mr-1 rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black border-2 border-black"
+                          onClick={() => {
+                            setOpen(false);
+                            setSelected("");
+                          }}
                         >
                           <span className="sr-only">Close panel</span>
                           <XMarkIcon className="h-6 w-6" aria-hidden="true" />
