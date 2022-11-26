@@ -7,9 +7,10 @@ import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import MobileListingCard from "./MobileListingCard";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import type { Listing } from "@prisma/client";
-import { sector } from "@turf/turf";
-import { NeighborhoodsType } from "@/pages/map";
-import { divide } from "lodash";
+// import { sector } from "@turf/turf";
+import type { NeighborhoodsType } from "@/pages/map";
+import { MapIcon } from "@heroicons/react/20/solid";
+// import { divide } from "lodash";
 
 type MobileListingSlideOverTypes = {
   listSlide: boolean;
@@ -29,11 +30,17 @@ const MobileListingsSlideOver = ({
   const setListing = useSelectedListing((state) => state.setListing);
   const setNeighborhood = useSelectedListing((state) => state.setNeighborhood);
 
-  let num = 0;
+  let noNeighborhoodsNum = 0;
+  let neighborhoodsNum = 0;
+
   neighborhoodsState.forEach((neighborhood) => {
     neighborhood.listingLocations.forEach((listingLocation) => {
-      num += listingLocation.listings.length;
+      neighborhoodsNum += listingLocation.listings.length;
     });
+  });
+
+  listingLocations.forEach((listingLocation) => {
+    noNeighborhoodsNum += listingLocation.listings.length;
   });
 
   console.log("listings", listingLocations);
@@ -64,17 +71,18 @@ const MobileListingsSlideOver = ({
                   className="pointer-events-auto w-screen"
                   draggable={true}
                 >
-                  <div className="flex h-full flex-col overflow-y-scroll bg-white py-2 shadow-xl">
+                  <div className="flex h-full flex-col overflow-y-scroll bg-white py-2 shadow-xl items-center">
                     <div className="px-4 sm:px-6 -mb-4">
                       <div className="flex items-start justify-between">
                         <Dialog.Title className="text-md font-medium text-gray-900 mt-[0.1rem]">
-                          {/* {`${
-                            listings.length > 0 && sectors.length < 1
-                              ? listings.length
-                              : num
-                          } Homes in this area`} */}
+                          {`${
+                            listingLocations.length > 0 &&
+                            neighborhoodsState.length < 1
+                              ? noNeighborhoodsNum
+                              : neighborhoodsNum
+                          } Homes in this area`}
                         </Dialog.Title>
-                        <div className="ml-3 flex h-7 items-center">
+                        {/* <div className="ml-3 flex h-7 items-center">
                           <button
                             type="button"
                             className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-indigo-500 focus:ring-offset-2"
@@ -83,13 +91,14 @@ const MobileListingsSlideOver = ({
                             <span className="sr-only">Close panel</span>
                             <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                           </button>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                      {/* {listingLocations.length < 1 && sectors.length < 1 && (
-                        <div>No listing to show move the map</div>
-                      )} */}
+                      {listingLocations.length < 1 &&
+                        neighborhoodsState.length < 1 && (
+                          <div>No listing to show move the map</div>
+                        )}
 
                       {neighborhoodsState.map((neighborhood) =>
                         neighborhood.listingLocations.map((listingLocation) => {
@@ -207,6 +216,22 @@ const MobileListingsSlideOver = ({
                             );
                           });
                         })}
+                    </div>
+                    <div
+                      onClick={() => setListSlide(false)}
+                      // className="fixed z-[51] h-10 w-[6rem] bg-indigo-600 bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
+                      className="fixed z-[51] h-10 w-[6rem] bg-black bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
+                      // className="fixed z-[51] h-10 w-[6rem] bg-gray-700 bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
+                    >
+                      Map
+                      <button
+                        type="button"
+                        className="ml-1"
+                        onClick={() => setListSlide(false)}
+                      >
+                        <span className="sr-only">Close panel</span>
+                        <MapIcon className="h-6 w-6" aria-hidden="true" />
+                      </button>
                     </div>
                   </div>
                 </Dialog.Panel>

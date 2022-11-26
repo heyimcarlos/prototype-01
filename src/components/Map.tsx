@@ -190,7 +190,7 @@ const Map = ({
           [maxLng, maxLat],
         ],
         {
-          padding: 10,
+          padding: { left: 20, top: 10, right: 20, bottom: 100 },
           animate: true,
           duration: 1400,
           essential: true,
@@ -471,7 +471,8 @@ const Map = ({
             neighborhoods={neighborhoods}
           />
 
-          <div className="h-full w-full">
+          {/* TOOL TIP */}
+          {/* <div className="h-full w-full">
             <div
               className="h-5 w-5 fixed left-0 top-0 mt-[12.50rem] ml-[0.95rem]"
               onMouseOver={() => {
@@ -492,7 +493,7 @@ const Map = ({
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* 
           <NavigationControl
