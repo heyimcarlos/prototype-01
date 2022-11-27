@@ -177,6 +177,8 @@ const Map = ({
   const setListing = useSelectedListing((state) => state.setListing);
   const setNeighborhood = useSelectedListing((state) => state.setNeighborhood);
 
+  const setSelectedListings = useSelectedListing((state) => state.setListings);
+
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
@@ -304,9 +306,11 @@ const Map = ({
         })
       ) {
         setListing(null);
+        setSelectedListings([]);
         return;
       } else {
       }
+      setSelectedListings([]);
       setListing(null);
 
       // const test = mapRef.current.getCenter();
@@ -555,13 +559,20 @@ const Map = ({
                     if (!listingLocation.listings[0]) return;
                     if (listingLocation.listings.length < 2) {
                       setListing(listingLocation.listings[0]);
+                      setSelectedListings([]);
                       setNeighborhood(
                         neighborhood.name === "Custom Boundary"
                           ? neighborhoodName
                           : neighborhood.name
                       );
-                      // setNeighborhood(neighborhood.name);
                     } else {
+                      setListing(null);
+                      setSelectedListings(listingLocation.listings);
+                      setNeighborhood(
+                        neighborhood.name === "Custom Boundary"
+                          ? neighborhoodName
+                          : neighborhood.name
+                      );
                     }
                   }}
                   latitude={parseFloat(listingLocation.lat)}

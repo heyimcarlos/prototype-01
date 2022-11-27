@@ -43,7 +43,7 @@ const MobileListingsSlideOver = ({
     noNeighborhoodsNum += listingLocation.listings.length;
   });
 
-  console.log("listings", listingLocations);
+  // console.log("listings", listingLocations);
 
   return (
     <Transition.Root show={listSlide} as={Fragment}>
@@ -219,9 +219,7 @@ const MobileListingsSlideOver = ({
                     </div>
                     <div
                       onClick={() => setListSlide(false)}
-                      // className="fixed z-[51] h-10 w-[6rem] bg-indigo-600 bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
                       className="fixed z-[51] h-10 w-[6rem] bg-black bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
-                      // className="fixed z-[51] h-10 w-[6rem] bg-gray-700 bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
                     >
                       Map
                       <button

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import house from "../../public/assets/images/house1.jpeg";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import type { Listing } from "@prisma/client";
@@ -11,17 +11,17 @@ type MobilePreviewTypes = {
 };
 
 const MobilePreviewListing = ({ listing, setOpen }: MobilePreviewTypes) => {
-  const property = listing;
   const neighborhood = useSelectedListing((state) => state.neighborhood);
-
-  console.log("listingLocation", listing);
+  const setListing = useSelectedListing((state) => state.setListing);
+  console.log(listing, "listing from mobile preview");
   return (
     <>
       <div
         onClick={() => {
+          setListing(listing);
           setOpen(true);
         }}
-        className="h-[8rem] w-[90%] rounded-xl bg-white fixed bottom-0 mb-[4rem] flex overflow-hidden shadow-2xl"
+        className="h-[8rem] rounded-xl bg-white fixed bottom-0 mb-8 flex overflow-hidden shadow-lg z-[50]"
       >
         <div className="h-[8.5rem] w-[40%] flex">
           <Image src={house} alt="" />
@@ -36,16 +36,14 @@ const MobilePreviewListing = ({ listing, setOpen }: MobilePreviewTypes) => {
           </div>
           <div className="absolute bottom-0  mb-2 text-black leading-5 text-[15px]">
             <span className="block">
-              <b>{property.bedrooms}</b> bd |{" "}
+              <b>{listing.bedrooms}</b> bd |{" "}
               <b>
-                {property
-                  ? property.fullBathrooms + property.halfBathrooms
-                  : null}
+                {listing ? listing.fullBathrooms + listing.halfBathrooms : null}
               </b>{" "}
-              ba | <b>{property?.squareFeet}</b> sqft
+              ba | <b>{listing?.squareFeet}</b> sqft
             </span>
 
-            <span className="block">${property?.price.toLocaleString()}</span>
+            <span className="block">${listing?.price.toLocaleString()}</span>
           </div>
         </div>
       </div>

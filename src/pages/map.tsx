@@ -19,9 +19,11 @@ import { useSelectedListing } from "@/stores/useSelectedListing";
 import SectorsSelected from "@/components/SectorsSelected";
 import MobilePreviewListing from "@/components/MobilePreviewListing";
 import SlideOver from "@/components/SlideOver";
-import { Listing, ListingLocation, Neighborhood } from "@prisma/client";
-import { SwipeableDrawer } from "@material-ui/core";
-import SwipeableSingleView from "@/components/SwipeableSingleView";
+import type { Listing, ListingLocation, Neighborhood } from "@prisma/client";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css";
+import SwiperCore, { Navigation, Pagination, Controller, Thumbs } from "swiper";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   // listingLocations,
@@ -44,8 +46,16 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   const listing = useSelectedListing((state) => state.listing);
   const leftListing = useSelectedListing((state) => state.leftListing);
   const setLeftListing = useSelectedListing((state) => state.setLeftListing);
+  const listings = useSelectedListing((state) => state.listings);
+
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [controlledSwiper, setControlledSwiper] = useState(null);
+
+  SwiperCore.use([Navigation, Pagination, Controller, Thumbs]);
 
   if (!isLoaded) return <div>Loading...</div>;
+
+  console.log(listings, "listings from map.page");
 
   return (
     <>
@@ -67,32 +77,6 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         </div>
 
         {/* {listing && (
-          <SwipeableDrawer
-            open={open}
-            onClose={() => setOpen(false)}
-            onOpen={() => {
-              // console.log("hi");
-            }}
-            disableBackdropTransition
-            disableEnforceFocus
-            style={{ height: "500px" }}
-            anchor="left"
-            hideBackdrop
-            hysteresis={0.1}
-          >
-            <SwipeableSingleView listing={listing} />
-          </SwipeableDrawer>
-        )} */}
-
-        {listing && (
-          <SingleViewSlideOver
-            open={open}
-            setOpen={setOpen}
-            listing={listing}
-          />
-        )}
-
-        {/* {listing && (
           <SlideOver open={open} setOpen={setOpen} listing={listing} />
         )} */}
 
@@ -104,19 +88,49 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           />
         )} */}
 
-        {/* {listing && (
+        {listing && (
           <SingleViewSlideOver
             open={open}
             setOpen={setOpen}
             listing={listing}
           />
-        )} */}
+        )}
 
-        {listing && (
+        {listing && listings.length < 2 && (
           <MobilePreviewListing
             listing={listing as Listing}
             setOpen={setOpen}
           />
+        )}
+
+        {listings.length > 0 && (
+          <div
+            onClick={() => {
+              setOpen(true);
+            }}
+            className="h-[10rem] w-[90%] rounded-xl fixed bottom-0 mb-[3rem] flex overflow-hidden"
+          >
+            <Swiper
+              id="main"
+              thumbs={{ swiper: thumbsSwiper }}
+              controller={{ control: controlledSwiper }}
+              tag="section"
+              wrapperTag="ul"
+              pagination
+              spaceBetween={0}
+              slidesPerView={1}
+            >
+              {listings.map((listing) => (
+                <SwiperSlide key={listing.id}>
+                  <MobilePreviewListing
+                    listing={listing as Listing}
+                    setOpen={setOpen}
+                  />
+                  {/* Hello {listing.id} */}!
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         )}
 
         <div className="hidden min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">

@@ -23,7 +23,7 @@ const SingleViewSlideOver = ({
 }: SingleViewSlideOverTypes) => {
   const [selected, setSelected] = useState("");
   const neighborhood = useSelectedListing((state) => state.neighborhood);
-  console.log(neighborhood, "neighborhood from singleViewSlideOver");
+  // console.log(neighborhood, "neighborhood from singleViewSlideOver");
 
   return (
     <Transition.Root show={open} as={Fragment}>
