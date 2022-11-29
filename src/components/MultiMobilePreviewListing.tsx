@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 import house from "../../public/assets/images/house1.jpeg";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import type { Listing } from "@prisma/client";
@@ -10,16 +10,22 @@ type MobilePreviewTypes = {
   setOpen: (arg: boolean) => void;
 };
 
-const MobilePreviewListing = ({ listing, setOpen }: MobilePreviewTypes) => {
+const MultiMobilePreviewListing = ({
+  listing,
+  setOpen,
+}: MobilePreviewTypes) => {
   const neighborhood = useSelectedListing((state) => state.neighborhood);
   const setListing = useSelectedListing((state) => state.setListing);
-  console.log(listing, "listing from mobile preview");
+  // console.log(listing, "listing from mobile preview");
+
   return (
     <>
       <div
         onClick={() => {
-          setListing(listing);
-          setOpen(true);
+          setTimeout(() => {
+            setListing(listing);
+            setOpen(true);
+          }, 100);
         }}
         className="h-[8rem] rounded-xl bg-white fixed bottom-0 mb-8 flex overflow-hidden shadow-lg z-[50]"
       >
@@ -51,4 +57,4 @@ const MobilePreviewListing = ({ listing, setOpen }: MobilePreviewTypes) => {
   );
 };
 
-export default MobilePreviewListing;
+export default MultiMobilePreviewListing;

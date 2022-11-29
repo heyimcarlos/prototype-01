@@ -179,6 +179,8 @@ const Map = ({
 
   const setSelectedListings = useSelectedListing((state) => state.setListings);
 
+  const [listSlide, setListSlide] = useState(false);
+
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
@@ -363,8 +365,6 @@ const Map = ({
     }
     setDrawShowFalse();
   };
-
-  const [listSlide, setListSlide] = useState(false);
 
   return (
     <>
@@ -605,48 +605,6 @@ const Map = ({
               );
             })
           )}
-
-          {/* {neighborhoodsState.map((neighborhood) =>
-            neighborhood.listingLocations.map((listingLocation) => (
-              <Marker
-                onClick={(e) => {
-                  e.originalEvent.stopPropagation();
-                  if (!listingLocation.listings[0]) return;
-                  if (listingLocation.listings.length < 2) {
-                    setListing(listingLocation.listings[0]);
-                    setNeighborhood(neighborhood.name);
-                  } else {
-                  }
-                }}
-                latitude={parseFloat(listingLocation.lat)}
-                longitude={parseFloat(listingLocation.lng)}
-                key={`listing-${listingLocation.id}`}
-              >
-                <div
-                  className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center border-[0.05rem] border-black`}
-                  style={{
-                    opacity: curListingId
-                      ? Number(curListingId) === listingLocation.id
-                        ? 1
-                        : 0.4
-                      : 1,
-                  }}
-                >
-                  <span className="text-sm">
-                    {listingLocation.listings.length > 1
-                      ? `${listingLocation.listings.length} Listings`
-                      : listingLocation.listings[0]?.price
-                      ? `$${new Intl.NumberFormat("en-US", {
-                          maximumFractionDigits: 1,
-                          notation: "compact",
-                          compactDisplay: "short",
-                        }).format(listingLocation.listings[0]?.price)}`
-                      : null}
-                  </span>
-                </div>
-              </Marker>
-            ))
-          )} */}
 
           {neighborhoodsState.map((neighborhood) => (
             <Source

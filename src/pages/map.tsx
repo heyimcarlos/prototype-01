@@ -17,13 +17,14 @@ import SingleViewSlideOver from "@/components/SingleViewSlideOver";
 import LeftSlideOver from "@/components/LeftSlideOver";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import SectorsSelected from "@/components/SectorsSelected";
-import MobilePreviewListing from "@/components/MobilePreviewListing";
 import SlideOver from "@/components/SlideOver";
 import type { Listing, ListingLocation, Neighborhood } from "@prisma/client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-import SwiperCore, { Navigation, Pagination, Controller, Thumbs } from "swiper";
+import SwiperCore, { Pagination } from "swiper";
+import MultiMobilePreviewListing from "@/components/MultiMobilePreviewListing";
+import SingleMobilePreviewListing from "@/components/SingleMobilePreviewListing";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   // listingLocations,
@@ -48,14 +49,11 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   const setLeftListing = useSelectedListing((state) => state.setLeftListing);
   const listings = useSelectedListing((state) => state.listings);
 
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const [controlledSwiper, setControlledSwiper] = useState(null);
-
-  SwiperCore.use([Navigation, Pagination, Controller, Thumbs]);
+  SwiperCore.use([Pagination]);
 
   if (!isLoaded) return <div>Loading...</div>;
 
-  console.log(listings, "listings from map.page");
+  // console.log(listings, "listings from map.page");
 
   return (
     <>
@@ -97,36 +95,22 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         )}
 
         {listing && listings.length < 2 && (
-          <MobilePreviewListing
+          <SingleMobilePreviewListing
             listing={listing as Listing}
             setOpen={setOpen}
           />
         )}
 
         {listings.length > 0 && (
-          <div
-            onClick={() => {
-              setOpen(true);
-            }}
-            className="h-[10rem] w-[90%] rounded-xl fixed bottom-0 mb-[3rem] flex overflow-hidden"
-          >
-            <Swiper
-              id="main"
-              thumbs={{ swiper: thumbsSwiper }}
-              controller={{ control: controlledSwiper }}
-              tag="section"
-              wrapperTag="ul"
-              pagination
-              spaceBetween={0}
-              slidesPerView={1}
-            >
+          <div className="h-[10rem] w-[90%] rounded-xl fixed bottom-0 mb-[3rem] flex overflow-hidden">
+            <Swiper pagination spaceBetween={0} slidesPerView={1}>
               {listings.map((listing) => (
                 <SwiperSlide key={listing.id}>
-                  <MobilePreviewListing
+                  <MultiMobilePreviewListing
                     listing={listing as Listing}
                     setOpen={setOpen}
                   />
-                  {/* Hello {listing.id} */}!
+                  .
                 </SwiperSlide>
               ))}
             </Swiper>

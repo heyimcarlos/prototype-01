@@ -123,13 +123,13 @@ const MobileListingsSlideOver = ({
                                 className="mb-2"
                                 key={listing.id}
                                 onClick={() => {
-                                  setOpen(true);
                                   setListing(listing);
                                   setNeighborhood(
                                     neighborhood.name === "Custom Boundary"
                                       ? neighborhoodName
                                       : neighborhood.name
                                   );
+                                  setOpen(true);
                                   // setLeftListing(listing);
                                   // setLeftSlideOver(true);
                                 }}
@@ -158,13 +158,13 @@ const MobileListingsSlideOver = ({
                                   className="mb-2"
                                   key={property.id}
                                   onClick={() => {
-                                    setOpen(true);
                                     setListing(property);
                                     setNeighborhood(
                                       neighborhood.name === "Custom Boundary"
                                         ? neighborhoodName
                                         : neighborhood.name
                                     );
+                                    setOpen(true);
                                     // setLeftListing(listing);
                                     // setLeftSlideOver(true);
                                   }}
@@ -219,14 +219,12 @@ const MobileListingsSlideOver = ({
                     </div>
                     <div
                       onClick={() => setListSlide(false)}
-                      className="fixed z-[51] h-10 w-[6rem] bg-black bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
+                      // className="fixed z-[51] h-10 w-[6rem] bg-black bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
+                      className="fixed z-[51] h-10 w-[6rem] bg-gray-800 bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
+                      // className="fixed z-[51] h-10 w-[6rem] bg-indigo-600 bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
                     >
                       Map
-                      <button
-                        type="button"
-                        className="ml-1"
-                        onClick={() => setListSlide(false)}
-                      >
+                      <button type="button" className="ml-1">
                         <span className="sr-only">Close panel</span>
                         <MapIcon className="h-6 w-6" aria-hidden="true" />
                       </button>

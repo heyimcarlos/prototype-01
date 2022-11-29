@@ -8,7 +8,7 @@ type MobileListingCardType = {
 };
 
 const MobileListingCard = ({ listing, sectorName }: MobileListingCardType) => {
-  console.log("listing from mobileListingCard", listing);
+  // console.log("listing from mobileListingCard", listing);
   return (
     <div className="card w-full h-auto shadow-md rounded border-black/[.1] border-[1px]">
       <div className="">
