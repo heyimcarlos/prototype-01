@@ -6,15 +6,21 @@ import Link from "next/link";
 import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
+  CalendarIcon,
 } from "@heroicons/react/20/solid";
 import GridIcon from "@/components/icons/grid";
-import { ListBulletIcon } from "@heroicons/react/24/outline";
+import {
+  ListBulletIcon,
+  HomeIcon,
+  BanknotesIcon,
+} from "@heroicons/react/24/outline";
 import randomImage from "../../../public/assets/images/house1.jpeg";
-// import { listings } from "../../../prisma/data";
 import { Avatar } from "@/components/Avatar";
 import useMeQuery from "@/hooks/useMeQuery";
 import { type UserMeOutput } from "@/server/trpc/router/user";
 import { trpc } from "@/utils/trpc";
+import { type Listing } from "@prisma/client";
+import classNames from "@/lib/classNames";
 
 const Card = ({
   children,
@@ -64,11 +70,166 @@ const ProfileOverview = ({ user }: { user?: UserMeOutput }) => {
   );
 };
 
+function DashboardGridItem({ listing }: { listing: Listing }) {
+  return (
+    <li>
+      <Link href={`/listing/${listing.slug}`}>
+        <div className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
+          <div className="aspect-w-3 aspect-h-4 bg-gray-200 group-hover:opacity-75 sm:aspect-none h-60 ">
+            <Image
+              src={randomImage}
+              alt="Listing"
+              width={720}
+              height={0}
+              className="h-full w-full object-cover object-center sm:h-full sm:w-full"
+            />
+          </div>
+          <div className="flex flex-1 flex-col space-y-2 p-4">
+            <h3 className="text-lg font-bold text-gray-900">{listing.name}</h3>
+            <div className="flex items-center justify-between">
+              <p className="truncate text-sm font-medium text-indigo-600">
+                {listing.bio}
+              </p>
+              <div className="ml-2 flex flex-shrink-0">
+                <p className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
+                  {listing.listingType}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-1 flex-col justify-end">
+              <p className="text-sm italic text-gray-500">
+                Published: {listing.createdAt.toDateString()}
+              </p>
+              <p className="text-base font-medium text-gray-900">
+                $
+                {listing.price.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: listing.currency,
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </li>
+  );
+}
+
+function DashboardListItem({ listing }: { listing: Listing }) {
+  return (
+    <li className="mb-4">
+      <Link
+        href={`/listing/${listing.slug}`}
+        className="group flex hover:bg-gray-50 bg-white overflow-hidden shadow rounded-md"
+      >
+        <div className="w-[10rem] group-hover:opacity-75">
+          <Image
+            src={randomImage}
+            width={256}
+            height={0}
+            alt=""
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+        <div className="px-4 py-4 sm:px-6 w-full">
+          <h3 className="">{listing.name}</h3>
+          <div className="flex items-center justify-between">
+            <p className="truncate text-sm font-medium text-indigo-600 w-40 sm:w-full">
+              {listing.bio}
+            </p>
+            <div className="ml-2 flex flex-shrink-0">
+              <p className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
+                {listing.listingType}
+              </p>
+            </div>
+          </div>
+          <div className="mt-2 w-full sm:flex sm:justify-between">
+            <div className="sm:flex">
+              <p className="flex items-center text-sm text-gray-500">
+                <HomeIcon
+                  className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                  aria-hidden="true"
+                />
+                {listing.propertyType}
+              </p>
+              <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                <BanknotesIcon
+                  className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                  aria-hidden="true"
+                />
+                {listing.price.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: listing.currency,
+                })}
+              </p>
+            </div>
+            <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 md:hidden lg:flex">
+              <CalendarIcon
+                className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                aria-hidden="true"
+              />
+              <p>
+                <time dateTime={listing.createdAt.toString()}>
+                  {listing.createdAt.toDateString()}
+                </time>
+              </p>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </li>
+  );
+}
+
+function DashboardListingView({
+  listings,
+  listingViewMode,
+}: {
+  listings?: Listing[];
+  listingViewMode: "GRID" | "LIST";
+}) {
+  if (!listings) {
+    return null;
+  }
+
+  if (listings.length < 1) {
+    return <div>No listings found</div>;
+  }
+
+  if (listingViewMode === "GRID") {
+    return (
+      <ul
+        role="list"
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        {listings.map((listing) => (
+          <DashboardGridItem key={listing.id} listing={listing} />
+        ))}
+      </ul>
+    );
+  }
+
+  return (
+    <ul role="list" className="">
+      {listings.map((listing) => (
+        <DashboardListItem key={listing.id} listing={listing} />
+      ))}
+    </ul>
+  );
+}
+
 const DashboardPage: NextPageWithLayout = () => {
   const query = useMeQuery();
   const user = query.data;
   const { data, isLoading } = trpc.user.getMylistings.useQuery();
   const [search, setSearch] = useState("");
+  const [listingViewMode, setListingViewMode] = useState<"GRID" | "LIST">(
+    "GRID"
+  );
+
+  const toggleListingViewMode = () => {
+    setListingViewMode((viewMode) => (viewMode === "GRID" ? "LIST" : "GRID"));
+  };
 
   const searchResults = useMemo(() => {
     if (!search) return data;
@@ -77,6 +238,8 @@ const DashboardPage: NextPageWithLayout = () => {
       if (listing.name.includes(search)) return listing;
       if (listing.name.toLowerCase().includes(search)) return listing;
       if (listing.bio.toLowerCase().includes(search)) return listing;
+      if (listing.propertyType.toLowerCase().includes(search)) return listing;
+      if (listing.listingType.toLowerCase().includes(search)) return listing;
     });
   }, [search, data]);
 
@@ -112,11 +275,23 @@ const DashboardPage: NextPageWithLayout = () => {
           </div>
         </div>
         <div className="inline-flex items-center justify-center relative border border-gray-300 rounded-md max-w-full select-none bg-white">
-          <button className="h-10 w-10 p-2 border-r flex justify-center items-center">
+          <button
+            onClick={toggleListingViewMode}
+            className={classNames(
+              listingViewMode === "GRID" ? "" : "text-gray-300",
+              "h-10 w-10 p-2 border-r flex justify-center items-center"
+            )}
+          >
             <div className="sr-only">Grid view</div>
             <GridIcon />
           </button>
-          <button className="p-2">
+          <button
+            onClick={toggleListingViewMode}
+            className={classNames(
+              listingViewMode === "GRID" ? "text-gray-300" : "",
+              "p-2"
+            )}
+          >
             <div className="sr-only">List view</div>
             <ListBulletIcon className="h-6 w-6" />
           </button>
@@ -126,44 +301,18 @@ const DashboardPage: NextPageWithLayout = () => {
           <ChevronDownIcon className="h-5 w-5" />
         </button>
       </div>
-      {!isLoading ? (
+      {data && data.length < 1 ? (
+        <div>Create your first listing!</div>
+      ) : (
         <>
-          {searchResults && searchResults.length > 0 ? (
-            <ul
-              role="list"
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-            >
-              {searchResults.map((listing) => (
-                <li
-                  key={listing.name}
-                  className="col-span-1 divide-y divide-gray-200 rounded-md bg-white shadow"
-                >
-                  <Link href={`/listing/${listing.slug}`}>
-                    <div className="flex">
-                      <div className="mr-4 flex-shrink-0 self-center">
-                        <Image
-                          src={randomImage}
-                          alt="Listing"
-                          width={150}
-                          height={150}
-                        />
-                      </div>
-                      <div className="">
-                        <h4 className="text-lg font-bold">{listing.name}</h4>
-                        <p className="mt-1">{listing.bio}</p>
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div>
-              <h3 className="text-gray-400">Create your first listing</h3>
-            </div>
-          )}
+          {!isLoading ? (
+            <DashboardListingView
+              listings={searchResults}
+              listingViewMode={listingViewMode}
+            />
+          ) : null}
         </>
-      ) : null}
+      )}
     </div>
   );
 };
