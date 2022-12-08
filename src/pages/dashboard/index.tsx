@@ -13,6 +13,7 @@ import {
   ListBulletIcon,
   HomeIcon,
   BanknotesIcon,
+  PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import randomImage from "../../../public/assets/images/house1.jpeg";
 import { Avatar } from "@/components/Avatar";
@@ -296,10 +297,12 @@ const DashboardPage: NextPageWithLayout = () => {
             <ListBulletIcon className="h-6 w-6" />
           </button>
         </div>
-        <button className="min-w-[120px] flex items-center justify-between bg-white border border-gray-300 py-2 px-4 rounded-md">
-          Add New...
-          <ChevronDownIcon className="h-5 w-5" />
-        </button>
+        <Link href="/new">
+          <button className="min-w-[120px] flex items-center justify-between bg-white border border-gray-300 py-2 px-4 rounded-md">
+            Add New
+            <PlusCircleIcon className="h-5 w-5 ml-2" />
+          </button>
+        </Link>
       </div>
       {data && data.length < 1 ? (
         <div>Create your first listing!</div>

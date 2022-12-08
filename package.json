@@ -45,6 +45,8 @@
     "next-superjson": "^0.0.4",
     "nodemailer": "^6.8.0",
     "react": "18.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.39.1",
     "react-map-gl": "^7.0.19",

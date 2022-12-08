@@ -31,10 +31,10 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   neighborhoods,
   initialViewport,
 }) => {
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    libraries: GOOGLE_MAP_LIBRARIES,
-  });
+  // const { isLoaded } = useJsApiLoader({
+  //   googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  //   libraries: GOOGLE_MAP_LIBRARIES,
+  // });
 
   const mapRef = useRef<MapRef>(null);
 
@@ -51,7 +51,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
   SwiperCore.use([Pagination]);
 
-  if (!isLoaded) return <div>Loading...</div>;
+  // if (!isLoaded) return <div>Loading...</div>;
 
   // console.log(listings, "listings from map.page");
 

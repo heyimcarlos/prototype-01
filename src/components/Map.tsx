@@ -248,7 +248,7 @@ const Map = ({
           [maxLng, maxLat],
         ],
         {
-          padding: 10,
+          padding: { left: 20, top: 10, right: 20, bottom: 100 },
           animate: true,
           duration: 1400,
           essential: true,
