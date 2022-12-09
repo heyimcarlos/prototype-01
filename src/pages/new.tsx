@@ -7,12 +7,13 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import NewListingStep1 from "@/components/NewListingStep1";
 import NewListingStep2 from "@/components/NewListingStep2";
 import NewListingStep2Half from "@/components/NewListingStep2Half";
+import NewListingStep3 from "@/components/NewListingStep3";
 
 const New = () => {
-  const [step, setStep] = useState("step 1");
+  const [step, setStep] = useState("step 2.5");
 
   return (
-    <div className="w-full h-[100vh]">
+    <div className="w-full h-[100vh]" draggable={false}>
       <div className="w-full h-auto pt-3">
         <div
           id="stepsBar"
@@ -77,6 +78,7 @@ const New = () => {
       {step === "step 1" && <NewListingStep1 setStep={setStep} />}
       {step === "step 2" && <NewListingStep2 setStep={setStep} />}
       {step === "step 2.5" && <NewListingStep2Half setStep={setStep} />}
+      {step === "step 3" && <NewListingStep3 setStep={setStep} />}
     </div>
   );
 };

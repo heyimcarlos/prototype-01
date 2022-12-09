@@ -53,7 +53,7 @@ const NewListingStep1 = ({ setStep }) => {
         setPlaceId(data.place_id);
       }
 
-      console.log("data", data);
+      // console.log("data", data);
       setAutocomplete(undefined);
     }
   };
@@ -92,7 +92,7 @@ const NewListingStep1 = ({ setStep }) => {
                 draggable={true}
                 color="rgb(79,70,229)"
                 onDragEnd={(e) => {
-                  console.log("event", e);
+                  // console.log("event", e);
                 }}
               />
             )}

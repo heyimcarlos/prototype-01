@@ -7,6 +7,10 @@ export type NewListingState = {
   lng: number;
   hide: boolean;
   sector: string;
+  buildingAmenities: string[];
+  setBuildingAmenities: (param: string[]) => void;
+  selectedBuildingAmenities: string[];
+  setSelectedBuildingAmenities: (param: string[]) => void;
   setPlaceId: (param: string) => void;
   setName: (param: string) => void;
   setLat: (param: number) => void;
@@ -22,6 +26,40 @@ export const useNewListing = create<NewListingState>((set) => ({
   lng: 0,
   hide: false,
   sector: "",
+  buildingAmenities: [
+    "Año de construcción ",
+    "Parqueos ",
+    "Ascensor",
+    "Proyecto cerrado",
+    "Porton Electrico",
+    "Planta Electrica",
+    "Gas Comun",
+    "Seguridad 24/7",
+    "Camara de seguridad",
+    "Sistema contra incendios",
+    "Escaleras de emergencia",
+    "Lobby",
+    "Intercom",
+    "Terraza",
+    "Casa club",
+    "Gazebo",
+    "Area Social",
+    "Salon de eventos",
+    "Area infantil",
+    "Patio",
+    "Piscina",
+    "Jacuzzi",
+    "Gimnasio",
+    "Sauna",
+    "BBQ",
+    "Cisterna",
+    "Tinaco",
+    "Airbnb friendly",
+  ],
+  setBuildingAmenities: (param) => set(() => ({ buildingAmenities: param })),
+  selectedBuildingAmenities: [],
+  setSelectedBuildingAmenities: (param) =>
+    set(() => ({ selectedBuildingAmenities: param })),
   setPlaceId: (param) => set(() => ({ placeId: param })),
   setName: (param) => set(() => ({ name: param })),
   setLat: (param) => set(() => ({ lat: param })),
