@@ -1,86 +1,62 @@
-import { PencilSquareIcon, XCircleIcon } from "@heroicons/react/20/solid";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import BuildingSortableItem from "./BuildingSortableItem";
-import InteriorSortableItem from "./InteriorSortableItem";
-import { useNewListing } from "@/stores/useNewListing";
 
-// const tabs = [
-//   { name: "My Account", href: "#", current: true },
-//   { name: "Company", href: "#", current: false },
-//   { name: "Team Members", href: "#", current: false },
-//   { name: "Billing", href: "#", current: false },
-// ];
+import { useNewListing } from "@/stores/useNewListing";
+import SortableItem from "./SortableItem";
 
 const NewListingStep2Half = ({ setStep }) => {
-  // const [buildingAmenities, setBuildingAmenities] = useState([
-  //   "Año de construcción ",
-  //   "Parqueos ",
-  //   "Ascensor",
-  //   "Proyecto cerrado",
-  //   "Porton Electrico",
-  //   "Planta Electrica",
-  //   "Gas Comun",
-  //   "Seguridad 24/7",
-  //   "Camara de seguridad",
-  //   "Sistema contra incendios",
-  //   "Escaleras de emergencia",
-  //   "Lobby",
-  //   "Intercom",
-  //   "Terraza",
-  //   "Casa club",
-  //   "Gazebo",
-  //   "Area Social",
-  //   "Salon de eventos",
-  //   "Area infantil",
-  //   "Patio",
-  //   "Piscina",
-  //   "Jacuzzi",
-  //   "Gimnasio",
-  //   "Sauna",
-  //   "BBQ",
-  //   "Cisterna",
-  //   "Tinaco",
-  //   "Airbnb friendly",
-  // ]);
-
-  // const [buildingSelectedAmen, setBuildingSelectedAmen] = useState<string[]>(
-  //   []
-  // );
-
-  // const [interiorAmenities, setInteriorAmenities] = useState([
-  //   "Linea blanca",
-  //   "Calentador",
-  //   "Balcon",
-  //   "Area de lavado",
-  //   "Cuarto de servicio con baño",
-  //   "A/C",
-  //   "Desayunador",
-  //   "Vestidor",
-  //   "Sala",
-  //   "Comedor",
-  // ]);
-
-  // const [interiorSelectedAmen, setInteriorSelectedAmen] = useState<string[]>(
-  //   []
-  // );
-
-  const [selectedDetail, setSelectedDetail] = useState("Building");
+  const [selectedDetail, setSelectedDetail] = useState("Property");
   const [customInput, setCustomInput] = useState("");
 
+  const buildingAmenities = useNewListing((state) => state.buildingAmenities);
+  const setBuildingAmenities = useNewListing(
+    (state) => state.setBuildingAmenities
+  );
+  const selectedBuildingAmenities = useNewListing(
+    (state) => state.selectedBuildingAmenities
+  );
+  const setSelectedBuildingAmenities = useNewListing(
+    (state) => state.setSelectedBuildingAmenities
+  );
+
+  // console.log("selectedBuildingAmenities: ", selectedBuildingAmenities);
+
+  const interiorAmenities = useNewListing((state) => state.interiorAmenities);
+  const setInteriorAmenities = useNewListing(
+    (state) => state.setInteriorAmenities
+  );
+  const selectedInteriorAmenities = useNewListing(
+    (state) => state.selectedInteriorAmenities
+  );
+  const setSelectedInteriorAmenities = useNewListing(
+    (state) => state.setSelectedInteriorAmenities
+  );
+
+  // console.log("selectedInteriorAmenities: ", selectedInteriorAmenities);
+
+  const exteriorAmenities = useNewListing((state) => state.exteriorAmenities);
+  const setExteriorAmenities = useNewListing(
+    (state) => state.setExteriorAmenities
+  );
+  const selectedExteriorAmenities = useNewListing(
+    (state) => state.selectedExteriorAmenities
+  );
+  const setSelectedExteriorAmenities = useNewListing(
+    (state) => state.setSelectedExteriorAmenities
+  );
+
+  // console.log("selectedExteriorAmenities: ", selectedExteriorAmenities);
+
   function handleDragEnd(event) {
-    // console.log("Drag end called");
     const { active, over } = event;
-    // console.log("ACTIVE: ", active);
-    // console.log("OVER :", over);
 
     if (active.id !== over.id) {
-      if (selectedDetail === "Building") {
+      if (selectedDetail === "Property") {
         const activeIndex = selectedBuildingAmenities.indexOf(active.id);
         const overIndex = selectedBuildingAmenities.indexOf(over.id);
 
@@ -91,47 +67,29 @@ const NewListingStep2Half = ({ setStep }) => {
         );
 
         setSelectedBuildingAmenities(newArr);
-
-        // setSelectedBuildingAmenities((amens): string[] => {
-        //   const activeIndex = amens.indexOf(active.id);
-        //   const overIndex = amens.indexOf(over.id);
-
-        //   return arrayMove(amens, activeIndex, overIndex);
-        // });
       } else if (selectedDetail === "Interior") {
-        // setInteriorSelectedAmen((amens) => {
-        //   const activeIndex = amens.indexOf(active.id);
-        //   const overIndex = amens.indexOf(over.id);
-        //   return arrayMove(amens, activeIndex, overIndex);
-        // });
+        const activeIndex = selectedInteriorAmenities.indexOf(active.id);
+        const overIndex = selectedInteriorAmenities.indexOf(over.id);
+
+        const newArr = arrayMove(
+          selectedInteriorAmenities,
+          activeIndex,
+          overIndex
+        );
+        setSelectedInteriorAmenities(newArr);
+      } else if (selectedDetail === "Exterior") {
+        const activeIndex = selectedExteriorAmenities.indexOf(active.id);
+        const overIndex = selectedExteriorAmenities.indexOf(over.id);
+
+        const newArr = arrayMove(
+          selectedExteriorAmenities,
+          activeIndex,
+          overIndex
+        );
+        setSelectedExteriorAmenities(newArr);
       }
     }
   }
-
-  const setBuildingAmenities = useNewListing(
-    (state) => state.setBuildingAmenities
-  );
-
-  const buildingAmenities = useNewListing((state) => state.buildingAmenities);
-
-  const selectedBuildingAmenities = useNewListing(
-    (state) => state.selectedBuildingAmenities
-  );
-
-  const setSelectedBuildingAmenities = useNewListing(
-    (state) => state.setSelectedBuildingAmenities
-  );
-
-  console.log("zusBuildingAmenities", buildingAmenities);
-  console.log("zusBuildingAmenities", selectedBuildingAmenities);
-
-  // if (zusBuildingAmenities.length > 0) {
-  //   setBuildingSelectedAmen(zusBuildingAmenities);
-  // }
-
-  // useEffect(() => {
-  //   setZusBuildingAmenities(buildingSelectedAmen);
-  // });
 
   return (
     <div className="w-full h-[calc(100vh-68px)]" draggable={false}>
@@ -140,15 +98,15 @@ const NewListingStep2Half = ({ setStep }) => {
           <button
             type="button"
             className={`relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
-              selectedDetail === "Building"
+              selectedDetail === "Property"
                 ? "z-10 border-indigo-500 outline-none ring-1 ring-indigo-600"
                 : ""
             }`}
             onClick={() => {
-              setSelectedDetail("Building");
+              setSelectedDetail("Property");
             }}
           >
-            Building
+            Property
           </button>
           <button
             type="button"
@@ -165,7 +123,11 @@ const NewListingStep2Half = ({ setStep }) => {
           </button>
           <button
             type="button"
-            className={`relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-600`}
+            className={`relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
+              selectedDetail === "Exterior"
+                ? "z-10 border-indigo-500 outline-none ring-1 ring-indigo-600"
+                : ""
+            } `}
             onClick={() => {
               setSelectedDetail("Exterior");
             }}
@@ -177,7 +139,7 @@ const NewListingStep2Half = ({ setStep }) => {
 
       {/* <div>Building Custom ADD</div> */}
 
-      {selectedDetail === "Building" && (
+      {selectedDetail === "Property" && (
         <div className="w-full flex mt-9">
           <input
             className="w-full mx-2 rounded-md border-black caret-gray-800"
@@ -192,7 +154,10 @@ const NewListingStep2Half = ({ setStep }) => {
           <button
             className="border-[1px] mr-2 border-black p-2 rounded-md"
             onClick={() => {
-              setBuildingSelectedAmen([...buildingSelectedAmen, customInput]);
+              setSelectedBuildingAmenities([
+                ...selectedBuildingAmenities,
+                customInput,
+              ]);
               setCustomInput("");
             }}
           >
@@ -203,7 +168,7 @@ const NewListingStep2Half = ({ setStep }) => {
 
       {/* <div>Interior Custom ADD</div> */}
 
-      {/* {selectedDetail === "Interior" && (
+      {selectedDetail === "Interior" && (
         <div className="w-full flex mt-9">
           <input
             className="w-full mx-2 rounded-md border-black caret-gray-800"
@@ -218,18 +183,50 @@ const NewListingStep2Half = ({ setStep }) => {
           <button
             className="border-[1px] mr-2 border-black p-2 rounded-md"
             onClick={() => {
-              setInteriorSelectedAmen([...interiorSelectedAmen, customInput]);
+              setSelectedInteriorAmenities([
+                ...selectedInteriorAmenities,
+                customInput,
+              ]);
               setCustomInput("");
             }}
           >
             Add
           </button>
         </div>
-      )} */}
+      )}
+
+      {/* <div>Exterior Custom ADD</div> */}
+
+      {selectedDetail === "Exterior" && (
+        <div className="w-full flex mt-9">
+          <input
+            className="w-full mx-2 rounded-md border-black caret-gray-800"
+            type="text"
+            placeholder="Amenidad personalizada"
+            onChange={(e) => setCustomInput(e.target.value)}
+            value={customInput}
+            onKeyDown={(e) => {
+              console.log(e.code, "Hello");
+            }}
+          />
+          <button
+            className="border-[1px] mr-2 border-black p-2 rounded-md"
+            onClick={() => {
+              setSelectedExteriorAmenities([
+                ...selectedExteriorAmenities,
+                customInput,
+              ]);
+              setCustomInput("");
+            }}
+          >
+            Add
+          </button>
+        </div>
+      )}
 
       {/* <div>Building Selected Amenities</div> */}
 
-      {selectedDetail === "Building" && (
+      {selectedDetail === "Property" && (
         <div className="mt-1 mx-1 bg-indigo-600 flex" draggable={false}>
           <div className="w-[40%] h-[calc(100vh-250px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1">
             {buildingAmenities.map((amen) => (
@@ -263,14 +260,14 @@ const NewListingStep2Half = ({ setStep }) => {
                 strategy={verticalListSortingStrategy}
               >
                 {selectedBuildingAmenities.map((amen) => (
-                  <BuildingSortableItem
+                  <SortableItem
                     key={amen}
                     id={amen}
                     amen={amen}
-                    setBuildingSelectedAmen={setSelectedBuildingAmenities}
-                    buildingSelectedAmen={selectedBuildingAmenities}
-                    setBuildingAmenities={setBuildingAmenities}
-                    buildingAmenities={buildingAmenities}
+                    amenities={buildingAmenities}
+                    setAmenities={setBuildingAmenities}
+                    selectedAmenities={selectedBuildingAmenities}
+                    setSelectedAmenities={setSelectedBuildingAmenities}
                   />
                 ))}
               </SortableContext>
@@ -281,7 +278,7 @@ const NewListingStep2Half = ({ setStep }) => {
 
       {/* <div>Interior Selected Amenities</div> */}
 
-      {/* {selectedDetail === "Interior" && (
+      {selectedDetail === "Interior" && (
         <div className="mt-1 mx-1 bg-indigo-600 flex" draggable={false}>
           <div className="w-[40%] h-[calc(100vh-250px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1">
             {interiorAmenities.map((amen) => (
@@ -292,8 +289,8 @@ const NewListingStep2Half = ({ setStep }) => {
                   setInteriorAmenities(
                     interiorAmenities.filter((inteAmen) => amen !== inteAmen)
                   );
-                  setInteriorSelectedAmen(() => [
-                    ...interiorSelectedAmen,
+                  setSelectedInteriorAmenities([
+                    ...selectedInteriorAmenities,
                     amen,
                   ]);
                 }}
@@ -311,25 +308,77 @@ const NewListingStep2Half = ({ setStep }) => {
               onDragEnd={handleDragEnd}
             >
               <SortableContext
-                items={interiorSelectedAmen}
+                items={selectedInteriorAmenities}
                 strategy={verticalListSortingStrategy}
               >
-                {interiorSelectedAmen.map((amen) => (
-                  <InteriorSortableItem
+                {selectedInteriorAmenities.map((amen) => (
+                  <SortableItem
                     key={amen}
                     id={amen}
                     amen={amen}
-                    setInteriorSelectedAmen={setInteriorSelectedAmen}
-                    interiorSelectedAmen={interiorSelectedAmen}
-                    setInteriorAmenities={setInteriorAmenities}
-                    interiorAmenities={interiorAmenities}
+                    amenities={interiorAmenities}
+                    setAmenities={setInteriorAmenities}
+                    selectedAmenities={selectedInteriorAmenities}
+                    setSelectedAmenities={setSelectedInteriorAmenities}
                   />
                 ))}
               </SortableContext>
             </DndContext>
           </div>
         </div>
-      )} */}
+      )}
+
+      {/* <div>Exterior Selected Amenities</div> */}
+
+      {selectedDetail === "Exterior" && (
+        <div className="mt-1 mx-1 bg-indigo-600 flex" draggable={false}>
+          <div className="w-[40%] h-[calc(100vh-250px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1">
+            {exteriorAmenities.map((amen) => (
+              <div
+                key={amen}
+                className="p-1 border-[3px] bg-white rounded-md text-sm"
+                onClick={() => {
+                  setExteriorAmenities(
+                    exteriorAmenities.filter((inteAmen) => amen !== inteAmen)
+                  );
+                  setSelectedExteriorAmenities([
+                    ...selectedExteriorAmenities,
+                    amen,
+                  ]);
+                }}
+              >
+                {amen}
+              </div>
+            ))}
+          </div>
+          <div
+            draggable={false}
+            className="w-[60%] h-[calc(100vh-250px)] bg-indigo-600 flex flex-col overflow-auto space-y-1 p-1"
+          >
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={selectedExteriorAmenities}
+                strategy={verticalListSortingStrategy}
+              >
+                {selectedExteriorAmenities.map((amen) => (
+                  <SortableItem
+                    key={amen}
+                    id={amen}
+                    amen={amen}
+                    amenities={exteriorAmenities}
+                    setAmenities={setExteriorAmenities}
+                    selectedAmenities={selectedExteriorAmenities}
+                    setSelectedAmenities={setSelectedExteriorAmenities}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          </div>
+        </div>
+      )}
 
       <div className="w-full flex justify-center space-x-6 py-3">
         <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">

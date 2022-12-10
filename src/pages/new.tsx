@@ -10,7 +10,7 @@ import NewListingStep2Half from "@/components/NewListingStep2Half";
 import NewListingStep3 from "@/components/NewListingStep3";
 
 const New = () => {
-  const [step, setStep] = useState("step 2.5");
+  const [step, setStep] = useState("step 2");
 
   return (
     <div className="w-full h-[100vh]" draggable={false}>

@@ -14,6 +14,7 @@ import MapboxMap, {
 import { useNewListing } from "@/stores/useNewListing";
 import SectorSelect from "@/components/SectorSelect";
 import HideAddressCheckbox from "@/components/HideAddressCheckbox";
+import { useDefaultSectors } from "@/stores/useDefaultSectors";
 
 const NewListingStep1 = ({ setStep }) => {
   const mapRef = useRef<MapRef>(null);
@@ -28,15 +29,21 @@ const NewListingStep1 = ({ setStep }) => {
     libraries: GOOGLE_MAP_LIBRARIES,
   });
 
+  const defaultSectors = useDefaultSectors((state) => state.sectors);
+
   const setLat = useNewListing((state) => state.setLat);
-  const setLng = useNewListing((state) => state.setLng);
   const lat = useNewListing((state) => state.lat);
+
+  const setLng = useNewListing((state) => state.setLng);
   const lng = useNewListing((state) => state.lng);
+
   const setName = useNewListing((state) => state.setName);
   const setPlaceId = useNewListing((state) => state.setPlaceId);
 
-  // console.log("lat", lat);
-  // console.log("lng", lng);
+  const setFullAddress = useNewListing((state) => state.setFullAddress);
+  const fullAddress = useNewListing((state) => state.fullAddress);
+
+  const setSector = useNewListing((state) => state.setSector);
 
   const onPlaceChanged = () => {
     if (autocomplete) {
@@ -46,14 +53,29 @@ const NewListingStep1 = ({ setStep }) => {
         setLat(data.geometry?.location?.lat());
         setLng(data.geometry?.location?.lng());
       }
-      if (data.name) {
-        setName(data.name);
-      }
+
       if (data.place_id) {
         setPlaceId(data.place_id);
       }
 
-      // console.log("data", data);
+      if (data.name) {
+        setName(data.name);
+      }
+
+      if (data.formatted_address) {
+        setFullAddress(data.formatted_address);
+      }
+
+      if (data.vicinity) {
+        const vicinity = data.vicinity;
+        if (defaultSectors.indexOf(vicinity) !== -1) {
+          setSector(vicinity);
+        } else {
+          setSector("");
+        }
+      }
+
+      console.log("data", data);
       setAutocomplete(undefined);
     }
   };
@@ -101,7 +123,7 @@ const NewListingStep1 = ({ setStep }) => {
 
         {/* -------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
-        <div className="w-full h-full flex flex-1 flex-col items-center justify-evenly bg-white z-10 pt-5 shadow-inner">
+        <div className="w-full h-full flex flex-1 flex-col items-center justify-around bg-white z-10 pt-6 shadow-inner">
           <div className="flex w-[95%] mx-[1rem] -mt-5 shadow-lg">
             <div className="min-w-0 flex-1 flex flex-col items-start justify-end ">
               <label htmlFor="search" className="sr-only">
@@ -128,8 +150,10 @@ const NewListingStep1 = ({ setStep }) => {
                       e.preventDefault();
                     }
                   }}
-                  placeholder="Enter property address"
-                  className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                  placeholder={
+                    fullAddress ? fullAddress : "Enter property address"
+                  }
+                  className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                 />
               </Autocomplete>
             </div>
@@ -139,7 +163,7 @@ const NewListingStep1 = ({ setStep }) => {
             <SectorSelect />
           </div>
 
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center pt-1">
             <HideAddressCheckbox />
           </div>
 

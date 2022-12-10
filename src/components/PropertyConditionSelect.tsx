@@ -3,19 +3,12 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useNewListing } from "@/stores/useNewListing";
 
-const people = [
+const conditions = [
   { id: 0, name: "Condition" },
   { id: 1, name: "Second use" },
   { id: 2, name: "New" },
   { id: 3, name: "Under construction" },
   { id: 4, name: "In plans" },
-  // { id: 4, name: "" },
-  // { id: 5, name: "Second use" },
-  //   { id: 6, name: "Hellen Schmidt" },
-  //   { id: 7, name: "Caroline Schultz" },
-  //   { id: 8, name: "Mason Heaney" },
-  //   { id: 9, name: "Claudie Smitham" },
-  //   { id: 10, name: "Emil Schaefer" },
 ];
 
 function classNames(...classes: string[]) {
@@ -23,31 +16,27 @@ function classNames(...classes: string[]) {
 }
 
 export default function PropertyConditionSelect() {
-  const [selected, setSelected] = useState(people[0]);
-  const setSector = useNewListing((state) => state.setSector);
+  const [selected, setSelected] = useState(conditions[0]);
+  const setCondition = useNewListing((state) => state.setCondition);
+  const condition = useNewListing((state) => state.condition);
 
-  useEffect(() => {
-    if (selected) {
-      setSector(selected?.name);
-    }
-  }, [setSector, selected]);
-
-  console.log(selected?.name);
   return (
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
         <>
-          <div className="relative mt-1 w-[80%]">
+          <div className="relative  w-[80%]">
             <Listbox.Label className="block text-sm font-medium text-gray-700">
               Condition
             </Listbox.Label>
-            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
-              {selected && selected.id !== 0 && (
-                <span className="block truncate">{selected.name}</span>
-              )}
-              {selected && selected.id === 0 && (
+            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+              {condition !== "" && (
                 <span className="block truncate text-gray-500">
-                  {selected.name}
+                  {condition}
+                </span>
+              )}
+              {condition === "" && (
+                <span className="block truncate text-gray-500">
+                  {selected?.name}
                 </span>
               )}
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -66,16 +55,19 @@ export default function PropertyConditionSelect() {
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute z-10 mt-1 max-h-[9.9rem] w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {people.map((person) => (
+                {conditions.map((condition) => (
                   <Listbox.Option
-                    key={person.id}
+                    key={condition.id}
                     className={({ active }) =>
                       classNames(
                         active ? "text-white bg-indigo-600" : "text-gray-900",
                         "relative cursor-default select-none py-2 pl-8 pr-4"
                       )
                     }
-                    value={person}
+                    value={condition}
+                    onClick={() => {
+                      setCondition(condition.name);
+                    }}
                   >
                     {({ selected, active }) => (
                       <>
@@ -85,7 +77,7 @@ export default function PropertyConditionSelect() {
                             "block truncate"
                           )}
                         >
-                          {person.name}
+                          {condition.name}
                         </span>
 
                         {selected ? (

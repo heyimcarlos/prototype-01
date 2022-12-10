@@ -4,7 +4,7 @@ export default function HideAddressCheckbox() {
   const setHide = useNewListing((state) => state.setHide);
   const hide = useNewListing((state) => state.hide);
 
-  console.log("hide", hide);
+  // console.log("hide", hide);
 
   return (
     <fieldset className="ml-3">
@@ -16,6 +16,7 @@ export default function HideAddressCheckbox() {
             aria-describedby="comments-description"
             name="comments"
             type="checkbox"
+            checked={hide ? true : false}
             className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
             onChange={(e) => {
               setHide(e.target.checked);
