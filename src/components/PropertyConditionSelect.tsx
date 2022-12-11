@@ -1,10 +1,10 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useNewListing } from "@/stores/useNewListing";
 
 const conditions = [
-  { id: 0, name: "Condition" },
+  { id: 0, name: "Condition of property" },
   { id: 1, name: "Second use" },
   { id: 2, name: "New" },
   { id: 3, name: "Under construction" },
@@ -24,15 +24,13 @@ export default function PropertyConditionSelect() {
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
         <>
-          <div className="relative  w-[80%]">
-            <Listbox.Label className="block text-sm font-medium text-gray-700">
+          <div className="relative w-[80%]">
+            <Listbox.Label className=" text-sm font-medium text-gray-700">
               Condition
             </Listbox.Label>
-            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 pl-3 pr-10 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
               {condition !== "" && (
-                <span className="block truncate text-gray-500">
-                  {condition}
-                </span>
+                <span className="block truncate">{condition}</span>
               )}
               {condition === "" && (
                 <span className="block truncate text-gray-500">

@@ -7,7 +7,7 @@ export default function HideAddressCheckbox() {
   // console.log("hide", hide);
 
   return (
-    <fieldset className="ml-3">
+    <fieldset className="">
       <legend className="sr-only">Hide Listing</legend>
       <div className="relative flex flex-col items-start">
         <div className="flex h-5 items-center">
@@ -30,7 +30,7 @@ export default function HideAddressCheckbox() {
         </div>
         <p
           id="comments-description"
-          className="w-[97.5%] rounded-sm border-[0.01rem] border-[#d1d5db] rounded-lg p-2 text-gray-600 text-[12px] shadow-lg relative"
+          className="w-full rounded-sm border-[0.01rem] border-[#d1d5db] rounded-lg p-2 text-gray-600 text-[12px] shadow-lg relative mt-[0.2rem]"
         >
           You can hide the address if privacy is a concern, but the listing may
           receive fewer views and contacts than listings that show the property

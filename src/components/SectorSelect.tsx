@@ -26,10 +26,10 @@ export default function SectorSelect() {
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
         <>
-          <Listbox.Label className="block text-sm font-medium text-gray-700">
+          <Listbox.Label className="block text-sm font-medium text-gray-700 ">
             Sector
           </Listbox.Label>
-          <div className="relative mt-1">
+          <div className="relative ">
             <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
               {sector === "" && (
                 <span className="block truncate text-gray-500">
@@ -37,7 +37,7 @@ export default function SectorSelect() {
                 </span>
               )}
               {sector !== "" && (
-                <span className="block truncate text-gray-500">{sector}</span>
+                <span className="block truncate">{sector}</span>
               )}
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon

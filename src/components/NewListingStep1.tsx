@@ -93,8 +93,8 @@ const NewListingStep1 = ({ setStep }) => {
   if (!isLoaded) return <div>loading...</div>;
   return (
     <>
-      <div className="h-[calc(100vh-68px)] w-full flex flex-col items-center">
-        <div className="w-full  flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-3">
+      <div className="h-[calc(100vh-50px)] w-full flex flex-col items-center">
+        <div className="w-full flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-3">
           <MapboxMap
             id="mapa"
             ref={mapRef}
@@ -113,9 +113,9 @@ const NewListingStep1 = ({ setStep }) => {
                 anchor="bottom"
                 draggable={true}
                 color="rgb(79,70,229)"
-                onDragEnd={(e) => {
-                  // console.log("event", e);
-                }}
+                // onDragEnd={(e) => {
+                //   console.log("event", e);
+                // }}
               />
             )}
           </MapboxMap>
@@ -150,9 +150,11 @@ const NewListingStep1 = ({ setStep }) => {
                       e.preventDefault();
                     }
                   }}
-                  placeholder={
-                    fullAddress ? fullAddress : "Enter property address"
-                  }
+                  onChange={() => {
+                    console.log("working?");
+                  }}
+                  placeholder={"Enter property address"}
+                  value={fullAddress ? fullAddress : undefined}
                   className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                 />
               </Autocomplete>
@@ -163,7 +165,7 @@ const NewListingStep1 = ({ setStep }) => {
             <SectorSelect />
           </div>
 
-          <div className="flex flex-col items-center pt-1">
+          <div className="w-[95%] flex flex-col items-center pt-1">
             <HideAddressCheckbox />
           </div>
 

@@ -25,17 +25,21 @@ const SortableItem = ({
       className="w-full flex items-center touch-none"
       style={style}
     >
-      <div
-        className="h-6 w-6 bg-gray-100 rounded-md mr-1"
-        {...attributes}
-        {...listeners}
-      >
-        <ChevronUpDownIcon className="h-6 w-6 text-black" />
-      </div>
+      <XCircleIcon
+        onClick={() => {
+          setSelectedAmenities(
+            selectedAmenities.filter(
+              (selectedAmen: string) => selectedAmen !== amen
+            )
+          );
+          setAmenities([amen, ...amenities]);
+        }}
+        className="h-6 w-6 text-black mx-1"
+      />
       <input
         type="text"
-        autoFocus={true}
-        className="p-1 border-[3px] bg-white rounded-md text-sm w-full"
+        // autoFocus={true}
+        className="p-1 border-[1px] bg-white rounded-md text-sm w-full focus:border-indigo-600 mr-1 "
         defaultValue={amen}
         onBlur={(e) => {
           console.log(e.target.value, "updated value");
@@ -47,18 +51,13 @@ const SortableItem = ({
           );
         }}
       />
-
-      <XCircleIcon
-        onClick={() => {
-          setSelectedAmenities(
-            selectedAmenities.filter(
-              (selectedAmen: string) => selectedAmen !== amen
-            )
-          );
-          setAmenities([amen, ...amenities]);
-        }}
-        className="h-6 w-6 text-black ml-1"
-      />
+      <div
+        className="h-6 w-6 bg-gray-100 rounded-md mx-0.5"
+        {...attributes}
+        {...listeners}
+      >
+        <ChevronUpDownIcon className="h-6 w-6 text-black" />
+      </div>
     </div>
   );
 };
