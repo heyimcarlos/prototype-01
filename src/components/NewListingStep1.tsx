@@ -151,7 +151,7 @@ const NewListingStep1 = ({ setStep }) => {
                     }
                   }}
                   onChange={() => {
-                    console.log("working?");
+                    console.log("working? ");
                   }}
                   placeholder={"Enter property address"}
                   value={fullAddress ? fullAddress : undefined}

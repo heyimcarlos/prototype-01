@@ -50,7 +50,7 @@ const NewListingStep2Half = ({ setStep }) => {
     (state) => state.setSelectedExteriorAmenities
   );
 
-  // console.log("selectedExteriorAmenities: ", selectedExteriorAmenities);
+  console.log("selectedExteriorAmenities: ", selectedBuildingAmenities);
 
   function handleDragEnd(event) {
     const { active, over } = event;
