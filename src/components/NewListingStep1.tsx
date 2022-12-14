@@ -93,8 +93,8 @@ const NewListingStep1 = ({ setStep }) => {
   if (!isLoaded) return <div>loading...</div>;
   return (
     <>
-      <div className="h-[calc(100vh-50px)] w-full flex flex-col items-center">
-        <div className="w-full flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-3">
+      <div className="h-[calc(100vh-55.59px)] w-full flex flex-col items-center">
+        <div className="w-full flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-0.5">
           <MapboxMap
             id="mapa"
             ref={mapRef}

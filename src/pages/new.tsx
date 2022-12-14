@@ -14,8 +14,8 @@ const New = () => {
   const [step, setStep] = useState("step 1");
 
   return (
-    <div className="w-full h-[100vh] overflow-y-auto" draggable={false}>
-      <div className="w-full pt-1">
+    <div className="w-full h-[100vh]" draggable={false}>
+      <div className="w-full h-auto pt-1">
         <div
           id="stepsBar"
           className="w-full h-auto flex items-center justify-center"
@@ -79,7 +79,7 @@ const New = () => {
 
         <div
           id="stepsBarLabels"
-          className="w-full h-full shadow-md flex items-center justify-center text-[12px] space-x-[3.3rem] border-b-[0.1rem] -mb-[10px] -ml-[1px] "
+          className="w-full h-full shadow-md flex items-center justify-center text-[12px] space-x-[3.3rem] border-b-[0.1rem] -ml-[1px] "
         >
           <div className="">Location</div>
           <div className="pr-1">Details</div>

@@ -27,7 +27,7 @@ const NewListingStep2 = ({ setStep }) => {
 
   return (
     <>
-      <div className="h-[calc(100vh-55px)] w-full flex flex-col pt-3 space-y-3">
+      <div className="h-[calc(100vh-55.59px)] w-full flex flex-col pt-2">
         <div className="flex h-full w-full flex-col justify-evenly">
           <div className="w-full flex flex-col justify-center items-center">
             <div className="w-[80%]">
@@ -252,7 +252,7 @@ const NewListingStep2 = ({ setStep }) => {
             </div>
           </div>
         </div>
-        <div className="w-full flex justify-center items-center space-x-6 ">
+        <div className="h-auto w-full flex justify-center items-center space-x-6 mb-3">
           <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
             Save & Exit
           </div>

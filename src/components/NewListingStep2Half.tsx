@@ -231,7 +231,7 @@ const NewListingStep2Half = ({ setStep }) => {
           className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg"
           draggable={false}
         >
-          <div className="w-[40%] h-[calc(100vh-250px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
+          <div className="w-[40%] h-[calc(100vh-300px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
             {buildingAmenities.map((amen) => (
               <div
                 key={amen}
@@ -252,7 +252,7 @@ const NewListingStep2Half = ({ setStep }) => {
           </div>
           <div
             draggable={false}
-            className="w-[60%] h-[calc(100vh-250px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
+            className="w-[60%] h-[calc(100vh-300px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
           >
             <DndContext
               collisionDetection={closestCenter}
@@ -286,7 +286,7 @@ const NewListingStep2Half = ({ setStep }) => {
           className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg"
           draggable={false}
         >
-          <div className="w-[40%] h-[calc(100vh-250px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
+          <div className="w-[40%] h-[calc(100vh-300px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
             {interiorAmenities.map((amen) => (
               <div
                 key={amen}
@@ -307,7 +307,7 @@ const NewListingStep2Half = ({ setStep }) => {
           </div>
           <div
             draggable={false}
-            className="w-[60%] h-[calc(100vh-250px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
+            className="w-[60%] h-[calc(100vh-300px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
           >
             <DndContext
               collisionDetection={closestCenter}
@@ -341,7 +341,7 @@ const NewListingStep2Half = ({ setStep }) => {
           className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg"
           draggable={false}
         >
-          <div className="w-[40%] h-[calc(100vh-250px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
+          <div className="w-[40%] h-[calc(100vh-300px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
             {exteriorAmenities.map((amen) => (
               <div
                 key={amen}
@@ -362,7 +362,7 @@ const NewListingStep2Half = ({ setStep }) => {
           </div>
           <div
             draggable={false}
-            className="w-[60%] h-[calc(100vh-250px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
+            className="w-[60%] h-[calc(100vh-300px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
           >
             <DndContext
               collisionDetection={closestCenter}
@@ -388,10 +388,10 @@ const NewListingStep2Half = ({ setStep }) => {
           </div>
         </div>
       )}
-      <div className="w-full h-3 flex justify-end text-sm pr-1">
+      <div className="w-full h-3 flex justify-end text-sm pr-2">
         *Contenido selecionado es editable.
       </div>
-      <div className="w-full flex justify-center space-x-6 py-3">
+      <div className="w-full flex justify-center space-x-6 py-3 mt-3">
         <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
           Save & Exit
         </div>
