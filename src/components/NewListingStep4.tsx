@@ -41,6 +41,15 @@ const NewListingStep4 = ({ setStep }) => {
 
   SwiperCore.use([Pagination]);
 
+  console.log("openPhotos", openPhotos);
+
+  const half = Math.ceil(newListing.selectedBuildingAmenities.length / 2);
+  const firstHalf = newListing.selectedBuildingAmenities.slice(0, half);
+  const secondHalf = newListing.selectedBuildingAmenities.slice(half);
+  const intHalf = Math.ceil(newListing.selectedInteriorAmenities.length / 2);
+  const intFirstHalf = newListing.selectedInteriorAmenities.slice(0, intHalf);
+  const intSecondHalf = newListing.selectedInteriorAmenities.slice(intHalf);
+
   return (
     <div
       id="start"
@@ -76,13 +85,16 @@ const NewListingStep4 = ({ setStep }) => {
           pagination={{ type: "fraction" }}
           spaceBetween={0}
           slidesPerView={1}
-          onClick={() => setOpenPhotos(true)}
         >
           {previewImages.map((image, idx) => (
             <SwiperSlide
               key={idx}
               draggable={false}
               className="max-h-[16rem] w-full"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenPhotos(true);
+              }}
             >
               <Image
                 className="max-h-[15.5rem] object-cover"
@@ -120,7 +132,7 @@ const NewListingStep4 = ({ setStep }) => {
                 </div>
               </div>
 
-              <p className="block text-md text-gray-500 mt2">
+              <p className="block text-md text-gray-500 mt-1">
                 {newListingState.sector} -{" "}
                 {newListingState.hide
                   ? "Dirección no disponible"
@@ -237,8 +249,8 @@ const NewListingStep4 = ({ setStep }) => {
             </div>
           </div>
 
-          <dl id="Descripción" className="space-y-8 overflow-auto ">
-            <div className="flex flex-col overflow-auto">
+          <dl id="Descripción" className="space-y-8">
+            <div className="flex flex-col">
               <dt className="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0 pt-3">
                 Descripción
               </dt>
@@ -257,15 +269,27 @@ const NewListingStep4 = ({ setStep }) => {
               <dt className="text-sm font-medium text-gray-500 w-40 flex-shrink-0 pt-3">
                 Property Amenities
               </dt>
-              <div className="flex flex-col flex-wrap mt-2 space-y-1">
-                {newListing.selectedBuildingAmenities.map((amen) => (
-                  <div
-                    key={amen}
-                    className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md"
-                  >
-                    {amen}
-                  </div>
-                ))}
+              <div className="w-full flex mt-2 ">
+                <div className="w-[50%] flex flex-col">
+                  {firstHalf.map((amen) => (
+                    <div
+                      key={amen}
+                      className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md mt-1 max-w-[100%]"
+                    >
+                      {amen}
+                    </div>
+                  ))}
+                </div>
+                <div className="w-[50%] flex flex-col ml-1">
+                  {secondHalf.map((amen) => (
+                    <div
+                      key={amen}
+                      className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md mt-1  max-w-[100%]"
+                    >
+                      {amen}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <Divider />
@@ -273,15 +297,27 @@ const NewListingStep4 = ({ setStep }) => {
               <dt className="text-sm font-medium text-gray-500 w-40 flex-shrink-0 pt-3">
                 Interior Amenities
               </dt>
-              <div className="flex flex-col flex-wrap mt-2 space-y-1">
-                {newListing.selectedInteriorAmenities.map((amen) => (
-                  <div
-                    key={amen}
-                    className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md"
-                  >
-                    {amen}
-                  </div>
-                ))}
+              <div className="w-full flex mt-2 ">
+                <div className="w-[50%] flex flex-col">
+                  {intFirstHalf.map((amen) => (
+                    <div
+                      key={amen}
+                      className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md mt-1 max-w-[100%]"
+                    >
+                      {amen}
+                    </div>
+                  ))}
+                </div>
+                <div className="w-[50%] flex flex-col ml-1">
+                  {intSecondHalf.map((amen) => (
+                    <div
+                      key={amen}
+                      className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md mt-1  max-w-[100%]"
+                    >
+                      {amen}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <Divider />
