@@ -27,16 +27,16 @@ const NewListingStep2 = ({ setStep }) => {
 
   return (
     <>
-      <div className="h-[calc(100vh-55.59px)] w-full flex flex-col pt-2">
+      <div className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-80.59px)] w-full flex flex-col pt-2">
         <div className="flex h-full w-full flex-col justify-evenly">
           <div className="w-full flex flex-col justify-center items-center">
             <div className="w-[80%]">
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 md:text-xl"
               >
                 Name
-                <span className="text-xs text-gray-400 ml-3">
+                <span className="text-xs text-gray-400 ml-3 md:text-lg">
                   *For your records only
                 </span>
               </label>
@@ -53,7 +53,7 @@ const NewListingStep2 = ({ setStep }) => {
                 }}
                 placeholder={"Name of listing"}
                 value={recordName ? recordName : undefined}
-                className="relative cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 pl-3 pr-10 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                className="relative cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 pl-3 pr-10 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
               />
             </div>
           </div>
@@ -70,7 +70,7 @@ const NewListingStep2 = ({ setStep }) => {
             <div className="relative w-[80%]">
               <label
                 htmlFor="name"
-                className=" text-sm font-medium text-gray-700"
+                className=" text-sm font-medium text-gray-700 md:text-xl"
               >
                 Price
               </label>
@@ -91,7 +91,7 @@ const NewListingStep2 = ({ setStep }) => {
                 }}
                 value={price.toLocaleString()}
                 placeholder="0"
-                className=" relative inline cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                className=" relative inline cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
               />
             </div>
           </div>
@@ -100,7 +100,7 @@ const NewListingStep2 = ({ setStep }) => {
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
-                className=" text-sm font-medium text-gray-700"
+                className=" text-sm font-medium text-gray-700 md:text-xl"
               >
                 Mantenimiento
               </label>
@@ -123,7 +123,7 @@ const NewListingStep2 = ({ setStep }) => {
                 }}
                 value={maintenance.toLocaleString()}
                 placeholder="0"
-                className=" relative inline cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                className=" relative inline cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
               />
             </div>
           </div>
@@ -132,7 +132,7 @@ const NewListingStep2 = ({ setStep }) => {
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
-                className=" text-sm font-medium text-gray-700"
+                className=" text-sm font-medium text-gray-700 md:text-xl"
               >
                 Meters<sup>2</sup>
               </label>
@@ -153,7 +153,7 @@ const NewListingStep2 = ({ setStep }) => {
                 }}
                 value={meters.toLocaleString()}
                 placeholder="0"
-                className=" relative inline cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                className=" relative inline cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
               />
             </div>
           </div>
@@ -162,11 +162,11 @@ const NewListingStep2 = ({ setStep }) => {
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
-                className=" text-sm font-medium text-gray-700"
+                className=" text-sm font-medium text-gray-700 md:text-xl"
               >
                 Bedrooms
               </label>
-              <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+              <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
                 <button
                   className="w-[33%] flex justify-center items-center border-r border-gray-300"
                   onClick={() => {
@@ -192,11 +192,11 @@ const NewListingStep2 = ({ setStep }) => {
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
-                className=" text-sm font-medium text-gray-700"
+                className=" text-sm font-medium text-gray-700 md:text-xl"
               >
                 Full Bathrooms
               </label>
-              <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+              <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
                 <button
                   className="w-[33%] flex justify-center items-center border-r border-gray-300"
                   onClick={() => {
@@ -224,11 +224,11 @@ const NewListingStep2 = ({ setStep }) => {
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
-                className=" text-sm font-medium text-gray-700"
+                className=" text-sm font-medium text-gray-700 md:text-xl"
               >
                 Half Bathrooms
               </label>
-              <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+              <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
                 <button
                   className="w-[33%] flex justify-center items-center border-r border-gray-300"
                   onClick={() => {
@@ -252,18 +252,18 @@ const NewListingStep2 = ({ setStep }) => {
             </div>
           </div>
         </div>
-        <div className="h-auto w-full flex justify-center items-center space-x-6 mb-3">
-          <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
+        <div className="h-auto w-full flex justify-center items-center space-x-6 mb-3 md:mb-6 md:text-2xl">
+          {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
             Save & Exit
-          </div>
+          </div> */}
           <div
-            className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl"
+            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
             onClick={() => setStep("step 1")}
           >
             Back
           </div>
           <div
-            className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl"
+            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
             onClick={() => setStep("step 2.5")}
           >
             Continue

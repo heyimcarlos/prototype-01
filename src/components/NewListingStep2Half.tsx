@@ -92,12 +92,15 @@ const NewListingStep2Half = ({ setStep }) => {
   }
 
   return (
-    <div className="w-full h-[calc(100vh-68px)]" draggable={false}>
+    <div
+      className="w-full h-[calc(100vh-68px)] md:h-[calc(100vh-80.59px)]"
+      draggable={false}
+    >
       <div className="w-full h-9 flex justify-around items-center pt-[3rem]">
         <span className="isolate inline-flex rounded-md shadow-sm">
           <button
             type="button"
-            className={`shadow-md relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
+            className={`shadow-md relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm md:text-xl font-medium text-gray-700 hover:bg-gray-50 ${
               selectedDetail === "Property"
                 ? "z-10 border-indigo-500 outline-none ring-1 ring-indigo-600"
                 : ""
@@ -110,7 +113,7 @@ const NewListingStep2Half = ({ setStep }) => {
           </button>
           <button
             type="button"
-            className={`shadow-md relative -ml-px inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
+            className={`shadow-md relative -ml-px inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm md:text-xl font-medium text-gray-700 hover:bg-gray-50 ${
               selectedDetail === "Interior"
                 ? "z-10 border-indigo-500 outline-none ring-1 ring-indigo-600"
                 : ""
@@ -123,7 +126,7 @@ const NewListingStep2Half = ({ setStep }) => {
           </button>
           <button
             type="button"
-            className={`shadow-md relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
+            className={`shadow-md relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm md:text-xl font-medium text-gray-700 hover:bg-gray-50 ${
               selectedDetail === "Exterior"
                 ? "z-10 border-indigo-500 outline-none ring-1 ring-indigo-600"
                 : ""
@@ -142,17 +145,24 @@ const NewListingStep2Half = ({ setStep }) => {
       {selectedDetail === "Property" && (
         <div className="w-full flex mt-9">
           <input
-            className="w-full mx-2 rounded-md border-black border-[1px] shadow-xl"
+            className="w-full mx-2 rounded-md border-black border-[1px] shadow-xl md:p-3 md:text-xl"
             type="text"
             placeholder="Amenidad personalizada"
             onChange={(e) => setCustomInput(e.target.value)}
             value={customInput}
             onKeyDown={(e) => {
               console.log(e.code, "Hello");
+              if (e.code === "Enter") {
+                setSelectedBuildingAmenities([
+                  ...selectedBuildingAmenities,
+                  customInput,
+                ]);
+                setCustomInput("");
+              }
             }}
           />
           <button
-            className="border-[1px] mr-2 border-black p-2 rounded-md shadow-xl"
+            className="border-[1px] mr-2 border-black p-2 rounded-md shadow-xl md:p-3 md:px-6 md:text-xl"
             onClick={() => {
               setSelectedBuildingAmenities([
                 ...selectedBuildingAmenities,
@@ -171,17 +181,24 @@ const NewListingStep2Half = ({ setStep }) => {
       {selectedDetail === "Interior" && (
         <div className="w-full flex mt-9">
           <input
-            className="w-full mx-2 rounded-md border-black caret-gray-800"
+            className="w-full mx-2 rounded-md border-black border-[1px] md:p-3 md:text-xl"
             type="text"
             placeholder="Amenidad personalizada"
             onChange={(e) => setCustomInput(e.target.value)}
             value={customInput}
             onKeyDown={(e) => {
               console.log(e.code, "Hello");
+              if (e.code === "Enter") {
+                setSelectedInteriorAmenities([
+                  ...selectedInteriorAmenities,
+                  customInput,
+                ]);
+                setCustomInput("");
+              }
             }}
           />
           <button
-            className="border-[1px] mr-2 border-black p-2 rounded-md"
+            className="border-[1px] mr-2 border-black p-2 rounded-md shadow-xl md:p-3 md:px-6 md:text-xl"
             onClick={() => {
               setSelectedInteriorAmenities([
                 ...selectedInteriorAmenities,
@@ -200,17 +217,24 @@ const NewListingStep2Half = ({ setStep }) => {
       {selectedDetail === "Exterior" && (
         <div className="w-full flex mt-9">
           <input
-            className="w-full mx-2 rounded-md border-black caret-gray-800"
+            className="w-full mx-2 rounded-md border-black border-[1px] md:p-3 md:text-xl"
             type="text"
             placeholder="Amenidad personalizada"
             onChange={(e) => setCustomInput(e.target.value)}
             value={customInput}
             onKeyDown={(e) => {
               console.log(e.code, "Hello");
+              if (e.code === "Enter") {
+                setSelectedExteriorAmenities([
+                  ...selectedExteriorAmenities,
+                  customInput,
+                ]);
+                setCustomInput("");
+              }
             }}
           />
           <button
-            className="border-[1px] mr-2 border-black p-2 rounded-md"
+            className="border-[1px] mr-2 border-black p-2 rounded-md shadow-xl md:p-3 md:px-6 md:text-xl"
             onClick={() => {
               setSelectedExteriorAmenities([
                 ...selectedExteriorAmenities,
@@ -231,11 +255,11 @@ const NewListingStep2Half = ({ setStep }) => {
           className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg"
           draggable={false}
         >
-          <div className="w-[40%] h-[calc(100vh-300px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
+          <div className="w-[40%] h-[calc(100vh-275px)] md:h-[calc(100vh-345px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
             {buildingAmenities.map((amen) => (
               <div
                 key={amen}
-                className="p-1 border-[1px] border-black bg-white rounded-md text-sm"
+                className="p-1 md:p-2 border-[1px] border-black bg-white rounded-md text-sm md:text-xl"
                 onClick={() => {
                   setBuildingAmenities(
                     buildingAmenities.filter((buildAmen) => amen !== buildAmen)
@@ -252,11 +276,12 @@ const NewListingStep2Half = ({ setStep }) => {
           </div>
           <div
             draggable={false}
-            className="w-[60%] h-[calc(100vh-300px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
+            className="w-[60%] max-w-[60%] h-[calc(100vh-275px)] md:h-[calc(100vh-345px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
           >
             <DndContext
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
+              autoScroll={false}
             >
               <SortableContext
                 items={selectedBuildingAmenities}
@@ -286,11 +311,11 @@ const NewListingStep2Half = ({ setStep }) => {
           className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg"
           draggable={false}
         >
-          <div className="w-[40%] h-[calc(100vh-300px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
+          <div className="w-[40%] h-[calc(100vh-300px)] md:h-[calc(100vh-345px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
             {interiorAmenities.map((amen) => (
               <div
                 key={amen}
-                className="p-1 border-[1px] border-black bg-white rounded-md text-sm"
+                className="p-1 md:p-2 border-[1px] border-black bg-white rounded-md text-sm md:text-xl"
                 onClick={() => {
                   setInteriorAmenities(
                     interiorAmenities.filter((inteAmen) => amen !== inteAmen)
@@ -307,7 +332,7 @@ const NewListingStep2Half = ({ setStep }) => {
           </div>
           <div
             draggable={false}
-            className="w-[60%] h-[calc(100vh-300px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
+            className="w-[60%] h-[calc(100vh-300px)] md:h-[calc(100vh-345px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
           >
             <DndContext
               collisionDetection={closestCenter}
@@ -341,11 +366,11 @@ const NewListingStep2Half = ({ setStep }) => {
           className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg"
           draggable={false}
         >
-          <div className="w-[40%] h-[calc(100vh-300px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
+          <div className="w-[40%] h-[calc(100vh-300px)] md:h-[calc(100vh-345px)] bg-gray-300 flex flex-col overflow-auto space-y-1 p-1 ">
             {exteriorAmenities.map((amen) => (
               <div
                 key={amen}
-                className="p-1 border-[1px] border-black bg-white rounded-md text-sm"
+                className="p-1 md:p-2 border-[1px] border-black bg-white rounded-md text-sm md:text-xl"
                 onClick={() => {
                   setExteriorAmenities(
                     exteriorAmenities.filter((inteAmen) => amen !== inteAmen)
@@ -362,7 +387,7 @@ const NewListingStep2Half = ({ setStep }) => {
           </div>
           <div
             draggable={false}
-            className="w-[60%] h-[calc(100vh-300px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
+            className="w-[60%] h-[calc(100vh-300px)] md:h-[calc(100vh-345px)] bg-gray-400 flex flex-col overflow-auto space-y-1 p-1"
           >
             <DndContext
               collisionDetection={closestCenter}
@@ -388,21 +413,21 @@ const NewListingStep2Half = ({ setStep }) => {
           </div>
         </div>
       )}
-      <div className="w-full h-3 flex justify-end text-sm pr-2">
+      <div className="w-full h-3 flex justify-center text-sm md:text-xl pr-2">
         *Contenido selecionado es editable.
       </div>
-      <div className="w-full flex justify-center space-x-6 py-3 mt-3">
-        <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
+      <div className="w-full flex justify-center space-x-6 bottom-0 absolute mb-3 md:mb-6 md:text-2xl">
+        {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
           Save & Exit
-        </div>
+        </div> */}
         <div
-          className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl"
+          className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
           onClick={() => setStep("step 2")}
         >
           Back
         </div>
         <div
-          className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl"
+          className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
           onClick={() => setStep("step 3")}
         >
           Continue

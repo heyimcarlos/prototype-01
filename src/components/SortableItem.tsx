@@ -34,12 +34,12 @@ const SortableItem = ({
           );
           setAmenities([amen, ...amenities]);
         }}
-        className="h-6 w-6 text-black mx-1"
+        className="h-6 w-6 md:h-8 md:w-8 text-black mx-1"
       />
       <input
         type="text"
         // autoFocus={true}
-        className="p-1 border-[1px] bg-white rounded-md text-sm w-full focus:border-indigo-600 mr-1 "
+        className="p-1 md:p-2 border-[1px] bg-white rounded-md text-sm md:text-xl w-full focus:border-indigo-600 mr-1 "
         defaultValue={amen}
         onBlur={(e) => {
           console.log(e.target.value, "updated value");
@@ -52,11 +52,11 @@ const SortableItem = ({
         }}
       />
       <div
-        className="h-6 w-6 bg-gray-100 rounded-md mx-0.5"
+        className="h-6 w-6 md:h-8 md:w-8 bg-gray-100 rounded-md mx-0.5"
         {...attributes}
         {...listeners}
       >
-        <ChevronUpDownIcon className="h-6 w-6 text-black" />
+        <ChevronUpDownIcon className="h-6 w-6 md:h-8 md:w-8 text-black" />
       </div>
     </div>
   );

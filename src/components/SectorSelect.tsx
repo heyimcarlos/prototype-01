@@ -26,11 +26,11 @@ export default function SectorSelect() {
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
         <>
-          <Listbox.Label className="block text-sm font-medium text-gray-700 ">
+          <Listbox.Label className="block text-sm font-medium text-gray-700 md:text-xl">
             Sector
           </Listbox.Label>
           <div className="relative ">
-            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 md:py-3 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
               {sector === "" && (
                 <span className="block truncate text-gray-500">
                   {people[0]?.name}
@@ -56,7 +56,7 @@ export default function SectorSelect() {
             >
               <Listbox.Options
                 // defaultValue={people[1]?.name}
-                className="absolute z-10 mt-1 max-h-[9.9rem] w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                className="absolute z-10 mt-1 max-h-[9.9rem] w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm md:text-xl"
               >
                 {people.map((person) => (
                   <Listbox.Option

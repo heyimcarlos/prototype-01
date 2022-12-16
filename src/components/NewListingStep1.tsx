@@ -15,6 +15,7 @@ import { useNewListing } from "@/stores/useNewListing";
 import SectorSelect from "@/components/SectorSelect";
 import HideAddressCheckbox from "@/components/HideAddressCheckbox";
 import { useDefaultSectors } from "@/stores/useDefaultSectors";
+import Link from "next/link";
 
 const NewListingStep1 = ({ setStep }) => {
   const mapRef = useRef<MapRef>(null);
@@ -93,8 +94,9 @@ const NewListingStep1 = ({ setStep }) => {
   if (!isLoaded) return <div>loading...</div>;
   return (
     <>
-      <div className="h-[calc(100vh-55.59px)] w-full flex flex-col items-center">
-        <div className="w-full flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-0.5">
+      <div className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-80.59px)] w-full flex flex-col items-center">
+        {/* <div>MAP for searching address</div> */}
+        <div className="w-full flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-0.5 md:max-h-[35rem]">
           <MapboxMap
             id="mapa"
             ref={mapRef}
@@ -123,7 +125,7 @@ const NewListingStep1 = ({ setStep }) => {
 
         {/* -------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
-        <div className="w-full h-full flex flex-1 flex-col items-center justify-around bg-white z-10 pt-6 shadow-inner">
+        <div className="w-full h-full flex flex-1 flex-col items-center justify-evenly bg-white z-10 pt-6 shadow-inner">
           <div className="flex w-[95%] mx-[1rem] -mt-5 shadow-lg">
             <div className="min-w-0 flex-1 flex flex-col items-start justify-end ">
               <label htmlFor="search" className="sr-only">
@@ -132,13 +134,13 @@ const NewListingStep1 = ({ setStep }) => {
 
               <label
                 htmlFor="search"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 md:text-xl"
               >
                 Address
               </label>
               <Autocomplete
                 restrictions={{ country: "do" }}
-                className="w-full"
+                className="w-full md:text-xl"
                 onLoad={onLoad}
                 onPlaceChanged={() => onPlaceChanged()}
               >
@@ -156,7 +158,7 @@ const NewListingStep1 = ({ setStep }) => {
                   placeholder={"Enter property address"}
                   value={fullAddress}
                   // value={fullAddress ? fullAddress : undefined}
-                  className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                  className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 md:py-3 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
                 />
               </Autocomplete>
             </div>
@@ -169,17 +171,22 @@ const NewListingStep1 = ({ setStep }) => {
           <div className="w-[95%] flex flex-col items-center pt-1">
             <HideAddressCheckbox />
           </div>
-
-          <div className="w-full flex justify-center space-x-6 mt-3">
-            <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
-              Save & Exit
-            </div>
-            <div
-              className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl"
-              onClick={() => setStep("step 2")}
-            >
-              Continue
-            </div>
+        </div>
+        <div className="w-full flex justify-center space-x-6 mb-3 md:mb-6 text-md md:text-2xl">
+          {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
+            Save & Exit
+          </div> */}
+          <Link
+            href="/dashboard"
+            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+          >
+            Back
+          </Link>
+          <div
+            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+            onClick={() => setStep("step 2")}
+          >
+            Continue
           </div>
         </div>
       </div>

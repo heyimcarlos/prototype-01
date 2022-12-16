@@ -2,14 +2,14 @@ const NewListingStep3 = ({ setStep }) => {
   return (
     <div className="w-full h-[calc(100vh-68px)]">
       <div className="h-[45rem] w-full">
-        <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5 mt-10 px-2">
+        <div className="grid grid-cols-3 items-start gap-4 pt-5 mt-10 px-2">
           <label
             htmlFor="cover-photo"
             className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
           >
             Photos
           </label>
-          <div className="mt-1 sm:col-span-2 sm:mt-0">
+          <div className="mt-1 col-span-2 mt-0">
             <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
               <div className="space-y-1 text-center">
                 <svg
@@ -49,18 +49,18 @@ const NewListingStep3 = ({ setStep }) => {
           </div>
         </div>
       </div>
-      <div className="w-full flex justify-center space-x-6 py-3">
-        <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
+      <div className="w-full flex justify-center space-x-6 absolute bottom-0 mb-3 md:mb-6 md:text-2xl">
+        {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
           Save & Exit
-        </div>
+        </div> */}
         <div
-          className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl"
+          className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
           onClick={() => setStep("step 2.5")}
         >
           Back
         </div>
         <div
-          className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl"
+          className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
           onClick={() => setStep("step 4")}
         >
           Continue

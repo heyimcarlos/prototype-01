@@ -26,10 +26,10 @@ export default function PropertyTypeSelect() {
       {({ open }) => (
         <>
           <div className="relative w-[80%]">
-            <Listbox.Label className="text-sm font-medium text-gray-700">
+            <Listbox.Label className="text-sm font-medium text-gray-700 md:text-xl">
               Type
             </Listbox.Label>
-            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 pl-3 pr-10 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 md:py-3 pl-3 pr-10 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
               {propertyType === "" && (
                 <span className="block truncate text-gray-500">
                   {selected?.name}
@@ -54,7 +54,7 @@ export default function PropertyTypeSelect() {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute z-10 mt-1 max-h-[9.9rem] w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              <Listbox.Options className="absolute z-10 mt-1 max-h-[9.9rem] w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm md:text-xl">
                 {propertyTypes.map((type) => (
                   <Listbox.Option
                     key={type.id}
