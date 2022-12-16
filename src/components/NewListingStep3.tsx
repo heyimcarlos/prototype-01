@@ -2,7 +2,7 @@ const NewListingStep3 = ({ setStep }) => {
   return (
     <div className="w-full h-[calc(100vh-68px)]">
       <div className="h-[45rem] w-full">
-        <div className="grid grid-cols-3 items-start gap-4 pt-5 mt-10 px-2">
+        <div className="gap-4 pt-5 mt-10 px-2 flex flex-col justify-center items-center">
           <label
             htmlFor="cover-photo"
             className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
