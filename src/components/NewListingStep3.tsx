@@ -48,23 +48,34 @@ const NewListingStep3 = ({ setStep }) => {
             </div>
           </div>
         </div>
+
+        <div className="w-auto h-auto flex flex-col items-center justify-center mt-14">
+          <label htmlFor="description" className="w-1/3">
+            Description
+          </label>
+          <textarea
+            id="description"
+            // type="text"
+            className="w-1/3 h-[10rem] rounded-md"
+          />
+        </div>
       </div>
       <div className="w-full flex justify-center space-x-6 absolute bottom-0 mb-3 md:mb-6 md:text-2xl">
         {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
           Save & Exit
         </div> */}
-        <div
+        <button
           className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
           onClick={() => setStep("step 2.5")}
         >
           Back
-        </div>
-        <div
+        </button>
+        <button
           className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
           onClick={() => setStep("step 4")}
         >
           Continue
-        </div>
+        </button>
       </div>
     </div>
   );

@@ -54,7 +54,7 @@ const NewListingStep4 = ({ setStep }) => {
   return (
     <div
       id="start"
-      className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-82.59px)] w-full overflow-auto scroll-smooth scroll-mt-[22rem] md:scroll-mt-[32rem] mt-[1px] md:mt-[2px]"
+      className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-82.59px)] w-full lg:px-[30rem] overflow-auto scroll-smooth scroll-mt-[22rem] md:scroll-mt-[32rem] mt-[1px] md:mt-[2px]"
     >
       {openPhotos && (
         <PhotosModal
@@ -64,23 +64,23 @@ const NewListingStep4 = ({ setStep }) => {
         />
       )}
 
-      <div id="imagesAndTopElement" className="w-full">
-        <div className="w-full flex justify-center space-x-6 pb-1.5 absolute mt-3 z-20 md:text-xl">
-          <div className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl">
+      <div id="imagesAndTopElement" className="w-full ">
+        <div className="w-full flex justify-center space-x-6 pb-1.5 absolute mt-3 z-20 md:text-xl lg:relative lg:-mb-[3.5rem]">
+          <button className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl">
             Save & Exit
-          </div>
-          <div
+          </button>
+          <button
             className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
             onClick={() => setStep("step 3")}
           >
             Back
-          </div>
-          <div
+          </button>
+          <button
             className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
             onClick={() => setStep("step 4")}
           >
             Publish
-          </div>
+          </button>
         </div>
         <Swiper
           pagination={{ type: "fraction" }}
@@ -109,7 +109,7 @@ const NewListingStep4 = ({ setStep }) => {
 
       <div
         id="firstInfoAndNavBar"
-        className="bg-white sticky top-0 z-30 -mt-[6px] md:py-2"
+        className="bg-white sticky top-0 z-30 -mt-[6px] md:py-2 lg:border-l-2 lg:border-r-2 lg:border-black/20"
       >
         <div className="flow-root flex items-end px-4">
           <div className="flex-1">
@@ -209,7 +209,7 @@ const NewListingStep4 = ({ setStep }) => {
 
       <div
         id="detailsContainer"
-        className="h-[calc(100vh-38px-54.39px-55.59px)] md:h-[calc(100vh-58px-94.59px-55.59px)] w-full overflow-auto scroll-smooth"
+        className="h-[calc(100vh-38px-54.39px-55.59px)] md:h-[calc(100vh-58px-94.59px-55.59px)] w-full overflow-auto scroll-smooth lg:border-l-2 lg:border-r-2 lg:border-black/20"
       >
         <div className="px-4 py-1">
           <div

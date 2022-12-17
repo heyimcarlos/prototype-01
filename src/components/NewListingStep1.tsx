@@ -94,9 +94,9 @@ const NewListingStep1 = ({ setStep }) => {
   if (!isLoaded) return <div>loading...</div>;
   return (
     <>
-      <div className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-80.59px)] w-full flex flex-col items-center">
+      <div className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-80.59px)] w-full flex flex-col items-center ">
         {/* <div>MAP for searching address</div> */}
-        <div className="w-full flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-0.5 md:max-h-[35rem] lg:max-w-[70rem] lg:mt-3 lg:overflow-hidden lg:rounded-tr-md lg:rounded-tl-md">
+        <div className="w-full flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-0.5 md:max-h-[35rem] lg:max-w-[55rem] lg:mt-3 lg:overflow-hidden lg:rounded-tr-md lg:rounded-tl-md  lg:border-t-2 lg:border-l-2 lg:border-r-2 lg:border-black/20 lg:drop-shadow-2xl">
           <MapboxMap
             id="mapa"
             ref={mapRef}
@@ -125,7 +125,7 @@ const NewListingStep1 = ({ setStep }) => {
 
         {/* -------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
-        <div className="w-full h-full flex flex-1 flex-col items-center justify-evenly bg-white z-10 pt-6 lg:shadow-lg lg:max-w-[70rem] lg:pb-3 lg:rounded-md">
+        <div className="w-full h-full flex flex-1 flex-col items-center justify-evenly bg-white pt-6 lg:max-w-[55rem] lg:pb-3 lg:rounded-br-md lg:rounded-bl-md lg:border-l-2 lg:border-r-2 lg:border-b-2 lg:border-black/20 lg:drop-shadow-xl">
           <div className="flex w-[95%] mx-[1rem] -mt-5 shadow-lg lg:shadow-none">
             <div className="min-w-0 flex-1 flex flex-col items-start justify-end ">
               <label htmlFor="search" className="sr-only">
@@ -178,12 +178,12 @@ const NewListingStep1 = ({ setStep }) => {
           </div> */}
           <Link
             href="/dashboard"
-            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-lg"
           >
             Back
           </Link>
           <button
-            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-lg"
             onClick={() => setStep("step 2")}
           >
             Continue
