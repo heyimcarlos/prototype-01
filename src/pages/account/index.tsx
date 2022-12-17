@@ -6,16 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import {
-  Controller,
-  FormProvider,
-  SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { type NextPageWithLayout } from "../_app";
-import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
-import "react-phone-number-input/style.css";
+// import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+// import "react-phone-number-input/style.css";
 
 type AvatarSectionProps = {
   imageSrc: string;
@@ -130,7 +125,7 @@ const SettingsPage: NextPageWithLayout = () => {
     mutation.mutate(values);
   };
 
-  if (isLoading || !user) return <div>Loading...</div>;
+  if (isLoading || !user) return null;
   const isDisabled = isSubmitting || !isDirty;
 
   return (
