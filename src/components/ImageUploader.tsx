@@ -2,6 +2,7 @@ import { type FormEvent, useCallback, useEffect, useState } from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import * as Dialog from "@radix-ui/react-dialog";
 import Cropper from "react-easy-crop";
+import Button from "./Button";
 
 // @INFO: FileReader methods
 type ReadAsMethod =
@@ -161,15 +162,18 @@ export default function ImageUploader({
   return (
     <Dialog.Root onOpenChange={(opened) => !opened && setFile(null)}>
       <Dialog.Trigger asChild>
-        <button type="button" className="py-1 text-sm">
+        <button
+          type="button"
+          className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
           {buttonMsg}
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="bg-black opacity-50 fixed inset-0" />
         <Dialog.Content className="bg-white rounded-md fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] w-[90vw] max-w-[450px] max-h-[85vh] p-6 focus:outline-none">
-          <div className="mb-4 sm:flex sm:items-start">
-            <div className="mt-3 text-center sm:mt-0 sm:text-left">
+          <div className="sm:flex sm:items-start">
+            <div className="text-center sm:mt-0 sm:text-left">
               <h3 className="text-lg leading-6 text-gray-900" id="modal-title">
                 Upload avatar
               </h3>
@@ -201,7 +205,7 @@ export default function ImageUploader({
                 />
               )}
               {/*dark settings: dark:border-gray-800 dark:bg-transparent dark:text-white dark:hover:bg-gray-900*/}
-              <label className="mt-8 rounded-md border border-gray-300 bg-white px-3 py-1 text-xs font-medium leading-4 text-gray-700 hover:bg-gray-50 hover:text-gray-900 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1">
+              <label className="cursor-pointer mt-8 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                 <input
                   onInput={onInputFile}
                   type="file"
@@ -216,13 +220,23 @@ export default function ImageUploader({
           </div>
           <div className="mt-5 flex flex-row-reverse gap-x-2 sm:mt-4">
             <Dialog.Close asChild>
-              <button onClick={() => showCroppedImage(croppedAreaPixels)}>
-                save
+              <button
+                type="button"
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                onClick={() => showCroppedImage(croppedAreaPixels)}
+              >
+                Save
               </button>
             </Dialog.Close>
 
             <Dialog.Close asChild>
-              <button>cancel</button>
+              <button
+                type="button"
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                onClick={() => showCroppedImage(croppedAreaPixels)}
+              >
+                Cancel
+              </button>
             </Dialog.Close>
           </div>
         </Dialog.Content>
