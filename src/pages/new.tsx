@@ -11,7 +11,7 @@ import NewListingStep3 from "@/components/NewListingStep3";
 import NewListingStep4 from "@/components/NewListingStep4";
 
 const New = () => {
-  const [step, setStep] = useState("step 4");
+  const [step, setStep] = useState("step 1");
 
   return (
     <div className="w-full h-[100vh]" draggable={false}>

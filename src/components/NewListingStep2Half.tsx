@@ -50,7 +50,7 @@ const NewListingStep2Half = ({ setStep }) => {
     (state) => state.setSelectedExteriorAmenities
   );
 
-  console.log("selectedExteriorAmenities: ", selectedBuildingAmenities);
+  // console.log("selectedExteriorAmenities: ", selectedBuildingAmenities);
 
   function handleDragEnd(event) {
     const { active, over } = event;
@@ -151,7 +151,7 @@ const NewListingStep2Half = ({ setStep }) => {
             onChange={(e) => setCustomInput(e.target.value)}
             value={customInput}
             onKeyDown={(e) => {
-              console.log(e.code, "Hello");
+              // console.log(e.code, "Hello");
               if (e.code === "Enter") {
                 setSelectedBuildingAmenities([
                   ...selectedBuildingAmenities,
@@ -187,7 +187,7 @@ const NewListingStep2Half = ({ setStep }) => {
             onChange={(e) => setCustomInput(e.target.value)}
             value={customInput}
             onKeyDown={(e) => {
-              console.log(e.code, "Hello");
+              // console.log(e.code, "Hello");
               if (e.code === "Enter") {
                 setSelectedInteriorAmenities([
                   ...selectedInteriorAmenities,
@@ -223,7 +223,7 @@ const NewListingStep2Half = ({ setStep }) => {
             onChange={(e) => setCustomInput(e.target.value)}
             value={customInput}
             onKeyDown={(e) => {
-              console.log(e.code, "Hello");
+              // console.log(e.code, "Hello");
               if (e.code === "Enter") {
                 setSelectedExteriorAmenities([
                   ...selectedExteriorAmenities,

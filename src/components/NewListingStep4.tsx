@@ -42,7 +42,7 @@ const NewListingStep4 = ({ setStep }) => {
 
   SwiperCore.use([Pagination]);
 
-  console.log("openPhotos", openPhotos);
+  // console.log("openPhotos", openPhotos);
 
   const half = Math.ceil(newListing.selectedBuildingAmenities.length / 2);
   const firstHalf = newListing.selectedBuildingAmenities.slice(0, half);
