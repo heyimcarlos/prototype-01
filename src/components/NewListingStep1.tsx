@@ -96,7 +96,7 @@ const NewListingStep1 = ({ setStep }) => {
     <>
       <div className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-80.59px)] w-full flex flex-col items-center ">
         {/* <div>MAP for searching address</div> */}
-        <div className="w-full flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-0.5 md:max-h-[35rem] lg:max-w-[55rem] lg:mt-3 lg:overflow-hidden lg:rounded-tr-md lg:rounded-tl-md  lg:border-t-2 lg:border-l-2 lg:border-r-2 lg:border-black/20 lg:drop-shadow-2xl">
+        <div className="w-full flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-0.5 md:max-h-[35rem] xl:max-w-[55rem] xl:mt-3 xl:overflow-hidden xl:rounded-tr-md xl:rounded-tl-md  xl:border-t-2 xl:border-l-2 xl:border-r-2 xl:border-black/20 xl:drop-shadow-2xl">
           <MapboxMap
             id="mapa"
             ref={mapRef}
@@ -125,8 +125,8 @@ const NewListingStep1 = ({ setStep }) => {
 
         {/* -------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
-        <div className="w-full h-full flex flex-1 flex-col items-center justify-evenly bg-white pt-6 lg:max-w-[55rem] lg:pb-3 lg:rounded-br-md lg:rounded-bl-md lg:border-l-2 lg:border-r-2 lg:border-b-2 lg:border-black/20 lg:drop-shadow-xl">
-          <div className="flex w-[95%] mx-[1rem] -mt-5 shadow-lg lg:shadow-none">
+        <div className="w-full h-full flex flex-1 flex-col items-center justify-evenly bg-white pt-6 xl:max-w-[55rem] xl:pb-3 xl:rounded-br-md xl:rounded-bl-md xl:border-l-2 xl:border-r-2 xl:border-b-2 xl:border-black/20 xl:drop-shadow-xl">
+          <div className="flex w-[95%] mx-[1rem] -mt-5 shadow-lg xl:shadow-none">
             <div className="min-w-0 flex-1 flex flex-col items-start justify-end ">
               <label htmlFor="search" className="sr-only">
                 Initial search
@@ -158,7 +158,7 @@ const NewListingStep1 = ({ setStep }) => {
                   placeholder={"Enter property address"}
                   value={fullAddress}
                   // value={fullAddress ? fullAddress : undefined}
-                  className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 md:py-3 lg:py-2 pl-3 pr-10 text-left shadow-sm lg:shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
+                  className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 md:py-3 xl:py-2 pl-3 pr-10 text-left shadow-sm xl:shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
                 />
               </Autocomplete>
             </div>
@@ -172,8 +172,8 @@ const NewListingStep1 = ({ setStep }) => {
             <HideAddressCheckbox />
           </div>
         </div>
-        <div className="w-full flex justify-center space-x-6 mb-3 md:mb-6 text-md md:text-2xl lg:mt-3">
-          {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
+        <div className="w-full flex justify-center space-x-6 mb-3 md:mb-6 text-md md:text-2xl xl:mt-3">
+          {/* <div className="rounded-xl py-1 px-2 bg-indigo-600 text-white shadow-xl">
             Save & Exit
           </div> */}
           <Link

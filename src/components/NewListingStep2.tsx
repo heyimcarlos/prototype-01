@@ -28,8 +28,8 @@ const NewListingStep2 = ({ setStep }) => {
   return (
     <>
       <div className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-80.59px)] w-full flex flex-col pt-2">
-        <div className="flex h-full w-full lg:px-[18rem] flex-col justify-evenly lg:flex-row lg:justify-start lg:items-center lg:flex-wrap lg:after:justify-start lg:ml-3">
-          <div className="w-full lg:w-[49%] flex flex-col justify-center items-center">
+        <div className="flex h-full w-full xl:px-[18rem] flex-col justify-evenly xl:flex-row xl:justify-start xl:items-center xl:flex-wrap xl:after:justify-start xl:ml-3">
+          <div className="w-full xl:w-[49%] flex flex-col justify-center items-center">
             <div className="w-[80%]">
               <label
                 htmlFor="name"
@@ -58,15 +58,15 @@ const NewListingStep2 = ({ setStep }) => {
             </div>
           </div>
 
-          <div className="w-full lg:w-[49%] flex justify-center items-center ">
+          <div className="w-full xl:w-[49%] flex justify-center items-center ">
             <PropertyTypeSelect />
           </div>
 
-          <div className="w-full lg:w-[49%] flex justify-center items-center ">
+          <div className="w-full xl:w-[49%] flex justify-center items-center ">
             <PropertyConditionSelect />
           </div>
 
-          <div className="w-full lg:w-[49%] flex justify-center">
+          <div className="w-full xl:w-[49%] flex justify-center">
             <div className="relative w-[80%]">
               <label
                 htmlFor="name"
@@ -96,7 +96,7 @@ const NewListingStep2 = ({ setStep }) => {
             </div>
           </div>
 
-          <div className="w-full lg:w-[49%] flex justify-center">
+          <div className="w-full xl:w-[49%] flex justify-center">
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
@@ -128,7 +128,7 @@ const NewListingStep2 = ({ setStep }) => {
             </div>
           </div>
 
-          <div className="w-full lg:w-[49%] flex justify-center">
+          <div className="w-full xl:w-[49%] flex justify-center">
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
@@ -158,7 +158,7 @@ const NewListingStep2 = ({ setStep }) => {
             </div>
           </div>
 
-          <div className="w-full lg:w-[49%] flex justify-center">
+          <div className="w-full xl:w-[49%] flex justify-center">
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
@@ -188,7 +188,7 @@ const NewListingStep2 = ({ setStep }) => {
             </div>
           </div>
 
-          <div className="w-full lg:w-[49%] flex justify-center">
+          <div className="w-full xl:w-[49%] flex justify-center">
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
@@ -220,7 +220,7 @@ const NewListingStep2 = ({ setStep }) => {
             </div>
           </div>
 
-          <div className="w-full lg:w-[49%] flex justify-center">
+          <div className="w-full xl:w-[49%] flex justify-center">
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"

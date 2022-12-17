@@ -93,7 +93,7 @@ const NewListingStep2Half = ({ setStep }) => {
 
   return (
     <div
-      className="w-full h-[calc(100vh-68px)] md:h-[calc(100vh-80.59px)] lg:px-[18rem]"
+      className="w-full h-[calc(100vh-68px)] md:h-[calc(100vh-80.59px)] xl:px-[18rem]"
       draggable={false}
     >
       <div className="w-full h-9 flex justify-around items-center pt-[3rem]">
@@ -252,7 +252,7 @@ const NewListingStep2Half = ({ setStep }) => {
 
       {selectedDetail === "Property" && (
         <div
-          className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg lg:border-2 lg:border-black/20 lg:shadow-none lg:drop-shadow-xl"
+          className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg xl:border-2 xl:border-black/20 xl:shadow-none xl:drop-shadow-xl"
           draggable={false}
         >
           <div className="w-[40%] h-[calc(100vh-275px)] md:h-[calc(100vh-345px)] bg-gray-200 flex flex-col overflow-auto space-y-1 p-1 ">
@@ -308,7 +308,7 @@ const NewListingStep2Half = ({ setStep }) => {
 
       {selectedDetail === "Interior" && (
         <div
-          className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg lg:border-2 lg:border-black/20 lg:shadow-none lg:drop-shadow-xl"
+          className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg xl:border-2 xl:border-black/20 xl:shadow-none xl:drop-shadow-xl"
           draggable={false}
         >
           <div className="w-[40%] h-[calc(100vh-300px)] md:h-[calc(100vh-345px)] bg-gray-200 flex flex-col overflow-auto space-y-1 p-1 ">
@@ -363,7 +363,7 @@ const NewListingStep2Half = ({ setStep }) => {
 
       {selectedDetail === "Exterior" && (
         <div
-          className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg lg:border-2 lg:border-black/20 lg:shadow-none lg:drop-shadow-xl"
+          className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg xl:border-2 xl:border-black/20 xl:shadow-none xl:drop-shadow-xl"
           draggable={false}
         >
           <div className="w-[40%] h-[calc(100vh-300px)] md:h-[calc(100vh-345px)] bg-gray-200 flex flex-col overflow-auto space-y-1 p-1 ">
@@ -416,7 +416,7 @@ const NewListingStep2Half = ({ setStep }) => {
       <div className="w-full h-3 flex justify-center text-sm md:text-xl pr-2">
         *Contenido selecionado es editable.
       </div>
-      <div className="w-full flex justify-center space-x-6 bottom-0 absolute lg:relative mb-3 lg:mb-0 lg:mt-[1.9rem] md:mb-6 md:text-2xl">
+      <div className="w-full flex justify-center space-x-6 bottom-0 absolute xl:relative mb-3 xl:mb-0 xl:mt-[1.9rem] md:mb-6 md:text-2xl">
         {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
           Save & Exit
         </div> */}
