@@ -1,4 +1,7 @@
+import { resizeBase64Image } from "@/lib/resizeBase64Image";
 import { type RouterOutputs } from "@/utils/trpc";
+import { type Prisma } from "@prisma/client";
+import { z } from "zod";
 import {
   publicProcedure,
   protectedProcedure,
@@ -38,6 +41,29 @@ const loggedInUserRouter = router({
       },
     });
   }),
+  updateProfile: protectedProcedure
+    .input(
+      z.object({
+        avatar: z.string().optional(),
+        bio: z.string().optional(),
+        email: z.string().optional(),
+        name: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const data: Prisma.UserUpdateInput = { ...input };
+
+      if (input.avatar) {
+        data.avatar = await resizeBase64Image(input.avatar);
+      }
+
+      await ctx.prisma.user.update({
+        where: {
+          id: ctx.user.id,
+        },
+        data,
+      });
+    }),
 });
 
 export const userRouter = mergeRouters(
