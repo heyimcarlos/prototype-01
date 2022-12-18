@@ -1,4 +1,5 @@
 import { Avatar } from "@/components/Avatar";
+import { ImagesUploader } from "@/components/ImagesUploader";
 import ImageUploader from "@/components/ImageUploader";
 import DashboardLayout from "@/components/layouts/dashboard";
 import { trpc } from "@/utils/trpc";
@@ -23,9 +24,7 @@ const AvatarSection = ({ imageSrc, onSave }: AvatarSectionProps) => {
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900">
-              Your Avatar
-            </h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900">Your Avatar</h3>
             <div className="mt-2 max-w-xl text-sm text-gray-500">
               <p>This is your avatar.</p>
               <p>Click below to upload a custom one from your files.</p>
@@ -137,8 +136,7 @@ const SettingsPage: NextPageWithLayout = () => {
               {_.capitalize(router.pathname.replace("/", ""))}
             </h3>
             <p className="max-w-2xl text-sm text-gray-500">
-              This information will be displayed publicly so be careful what you
-              share.
+              This information will be displayed publicly so be careful what you share.
             </p>
           </div>
         </div>
@@ -150,20 +148,12 @@ const SettingsPage: NextPageWithLayout = () => {
       <section className="bg-white border rounded-md sm:rounded-lg">
         <div className="p-6">
           <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900">
-              Personal Information
-            </h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900">Personal Information</h3>
             <div className="mt-2 max-w-xl text-sm text-gray-500">
-              <p>
-                This information will be displayed publicly so be careful what
-                you share.
-              </p>
+              <p>This information will be displayed publicly so be careful what you share.</p>
             </div>
           </div>
-          <form
-            className="space-y-8 divide-y divide-gray-200"
-            onSubmit={handleSubmit(onSubmit)}
-          >
+          <form className="space-y-8 divide-y divide-gray-200" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
               <div className="space-y-6 pt-8 sm:space-y-5 sm:pt-10">
                 <div className="space-y-6 sm:space-y-5">
@@ -184,9 +174,7 @@ const SettingsPage: NextPageWithLayout = () => {
                         autoComplete="given-name"
                         className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm"
                       />
-                      {errors.name?.message && (
-                        <ErrorMessage message={errors.name.message} />
-                      )}
+                      {errors.name?.message && <ErrorMessage message={errors.name.message} />}
                     </div>
                   </div>
 
@@ -214,9 +202,7 @@ const SettingsPage: NextPageWithLayout = () => {
                         autoComplete="email"
                         className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm"
                       />
-                      {errors.email?.message && (
-                        <ErrorMessage message={errors.email.message} />
-                      )}
+                      {errors.email?.message && <ErrorMessage message={errors.email.message} />}
                     </div>
                   </div>
                   <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
@@ -234,9 +220,7 @@ const SettingsPage: NextPageWithLayout = () => {
                         rows={4}
                         className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm"
                       />
-                      {errors.bio?.message && (
-                        <ErrorMessage message={errors.bio.message} />
-                      )}
+                      {errors.bio?.message && <ErrorMessage message={errors.bio.message} />}
                     </div>
                     <p className="mt-3 text-sm text-gray-500">
                       Brief description for your profile.
@@ -295,6 +279,7 @@ const SettingsPage: NextPageWithLayout = () => {
           </form>
         </div>
       </section>
+      <ImagesUploader />
     </div>
   );
 };

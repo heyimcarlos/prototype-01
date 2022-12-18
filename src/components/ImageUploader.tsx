@@ -2,19 +2,7 @@ import { type FormEvent, useCallback, useEffect, useState } from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import * as Dialog from "@radix-ui/react-dialog";
 import Cropper from "react-easy-crop";
-import Button from "./Button";
-
-// @INFO: FileReader methods
-type ReadAsMethod =
-  | "readAsText"
-  | "readAsDataURL"
-  | "readAsArrayBuffer"
-  | "readAsBinaryString";
-
-type UseFileReaderProps = {
-  method: ReadAsMethod;
-  onLoad?: (result: unknown) => void;
-};
+import { useFileReader } from "@/hooks/useFileReader";
 
 type Area = {
   width: number;
@@ -25,42 +13,6 @@ type Area = {
 
 const MAX_IMAGE_SIZE = 512;
 
-const useFileReader = (options: UseFileReaderProps) => {
-  const { method = "readAsText", onLoad } = options;
-  const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<DOMException | null>(null);
-  const [result, setResult] = useState<string | ArrayBuffer | null>(null);
-
-  useEffect(() => {
-    if (!file && result) {
-      setResult(null);
-    }
-  }, [file, result]);
-
-  useEffect(() => {
-    if (!file) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onloadstart = () => setLoading(true);
-    reader.onloadend = () => setLoading(false);
-    reader.onerror = () => setError(reader.error);
-
-    reader.onload = (e) => {
-      const result = e.target?.result ?? null;
-      setResult(result);
-      if (onLoad) {
-        onLoad(result);
-      }
-    };
-    reader[method](file);
-  }, [file, method, onLoad]);
-
-  return [{ result, error, file, loading }, setFile] as const;
-};
-
 type ImageUploaderProps = {
   id: string;
   buttonMsg: string;
@@ -69,7 +21,7 @@ type ImageUploaderProps = {
   target: string;
 };
 
-interface FileEvent<T = Element> extends FormEvent<T> {
+export interface FileEvent<T = Element> extends FormEvent<T> {
   target: EventTarget & T;
 }
 
@@ -97,9 +49,7 @@ function CropContainer({
           zoom={zoom}
           aspect={1}
           onCropChange={setCrop}
-          onCropComplete={(_, croppedAreaPixels) =>
-            onCropComplete(croppedAreaPixels)
-          }
+          onCropComplete={(_, croppedAreaPixels) => onCropComplete(croppedAreaPixels)}
           onZoomChange={setZoom}
         />
       </div>
@@ -146,10 +96,7 @@ export default function ImageUploader({
     async (croppedAreaPixels: Area | null) => {
       try {
         if (!croppedAreaPixels) return;
-        const croppedImage = await getCroppedImg(
-          result as string,
-          croppedAreaPixels
-        );
+        const croppedImage = await getCroppedImg(result as string, croppedAreaPixels);
         setImageSrc(croppedImage);
         handleAvatarChange(croppedImage);
       } catch (e) {
@@ -190,19 +137,12 @@ export default function ImageUploader({
                   )}
                   {imageSrc && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      className="h-20 w-20 rounded-full"
-                      src={imageSrc}
-                      alt={target}
-                    />
+                    <img className="h-20 w-20 rounded-full" src={imageSrc} alt={target} />
                   )}
                 </div>
               )}
               {result && (
-                <CropContainer
-                  imageSrc={result as string}
-                  onCropComplete={setCroppedAreaPixels}
-                />
+                <CropContainer imageSrc={result as string} onCropComplete={setCroppedAreaPixels} />
               )}
               {/*dark settings: dark:border-gray-800 dark:bg-transparent dark:text-white dark:hover:bg-gray-900*/}
               <label className="cursor-pointer mt-8 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -255,24 +195,17 @@ const createImage = (url: string) => {
   });
 };
 
-async function getCroppedImg(
-  imageSrc: string,
-  pixelCrop: Area
-): Promise<string> {
+async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<string> {
   const image = await createImage(imageSrc);
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Context is null, this should never happen");
 
   const maxSize = Math.max(image.naturalWidth, image.naturalHeight);
-  const resizeRatio =
-    MAX_IMAGE_SIZE / maxSize < 1 ? Math.max(MAX_IMAGE_SIZE / maxSize, 0.75) : 1;
+  const resizeRatio = MAX_IMAGE_SIZE / maxSize < 1 ? Math.max(MAX_IMAGE_SIZE / maxSize, 0.75) : 1;
 
   ctx.imageSmoothingEnabled = false;
-  canvas.width = canvas.height = Math.min(
-    maxSize * resizeRatio,
-    pixelCrop.width
-  );
+  canvas.width = canvas.height = Math.min(maxSize * resizeRatio, pixelCrop.width);
 
   ctx.drawImage(
     image,
