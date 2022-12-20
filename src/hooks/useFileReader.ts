@@ -2,7 +2,11 @@ import { asStringOrNull } from "@/lib/asStringOrNull";
 import { useEffect, useState } from "react";
 
 // @INFO: FileReader methods
-type ReadAsMethod = "readAsText" | "readAsDataURL" | "readAsArrayBuffer" | "readAsBinaryString";
+type ReadAsMethod =
+  | "readAsText"
+  | "readAsDataURL"
+  | "readAsArrayBuffer"
+  | "readAsBinaryString";
 
 type UseFileReaderProps = {
   method: ReadAsMethod;
@@ -57,6 +61,7 @@ export const useFilesReader = (options: UseFileReaderProps) => {
 
   const deleteFile = (name: string) => {
     setFiles((prev) => prev.filter((file) => file.name !== name));
+    setResults((prev) => prev.filter((file) => file.name !== name));
     return;
   };
 
@@ -90,5 +95,9 @@ export const useFilesReader = (options: UseFileReaderProps) => {
     });
   }, [files, options.method]);
 
-  return [{ results, error, files, loading }, handleSetFiles, deleteFile] as const;
+  return [
+    { results, error, files, loading },
+    handleSetFiles,
+    deleteFile,
+  ] as const;
 };

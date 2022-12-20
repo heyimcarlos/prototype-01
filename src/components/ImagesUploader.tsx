@@ -1,32 +1,20 @@
 import { useFilesReader } from "@/hooks/useFileReader";
-import { TrashIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { TrashIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
-import { type DragEvent, useState } from "react";
+import { type DragEvent, useState, useRef } from "react";
 import { type FileEvent } from "./ImageUploader";
 
 const MAX_FILE_AMOUNT = 10;
-type ImagesUploaderProps = {
-  images?: string[];
-};
-export function ImagesUploader(props: ImagesUploaderProps) {
-  const [images, setImages] = useState<string[] | null>(null);
-  const [inDropZone, setInDropZone] = useState<boolean>(false);
+// type ImagesUploaderProps = {};
 
-  const [{ results, files, loading, error }, setFiles, deleteFile] = useFilesReader({
+export function ImagesUploader() {
+  const [inDropZone, setInDropZone] = useState<boolean>(false);
+  const fileInputRef = useRef("");
+
+  const [{ results, files }, setFiles, deleteFile] = useFilesReader({
     method: "readAsDataURL",
   });
 
-  // useEffect(() => {
-  //   if (props.images?.length) {
-  //     setImages(props.images);
-  //   }
-  // }, [props.images]);
-
-  // useEffect(() => {
-  //   if (results) {
-  //     setImages(results);
-  //   }
-  // }, [results]);
   const validateFiles = (files: File[], newFiles: File[]) => {
     const existingFiles = files.map((f) => f.name);
     return newFiles.filter((f) => !existingFiles.includes(f.name));
@@ -51,7 +39,7 @@ export function ImagesUploader(props: ImagesUploaderProps) {
     if (filesToUpload.length >= MAX_FILE_AMOUNT) {
       return;
     }
-
+    fileInputRef.current = "";
     setFiles(filesToUpload);
   };
 
@@ -76,7 +64,10 @@ export function ImagesUploader(props: ImagesUploaderProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    const filesToUpload = validateFiles(files, Array.from(e.dataTransfer.files));
+    const filesToUpload = validateFiles(
+      files,
+      Array.from(e.dataTransfer.files)
+    );
 
     if (files.length + filesToUpload.length >= MAX_FILE_AMOUNT) {
       setFiles(filesToUpload.slice(0, MAX_FILE_AMOUNT - files.length));
@@ -124,6 +115,7 @@ export function ImagesUploader(props: ImagesUploaderProps) {
               <span>Upload</span>
               <input
                 onInput={onInputFiles}
+                value={fileInputRef.current || ""}
                 id="file-upload"
                 name="file-upload"
                 type="file"
@@ -137,7 +129,10 @@ export function ImagesUploader(props: ImagesUploaderProps) {
         </div>
       </div>
       <div>
-        <ul role="list" className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul
+          role="list"
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {results.length > 0 &&
             results.map((result, idx) => {
               return (
