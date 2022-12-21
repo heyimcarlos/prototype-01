@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { UserDropdown, UserPopover } from "@/components/Avatar";
 import { useSession } from "next-auth/react";
+import { ArrowSmallLeftIcon, Bars3Icon } from "@heroicons/react/20/solid";
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: HomeIcon },
@@ -84,6 +85,7 @@ function TopNavContainer() {
 }
 
 function TopNav() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const closeSidebar = useCallback(() => setOpen(false), []);
   useCloseSidebarOnNavigation(closeSidebar);
@@ -95,15 +97,24 @@ function TopNav() {
           <Sidebar />
         </div>
       </Dialog>
-      <div className="flex sticky top-0 z-10 h-16 flex-shrink-0 bg-white shadow">
+      <div className="sticky z-10 flex w-full items-center justify-between border-b border-gray-100 bg-gray-50 p-4 sm:relative lg:hidden">
         <button
           type="button"
-          className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
+          className="items-center text-sm font-medium relative rounded-md transition-colors text-gray-900 dark:text-darkgray-900 flex justify-center min-h-[36px] min-w-[36px]  hover:bg-gray-100 focus:bg-gray-100 dark:hover:bg-darkgray-200 dark:focus:bg-darkgray-200 focus:outline-none focus:ring-2 focus:ring-offset focus:ring-gray-900 dark:focus:ring-white"
           onClick={() => setOpen(true)}
         >
           <span className="sr-only">Open sidebar</span>
-          <Bars3BottomLeftIcon className="h-6 w-6" aria-hidden="true" />
+          <Bars3Icon className="h-6 w-6" aria-hidden="true" />
         </button>
+        {router.pathname.replace("/", "") !== "dashboard" && (
+          <Link
+            href="/dashboard"
+            className="flex items-center space-x-2 rounded-md px-2 py-1 hover:bg-gray-200"
+          >
+            <ArrowSmallLeftIcon className="text-gray-700 w-6 h-6" />
+            <p className="font-semibold text-black">Dashboard</p>
+          </Link>
+        )}
         <div className="flex flex-1 justify-end px-4">
           <div className="ml-4 flex items-center md:ml-6">
             <UserPopover />
