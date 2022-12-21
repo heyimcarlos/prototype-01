@@ -366,6 +366,8 @@ const Map = ({
     setDrawShowFalse();
   };
 
+  console.log("sectors", neighborhoodsState[0]?.bounds);
+
   return (
     <>
       <div className="w-full h-full">
@@ -380,9 +382,23 @@ const Map = ({
             setCurListingId("");
             onClickMap(e);
           }}
-          mapStyle="mapbox://styles/mapbox/streets-v11"
+          mapStyle="mapbox://styles/mtjosue/clbsexim8000d15pc7hlcg6f1"
+          // mapStyle="mapbox://styles/mapbox/streets-v11"
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
         >
+          <Marker
+            latitude={18.445770384723648}
+            longitude={-69.96954362555962}
+            style={{
+              fontSize: "18px",
+              fontWeight: "700",
+              color: "#465c85",
+              fontFamily: "DIN PRO BOLD",
+              // fontFamily: "DIN PRO BOLD",
+            }}
+          >
+            RENACIMIENTO
+          </Marker>
           <div className="h-full w-full flex justify-center items-start">
             <button
               onClick={() => {

@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "DIN PRO BOLD";
+  src: url("../styles/fonts/DINPro-Bold_13934.ttf");
+}
+
 * {
   box-sizing: border-box;
 }
