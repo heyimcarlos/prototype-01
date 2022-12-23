@@ -112,9 +112,9 @@ const load = async () => {
       );
 
     if (!neighborhoodWithListingLocation) return;
-    console.log("New neighborhood and listingLocation created: ", {
-      neighborhoodWithListingLocation,
-    });
+    // console.log("New neighborhood and listingLocation created: ", {
+    //   neighborhoodWithListingLocation,
+    // });
 
     // [[-69.93020605560467, 18.455260286335545],
     //  [-69.92919468274141, 18.456688659505033],

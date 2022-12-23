@@ -53,7 +53,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
   // if (!isLoaded) return <div>Loading...</div>;
 
-  console.log(listings, "listings from map.page");
+  // console.log(listings, "listings from map.page");
 
   return (
     <>
