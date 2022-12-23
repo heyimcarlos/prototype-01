@@ -1,4 +1,4 @@
-import React, { type ReactNode } from "react";
+import React from "react";
 import { type User } from "@prisma/client";
 
 import Image from "next/image";
@@ -99,7 +99,7 @@ export function UserDropdown() {
           className="group flex w-full cursor-pointer appearance-none items-center rounded-full p-2 text-left outline-none hover:bg-gray-200 md:rounded"
         >
           <Avatar user={user} alt={`${user.name} profile picture`} size={10} />
-          <span className="flex-grow truncate text-sm pl-3">
+          <span className="flex-grow truncate pl-3 text-sm">
             <span className="block truncate font-medium text-gray-900">
               {user.name || user.email.split("@")[0]}
             </span>
@@ -115,12 +115,12 @@ export function UserDropdown() {
             <DropdownMenu.Item
               key={item.name}
               className={
-                "flex group items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                "group flex w-full cursor-pointer items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               }
             >
               <Link
                 href={item.href}
-                className="flex min-w-max w-full cursor-pointer items-center text-sm hover:bg-gray-100 hover:text-gray-900"
+                className="flex w-full min-w-max cursor-pointer items-center text-sm hover:bg-gray-100 hover:text-gray-900"
               >
                 {item.name}
               </Link>
@@ -128,12 +128,12 @@ export function UserDropdown() {
           ))}
           <DropdownMenu.Item
             className={
-              "flex group items-center w-full px-4 py-2 text-sm text-gray-700 first:pt-3 last:pb-3 hover:bg-gray-100 cursor-pointer"
+              "group flex w-full cursor-pointer items-center px-4 py-2 text-sm text-gray-700 first:pt-3 last:pb-3 hover:bg-gray-100"
             }
           >
             <button
               onClick={handleSignOut}
-              className="flex min-w-max w-full cursor-pointer items-center text-sm hover:bg-gray-100 hover:text-gray-900"
+              className="flex w-full min-w-max cursor-pointer items-center text-sm hover:bg-gray-100 hover:text-gray-900"
             >
               <span className="mr-2 h-5 w-5">
                 <LogoutIcon />
@@ -164,13 +164,13 @@ export function UserPopover() {
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <button className="flex rounded-full text-sm text-left focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+        <button className="flex rounded-full text-left text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
           <span className="sr-only">Open user menu</span>
           <Avatar user={user} alt={`${user.name} avatar`} size={10} />
         </button>
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content className="z-10 m-2 w-32 origin-top-right rounded-md overflow-hidden bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Popover.Content className="z-10 m-2 w-32 origin-top-right overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <>
             {secondaryNavigation.map((item) => {
               const active = router.pathname === item.href;
@@ -190,7 +190,7 @@ export function UserPopover() {
             })}
             <button
               className={classNames(
-                "flex group items-center w-full px-4 py-2 text-sm text-gray-700 first:pt-3 last:pb-3 hover:bg-gray-100"
+                "group flex w-full items-center px-4 py-2 text-sm text-gray-700 first:pt-3 last:pb-3 hover:bg-gray-100"
               )}
               onClick={handleSignOut}
             >
