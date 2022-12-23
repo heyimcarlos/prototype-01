@@ -2,47 +2,66 @@ import React from "react";
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
-
 import Image from "next/image";
 import house from "../../public/assets/images/house1.jpeg";
 import { useState } from "react";
-import { Divider } from "@material-ui/core";
+import type { Listing } from "@prisma/client";
+import { useSelectedListing } from "@/stores/useSelectedListing";
+// import { prisma } from "@/server/db/client";
+// import { GetServerSidePropsContext } from "next";
 
-// function classNames(...classes) {
-//   return classes.filter(Boolean).join(" ");
-// }
+type SingleViewSlideOverTypes = {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  listing: Listing;
+};
 
-const SingleViewSlideOver = ({ open, setOpen, listing }) => {
+const SingleViewSlideOver = ({
+  open,
+  setOpen,
+  listing,
+}: SingleViewSlideOverTypes) => {
   const [selected, setSelected] = useState("");
-  // console.log("listing", listing);
+  const neighborhood = useSelectedListing((state) => state.neighborhood);
+  // console.log(neighborhood, "neighborhood from singleViewSlideOver");
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
         as="div"
         className="relative z-50"
         onClose={() => setSelected("")}
-        // onClose={setOpen}
       >
         <div className="fixed">
           <div className="absolute inset-0 overflow-hidden">
             <div className="pointer-events-none fixed inset-y-0 flex max-w-full">
               <Transition.Child
                 as={Fragment}
+                // enter="transform transition ease-in-out duration-500 sm:duration-700"
+                // enterFrom="translate-x-full"
+                // enterTo="translate-x-0"
+                // leave="transform transition ease-in-out duration-500 sm:duration-700"
+                // leaveFrom="translate-x-0"
+                // leaveTo="translate-x-full"
                 enter="transform transition ease-in-out duration-500 sm:duration-700"
-                enterFrom="translate-x-full"
+                enterFrom="-translate-x-full"
                 enterTo="translate-x-0"
                 leave="transform transition ease-in-out duration-500 sm:duration-700"
                 leaveFrom="translate-x-0"
-                leaveTo="translate-x-full"
+                leaveTo="-translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-full h-[calc(100vh-48px-33.4px)] bottom-0 fixed">
                   <div className="flex h-full w-full flex-col bg-white">
                     <div className="w-full h-auto">
-                      <div className="fixed z-10 right-0 mt-3 mr-3 flex h-7 items-center">
+                      <div className="fixed z-10 right-0 bottom-0 mb-3 mr-3 flex h-7 items-center">
                         <button
                           type="button"
-                          className=" mr-1 rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
-                          onClick={() => setOpen(false)}
+                          className=" mr-1 rounded-md bg-white text-gray-400 hover:text-gray-500 border-2 border-black focus:ring-black"
+                          // className=" mr-1 rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black border-2 border-black"
+                          onClick={() => {
+                            setOpen(false);
+                            setSelected("");
+                          }}
                         >
                           <span className="sr-only">Close panel</span>
                           <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -59,12 +78,17 @@ const SingleViewSlideOver = ({ open, setOpen, listing }) => {
                               <div className="flex justify-end">
                                 <div className="flex justify-start w-full">
                                   <h3 className="text-xl font-bold text-gray-900 sm:text-2xl mt-[0.15rem]">
-                                    ${listing.price}
+                                    ${listing.price.toLocaleString()}
                                   </h3>
-                                  <h3 className="ml-4 pt-2 text-sm flex">
-                                    <b>4</b> bd | <b className="ml-1">3.5</b> ba
-                                    |<b className="ml-1">1600</b> sqft
-                                  </h3>
+                                  <p className="inline text-md text-gray-600 mt-[0.4rem] ml-3">
+                                    <b>
+                                      $
+                                      {Math.floor(
+                                        listing.price / listing.squareFeet
+                                      ).toLocaleString()}
+                                    </b>{" "}
+                                    / sqft
+                                  </p>
                                 </div>
                                 <h3 className="mt-1 text-sm">
                                   <HeartIcon className="ml-2 h-6 w-6 inline text-indigo-600" />
@@ -73,17 +97,19 @@ const SingleViewSlideOver = ({ open, setOpen, listing }) => {
                                   <ShareIcon className="ml-2 h-6 w-6 inline text-indigo-600" />
                                 </h3>
                               </div>
+                              <h3 className=" pt-2 text-sm flex">
+                                <b>{listing.bedrooms}</b> bd |{" "}
+                                <b className="ml-1">
+                                  {listing.fullBathrooms +
+                                    listing.halfBathrooms}
+                                </b>{" "}
+                                ba |<b className="ml-1">{listing.squareFeet}</b>{" "}
+                                sqft
+                              </h3>
                               <p className="block text-md text-gray-500 mt-2">
-                                2034 49th St, Kissimmee, FL 34744
+                                {neighborhood} - {listing.name}
+                                <span className="ml-2">{}</span>
                               </p>
-                              <div className="flex w-full justify-start">
-                                <p className="inline text-md text-gray-600 mt-2">
-                                  <b>$288.75</b> / sqft
-                                </p>
-                                <p className="inline text-md text-gray-600 mt-2 ml-2">
-                                  <b>$1250</b> / mos
-                                </p>
-                              </div>
                             </div>
                           </div>
                         </div>

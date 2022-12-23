@@ -1,8 +1,14 @@
 import Image from "next/image";
 import { transformIntToMoney } from "@/lib/transformInt";
-import { Listing } from "@prisma/client";
+import type { Listing } from "@prisma/client";
 
-const MobileListingCard = ({ name, description, price }: Listing) => {
+type MobileListingCardType = {
+  listing: Listing;
+  sectorName: string;
+};
+
+const MobileListingCard = ({ listing, sectorName }: MobileListingCardType) => {
+  // console.log("listing from mobileListingCard", listing);
   return (
     <div className="card w-full h-auto shadow-md rounded border-black/[.1] border-[1px]">
       <div className="">
@@ -15,10 +21,10 @@ const MobileListingCard = ({ name, description, price }: Listing) => {
       </div>
       <div className="ml-1">
         <h2 className="text-lg font-semibold text-black">
-          {transformIntToMoney(price)}
+          {transformIntToMoney(listing.price ? listing.price : 0)}
         </h2>
-        <p>{description}</p>
-        <p>{name}</p>
+        <p>{sectorName}</p>
+        <p>{listing.name}</p>
       </div>
     </div>
   );

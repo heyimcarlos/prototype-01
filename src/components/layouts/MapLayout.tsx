@@ -1,4 +1,4 @@
-import { useSectors } from "@/stores/useSectors";
+import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import MapTopbar from "../MapTopbar";
 import NewTwTopbar from "../NewTwTopbar";
 import SectorsSelected from "../SectorsSelected";
@@ -9,7 +9,7 @@ type Props = {
 };
 
 const MapLayout = ({ children }: Props) => {
-  const sectors = useSectors((state) => state.sectors);
+  const neighborhoods = useNeighborhoods((state) => state.neighborhoods);
   return (
     <>
       <NewTwTopbar />

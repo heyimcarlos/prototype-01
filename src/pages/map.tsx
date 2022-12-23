@@ -12,29 +12,34 @@ import type { NextPageWithLayout } from "./_app";
 import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
 import ListingCard from "@/components/ListingCard";
-import { useSectors } from "@/stores/useSectors";
+import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import SingleViewSlideOver from "@/components/SingleViewSlideOver";
 import LeftSlideOver from "@/components/LeftSlideOver";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import SectorsSelected from "@/components/SectorsSelected";
-import MobilePreviewListing from "@/components/MobilePreviewListing";
 import SlideOver from "@/components/SlideOver";
-import { Listing, ListingLocation, Neighborhood } from "@prisma/client";
+import type { Listing, ListingLocation, Neighborhood } from "@prisma/client";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css";
+import SwiperCore, { Pagination } from "swiper";
+import MultiMobilePreviewListing from "@/components/MultiMobilePreviewListing";
+import SingleMobilePreviewListing from "@/components/SingleMobilePreviewListing";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   // listingLocations,
   neighborhoods,
   initialViewport,
 }) => {
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    libraries: GOOGLE_MAP_LIBRARIES,
-  });
+  // const { isLoaded } = useJsApiLoader({
+  //   googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  //   libraries: GOOGLE_MAP_LIBRARIES,
+  // });
 
   const mapRef = useRef<MapRef>(null);
 
-  const listings = useSidebar((state) => state.listings);
-  const sectors = useSectors((state) => state.sectors);
+  const listingLocations = useSidebar((state) => state.listingLocations);
+  const neighborhoodsState = useNeighborhoods((state) => state.neighborhoods);
 
   const [open, setOpen] = useState(false);
   const [leftSlideOver, setLeftSlideOver] = useState(false);
@@ -42,8 +47,13 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   const listing = useSelectedListing((state) => state.listing);
   const leftListing = useSelectedListing((state) => state.leftListing);
   const setLeftListing = useSelectedListing((state) => state.setLeftListing);
+  const listings = useSelectedListing((state) => state.listings);
 
-  if (!isLoaded) return <div>Loading...</div>;
+  SwiperCore.use([Pagination]);
+
+  // if (!isLoaded) return <div>Loading...</div>;
+
+  // console.log(listings, "listings from map.page");
 
   return (
     <>
@@ -63,6 +73,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
             setOpen={setOpen}
           />
         </div>
+
         {/* {listing && (
           <SlideOver open={open} setOpen={setOpen} listing={listing} />
         )} */}
@@ -75,31 +86,42 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           />
         )} */}
 
-        {/* {listing && (
+        {listing && (
           <SingleViewSlideOver
             open={open}
             setOpen={setOpen}
             listing={listing}
           />
-        )} */}
+        )}
 
-        {/* <SlideOver open={open} setOpen={setOpen} listing={listing} /> */}
+        {listing && listings.length < 2 && (
+          <SingleMobilePreviewListing
+            listing={listing as Listing}
+            setOpen={setOpen}
+          />
+        )}
 
-        {/* <LeftSlideOver
-          leftSlideOver={leftSlideOver}
-          setLeftSlideOver={setLeftSlideOver}
-          leftListing={leftListing}
-        /> */}
-
-        {listing && (
-          <MobilePreviewListing listing={listing} setOpen={setOpen} />
+        {listings.length > 0 && (
+          <div className="h-[10rem] w-[90%] rounded-xl fixed bottom-0 mb-[3rem] flex overflow-hidden">
+            <Swiper pagination spaceBetween={0} slidesPerView={1}>
+              {listings.map((listing) => (
+                <SwiperSlide key={listing.id}>
+                  <MultiMobilePreviewListing
+                    listing={listing as Listing}
+                    setOpen={setOpen}
+                  />
+                  .
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         )}
 
         <div className="hidden min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
-          {listings.length < 1 && sectors.length < 1 && (
+          {/* {listings.length < 1 && sectors.length < 1 && (
             <div>No listing to show move the map</div>
-          )}
-          {sectors.map((sector) =>
+          )} */}
+          {/* {sectors.map((sector) =>
             sector.listings.map((listing) => (
               <div
                 key={listing.id}
@@ -111,9 +133,9 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
                 <ListingCard {...listing} />
               </div>
             ))
-          )}
+          )} */}
 
-          {sectors.length < 1 &&
+          {/* {sectors.length < 1 &&
             listings.map((listing) => (
               <div
                 key={listing.id}
@@ -124,7 +146,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
               >
                 <ListingCard {...listing} />
               </div>
-            ))}
+            ))} */}
         </div>
       </main>
     </>
@@ -133,7 +155,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
 MapPage.layout = MapLayout;
 
-// @INFO: Server side fetching of places
+// @INFO: Server side fetching of neighborhoods
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 export type NeighborhoodsType = (Neighborhood & {
@@ -145,25 +167,12 @@ export type NeighborhoodsType = (Neighborhood & {
 export const getServerSideProps = async ({
   query,
 }: GetServerSidePropsContext) => {
-  // const listingLocations = await prisma.listingLocation.findMany({
-  //   include: {
-  //     listings: {},
-  //   },
-  // });
-
+  //
   const neighborhoods = await prisma.neighborhood.findMany({
-    include: { listingLocations: { include: { listings: {} } } },
+    include: {
+      listingLocations: { include: { listings: {}, neighborhood: {} } },
+    },
   });
-  // const places = await prisma.place.findMany({
-  //   include: {
-  //     center: true,
-  //     listing: {
-  //       include: {
-  //         location: true,
-  //       },
-  //     },
-  //   },
-  // });
 
   const initialViewport = {
     longitude: -69.94115,
@@ -189,7 +198,5 @@ export const getServerSideProps = async ({
     },
   };
 };
-
-// console.log("serverSideProps", getServerSideProps);
 
 export default MapPage;
