@@ -132,8 +132,10 @@ const CustomMarker2 = ({
   const globalHide = useGlobalHide((state) => state.globalHide);
   const setGlobalShowFalse = useGlobalShow((state) => state.setGlobalShowFalse);
 
+  // @TODO: refactor to align with react lifecycle.
   if (globalShow === true && show === false) setShow(true);
 
+  // @TODO: refactor to align with react lifecycle.
   let amount = 0;
   neighborhood.listingLocations.forEach((listingLocation) => {
     if (listingLocation.listings.length > 1) {
@@ -145,8 +147,10 @@ const CustomMarker2 = ({
 
   const slug = neighborhood.slug;
 
+  // @TODO: refactor to align with react lifecycle.
   let display;
 
+  // @TODO: refactor to align with react lifecycle.
   if (curZoom > 13) {
     display = { display: "inline" };
   } else {
@@ -426,6 +430,7 @@ const Map = ({
   //  svgElement.style.transformOrigin = "bottom";
   // });
 
+  // @TODO: hooks should be first in order of invocation.
   const [curZoom, setCurZoom] = useState<number | undefined>(0);
 
   return (
