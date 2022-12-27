@@ -14,6 +14,8 @@ export type SelectedListingState = {
   setNeighborhood: (neighborhood: string) => void;
   leftListing: Listing | null;
   setLeftListing: (listing: Listing | null) => void;
+  listingAddress: string;
+  setListingAddress: (param: string) => void;
 };
 
 export const useSelectedListing = create<SelectedListingState>((set) => ({
@@ -25,4 +27,6 @@ export const useSelectedListing = create<SelectedListingState>((set) => ({
   setNeighborhood: (param) => set(() => ({ neighborhood: param })),
   setListing: (param) => set(() => ({ listing: param })),
   setLeftListing: (param) => set(() => ({ leftListing: param })),
+  listingAddress: "",
+  setListingAddress: (param) => set(() => ({ listingAddress: param })),
 }));

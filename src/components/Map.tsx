@@ -64,6 +64,9 @@ type MapProps = {
   };
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  openRight: boolean;
+  // setOpenRight: any;
+  setOpenRight: Dispatch<SetStateAction<boolean>>;
   mapRef: RefObject<MapRef>;
   neighborhoods: NeighborhoodsType;
 };
@@ -73,67 +76,10 @@ type CustomMarkerPropsTypes = {
   onClick: ({ slug }: { slug: string }) => void;
   names: string[];
   mapRef?: RefObject<MapRef>;
+  curZoom: number | undefined;
 };
 
 const CustomMarker = ({
-  neighborhood,
-  onClick,
-  names,
-}: CustomMarkerPropsTypes) => {
-  const [show, setShow] = useState(true);
-  const globalShow = useGlobalShow((state) => state.globalShow);
-  const globalHide = useGlobalHide((state) => state.globalHide);
-  const setGlobalShowFalse = useGlobalShow((state) => state.setGlobalShowFalse);
-
-  if (globalShow === true && show === false) setShow(true);
-
-  let amount = 0;
-  neighborhood.listingLocations.forEach((listingLocation) => {
-    if (listingLocation.listings.length > 1) {
-      amount += listingLocation.listings.length;
-    } else {
-      amount += 1;
-    }
-  });
-
-  // let space;
-  // const spaceOne: PointLike = [0, -10];
-  // const spaceTwo: PointLike = [0, -19];
-  // if (neighborhood.name === "Bella Vista") space = spaceOne;
-  // if (neighborhood.name === "Evaristo Morales") space = spaceTwo;
-  // if (neighborhood.name === "La Julia") space = spaceOne;
-  // if (neighborhood.name === "El Manguito") space = spaceTwo;
-
-  const slug = neighborhood.slug;
-
-  return (
-    <>
-      {!globalHide && show && !names.includes(neighborhood.name) && (
-        <Marker
-          onClick={(e) => {
-            // e.originalEvent.cancelBubble
-            // e.originalEvent.preventDefault();
-            e.originalEvent.stopPropagation();
-            onClick({ slug });
-            setShow(false);
-            setGlobalShowFalse();
-          }}
-          anchor="bottom"
-          key={`marker-${neighborhood.id}`}
-          latitude={parseFloat(neighborhood.lat)}
-          longitude={parseFloat(neighborhood.lng)}
-          // offset={space}
-        >
-          <div className="bg-indigo-600 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
-            <span className="text-sm font-semibold text-white">{amount}</span>
-          </div>
-        </Marker>
-      )}
-    </>
-  );
-};
-
-const CustomMarker2 = ({
   neighborhood,
   onClick,
   names,
@@ -157,13 +103,24 @@ const CustomMarker2 = ({
 
   const slug = neighborhood.slug;
 
-  let display;
+  const display = { display: "inline" };
+  // let display = { display: "inline" };
 
-  if (curZoom > 13) {
-    display = { display: "inline" };
-  } else {
-    display = { display: "none" };
-  }
+  // if (curZoom > 12.5) {
+  //   display = { display: "inline" };
+  // } else {
+  //   display = { display: "none" };
+  // }
+
+  // if (curZoom > 12.5) {
+  //   if (curZoom > 14.2) {
+  //     display = { display: "none" };
+  //   } else {
+  //     display = { display: "inline" };
+  //   }
+  // } else {
+  //   display = { display: "none" };
+  // }
 
   return (
     <>
@@ -182,8 +139,13 @@ const CustomMarker2 = ({
           offset={[0, 33]}
           style={display}
         >
-          <div className="p-1 px-2 cursor-pointer rounded-full flex justify-center items-center bg-white border-2 border-indigo-600 marker">
-            <span className="text-[12px] font-bold">{neighborhood.name}</span>
+          <div className="p-2 px-2 cursor-pointer rounded-full flex justify-center items-center bg-white border-2 border-indigo-600 marker">
+            <span className="text-[13px] font-bold">
+              <div className="inline mr-1 border-2 rounded-full p-1 px-2 border-indigo-600 bg-indigo-600 text-white">
+                {amount}
+              </div>
+              {neighborhood.name}
+            </span>
           </div>
         </Marker>
       )}
@@ -197,6 +159,7 @@ const Map = ({
   mapRef,
   initialViewport,
   setOpen,
+  setOpenRight,
 }: MapProps) => {
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
 
@@ -237,6 +200,9 @@ const Map = ({
   const setNeighborhood = useSelectedListing((state) => state.setNeighborhood);
 
   const setSelectedListings = useSelectedListing((state) => state.setListings);
+  const setListingAddress = useSelectedListing(
+    (state) => state.setListingAddress
+  );
 
   const [listSlide, setListSlide] = useState(false);
 
@@ -336,6 +302,7 @@ const Map = ({
         });
       }
     }
+    console.log("listingLocations from Drag", listingsLocations);
     const flattened = listingsLocations.flat();
     setListings(flattened);
   };
@@ -425,20 +392,6 @@ const Map = ({
     setDrawShowFalse();
   };
 
-  // console.log("sectors", neighborhoodsState[0]?.bounds);
-
-  // const [curZoom, setCurZoom] = useState(0);
-
-  // mapRef?.current?.on("zoom", () => {
-  // const markers = document.getElementsByName("marker")[0];
-  // markers.
-  // console.log("marker 1", markers);
-  //  const scalePercent = 1 + (mapRef?.current?.getZoom() - 8) * 0.4;
-  //  const svgElement = marker.getElement().children[0];
-  //  svgElement.style.transform = `scale(${scalePercent})`;
-  //  svgElement.style.transformOrigin = "bottom";
-  // });
-
   const [curZoom, setCurZoom] = useState<number | undefined>(0);
 
   return (
@@ -464,20 +417,6 @@ const Map = ({
             setCurZoom(e.viewState.zoom);
           }}
         >
-          {/* <Marker
-            latitude={18.445770384723648}
-            longitude={-69.96954362555962}
-            style={{
-              fontSize: "18px",
-              fontWeight: "700",
-              color: "#465c85",
-              fontFamily: "DIN PRO BOLD",
-              // fontFamily: "DIN PRO BOLD",
-            }}
-          >
-            RENACIMIENTO
-          </Marker> */}
-
           <div className="h-full w-full flex justify-center items-start">
             <button
               onClick={() => {
@@ -625,19 +564,24 @@ const Map = ({
 
           {/* INFO: NEIGHBORHOODS MARKERS FOR THE MAIN CLUSTERS */}
 
-          {neighborhoods?.map((neighborhood) => (
+          {neighborhoods?.map((neighborhood) => {
+            if (neighborhood.listingLocations.length > 0) {
+              return (
+                <CustomMarker
+                  key={`marker-${neighborhood.id}`}
+                  neighborhood={neighborhood}
+                  onClick={() => {
+                    const slug = neighborhood.slug;
+                    neighborhoodMutation.mutate({ slug });
+                  }}
+                  names={names}
+                  curZoom={curZoom}
+                />
+              );
+            }
+          })}
+          {/* {neighborhoods?.map((neighborhood) => (
             <CustomMarker
-              key={`marker-${neighborhood.id}`}
-              neighborhood={neighborhood}
-              onClick={() => {
-                const slug = neighborhood.slug;
-                neighborhoodMutation.mutate({ slug });
-              }}
-              names={names}
-            />
-          ))}
-          {neighborhoods?.map((neighborhood) => (
-            <CustomMarker2
               key={`marker-${neighborhood.id}`}
               neighborhood={neighborhood}
               onClick={() => {
@@ -647,7 +591,7 @@ const Map = ({
               names={names}
               curZoom={curZoom}
             />
-          ))}
+          ))} */}
 
           {/* @INFO: LISTINGLOCATIONS MARKERS WITHIN NEIGHBORHOOD BOUNDS */}
 
@@ -672,6 +616,9 @@ const Map = ({
                           ? neighborhoodName
                           : neighborhood.name
                       );
+                      setListingAddress(listingLocation.name);
+                      // setOpen(true);
+                      setOpenRight(true);
                     } else {
                       setListing(null);
                       setSelectedListings(listingLocation.listings);
@@ -680,6 +627,7 @@ const Map = ({
                           ? neighborhoodName
                           : neighborhood.name
                       );
+                      setListingAddress(listingLocation.name);
                     }
                   }}
                   latitude={parseFloat(listingLocation.lat)}

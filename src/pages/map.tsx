@@ -17,7 +17,8 @@ import SingleViewSlideOver from "@/components/SingleViewSlideOver";
 import LeftSlideOver from "@/components/LeftSlideOver";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import SectorsSelected from "@/components/SectorsSelected";
-import SlideOver from "@/components/SlideOver";
+// import SlideOver from "@/components/SlideOver copy";
+import RightSlideOver from "@/components/RightSlideOver";
 import type { Listing, ListingLocation, Neighborhood } from "@prisma/client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -25,6 +26,8 @@ import "swiper/swiper-bundle.css";
 import SwiperCore, { Pagination } from "swiper";
 import MultiMobilePreviewListing from "@/components/MultiMobilePreviewListing";
 import SingleMobilePreviewListing from "@/components/SingleMobilePreviewListing";
+import useWindowSize from "@/hooks/useWindowSize";
+import SliveOverModalReplacement from "@/components/SliderOverModalReplacement";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   // listingLocations,
@@ -42,18 +45,43 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   const neighborhoodsState = useNeighborhoods((state) => state.neighborhoods);
 
   const [open, setOpen] = useState(false);
+  const [openRight, setOpenRight] = useState(false);
   const [leftSlideOver, setLeftSlideOver] = useState(false);
 
   const listing = useSelectedListing((state) => state.listing);
   const leftListing = useSelectedListing((state) => state.leftListing);
   const setLeftListing = useSelectedListing((state) => state.setLeftListing);
   const listings = useSelectedListing((state) => state.listings);
+  const setListingAddress = useSelectedListing(
+    (state) => state.setListingAddress
+  );
+  const setNeighborhood = useSelectedListing((state) => state.setNeighborhood);
 
   SwiperCore.use([Pagination]);
 
-  // if (!isLoaded) return <div>Loading...</div>;
+  const totalListings = () => {
+    let total = 0;
+    if (neighborhoodsState.length > 0) {
+      neighborhoodsState.forEach((sector) => {
+        sector.listingLocations.forEach((location) => {
+          total += location.listings.length;
+        });
+      });
 
-  // console.log(listings, "listings from map.page");
+      return total;
+    } else {
+      listingLocations.forEach((location) => {
+        total += location.listings.length;
+      });
+      return total;
+    }
+  };
+
+  let doesFit;
+  const width = useWindowSize();
+  if (width) doesFit = width > 768;
+
+  // if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <>
@@ -70,21 +98,27 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
             neighborhoods={neighborhoods}
             initialViewport={initialViewport}
             open={open}
+            openRight={openRight}
             setOpen={setOpen}
+            setOpenRight={setOpenRight}
           />
         </div>
 
-        {/* {listing && (
-          <SlideOver open={open} setOpen={setOpen} listing={listing} />
-        )} */}
+        {listing && doesFit && (
+          <RightSlideOver
+            open={openRight}
+            setOpen={setOpenRight}
+            listing={listing}
+          />
+        )}
 
-        {/* {leftListing && (
+        {leftListing && doesFit && (
           <LeftSlideOver
             open={leftSlideOver}
             setOpen={setLeftSlideOver}
             listing={leftListing}
           />
-        )} */}
+        )}
 
         {listing && (
           <SingleViewSlideOver
@@ -94,14 +128,16 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           />
         )}
 
-        {listing && listings.length < 2 && (
+        {/*Single Mobile Preview */}
+        {listing && listings.length < 2 && !doesFit && (
           <SingleMobilePreviewListing
             listing={listing as Listing}
             setOpen={setOpen}
           />
         )}
 
-        {listings.length > 0 && (
+        {/*Multiple Mobile Preview */}
+        {listings.length > 0 && !doesFit && (
           <div className="h-[10rem] w-[90%] rounded-xl fixed bottom-0 mb-[3rem] flex overflow-hidden">
             <Swiper pagination spaceBetween={0} slidesPerView={1}>
               {listings.map((listing) => (
@@ -117,37 +153,70 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           </div>
         )}
 
-        <div className="hidden min-w-[310px] max-w-[310px] lg:max-w-[600px] lg:max-w-[600px] h-full overflow-y-auto bg-white flex flex-wrap justify-evenly content-start md:after:justify-start md:after:mr-[17.5rem]">
-          {/* {listings.length < 1 && sectors.length < 1 && (
-            <div>No listing to show move the map</div>
-          )} */}
-          {/* {sectors.map((sector) =>
-            sector.listings.map((listing) => (
-              <div
-                key={listing.id}
-                onClick={() => {
-                  setLeftListing(listing);
-                  setLeftSlideOver(true);
-                }}
-              >
-                <ListingCard {...listing} />
-              </div>
-            ))
-          )} */}
+        {doesFit && (
+          <div className="min-w-[300px] max-w-[300px] lg:min-w-[575px] lg:max-w-[575px] lg:space-x-1 h-full overflow-y-auto bg-white flex flex-wrap justify-center content-start md:after:justify-start lg:after:mr-[18rem]">
+            {listingLocations.length < 1 && neighborhoodsState.length < 1 && (
+              <div>No listing to show move the map</div>
+            )}
 
-          {/* {sectors.length < 1 &&
-            listings.map((listing) => (
-              <div
-                key={listing.id}
-                onClick={() => {
-                  setLeftListing(listing);
-                  setLeftSlideOver(true);
-                }}
-              >
-                <ListingCard {...listing} />
+            {listingLocations.length > 0 && (
+              <div className="">
+                <span>{totalListings()} Homes in this area</span>
               </div>
-            ))} */}
-        </div>
+            )}
+
+            <div className="min-w-[300px] max-w-[300px] lg:min-w-[575px] lg:max-w-[575px] lg:space-x-1 h-full overflow-y-auto bg-white flex flex-wrap justify-center content-start md:after:justify-start lg:after:mr-[18rem]">
+              {neighborhoodsState.map((sector) =>
+                sector.listingLocations.map((location) => {
+                  return location.listings.map((listing) => (
+                    <div
+                      key={listing.id}
+                      onClick={() => {
+                        setLeftListing(listing);
+                        setLeftSlideOver(true);
+                        setListingAddress(location.name);
+                        setNeighborhood(sector.name);
+                      }}
+                    >
+                      <ListingCard
+                        price={listing.price}
+                        location={location.name}
+                        beds={listing.bedrooms}
+                        fullBaths={listing.fullBathrooms}
+                        halfBaths={listing.halfBathrooms}
+                        meters={listing.squareFeet}
+                        neighborhood={sector.name}
+                      />
+                    </div>
+                  ));
+                })
+              )}
+              {neighborhoodsState.length < 1 &&
+                listingLocations.map((location) => {
+                  return location.listings.map((listing) => (
+                    <div
+                      key={listing.id}
+                      onClick={() => {
+                        setLeftListing(listing);
+                        setLeftSlideOver(true);
+                        setListingAddress(location.name);
+                        setNeighborhood("");
+                      }}
+                    >
+                      <ListingCard
+                        price={listing.price}
+                        location={location.name}
+                        beds={listing.bedrooms}
+                        fullBaths={listing.fullBathrooms}
+                        halfBaths={listing.halfBathrooms}
+                        meters={listing.squareFeet}
+                      />
+                    </div>
+                  ));
+                })}
+            </div>
+          </div>
+        )}
       </main>
     </>
   );

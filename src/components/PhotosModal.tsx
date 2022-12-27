@@ -13,7 +13,7 @@ export default function PhotosModal({ setOpenPhotos, openPhotos, photos }) {
     <Transition.Root show={openPhotos} as={Fragment}>
       <Dialog
         as="div"
-        className="relative z-30"
+        className="relative z-[53]"
         initialFocus={cancelButtonRef}
         onClose={() => setOpenPhotos(false)}
         onClick={() => setOpenPhotos(false)}

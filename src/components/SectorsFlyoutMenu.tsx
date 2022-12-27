@@ -30,19 +30,52 @@ export default function SectorsFlyoutMenu() {
   const width = useWindowSize();
 
   let isMobile;
-
-  if (width) isMobile = width < 425;
+  let fitOne;
+  let fitTwo;
+  let fitThree;
+  let fitFour;
+  if (width) {
+    isMobile = width < 425;
+    fitOne = width < 605;
+    fitTwo = width >= 605 && width < 855;
+    fitThree = width >= 855 && width < 1165;
+    fitFour = width >= 1165;
+  }
+  // 23
 
   return (
     <>
       {neighborhoods.length > 1 && (
-        <Popover className={`${isMobile ? "inline" : "ml-3"}`}>
+        <Popover className={`${isMobile ? "inline" : "-ml-[0.5px]"} sm:ml-1`}>
           <>
-            <Popover.Button
-              className={`text-gray-500 px-3 mr-[0.2rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900`}
-            >
-              <span>{`${neighborhoods.length - 1} More`}</span>
-            </Popover.Button>
+            {fitOne && (
+              <Popover.Button
+                className={`text-gray-500 px-2.5 mr-[0.2rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900`}
+              >
+                <span>{`${neighborhoods.length - 1} More`}</span>
+              </Popover.Button>
+            )}
+            {fitTwo && neighborhoods.length > 2 && (
+              <Popover.Button
+                className={`text-gray-500 px-2.5 mr-[0.2rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900`}
+              >
+                <span>{`${neighborhoods.length - 2} More`}</span>
+              </Popover.Button>
+            )}
+            {fitThree && neighborhoods.length > 3 && (
+              <Popover.Button
+                className={`text-gray-500 px-2.5 mr-[0.2rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900`}
+              >
+                <span>{`${neighborhoods.length - 3} More`}</span>
+              </Popover.Button>
+            )}
+            {fitFour && neighborhoods.length > 4 && (
+              <Popover.Button
+                className={`text-gray-500 px-2.5 mr-[0.2rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900`}
+              >
+                <span>{`${neighborhoods.length - 4} More`}</span>
+              </Popover.Button>
+            )}
 
             <Transition
               as={Fragment}
@@ -54,11 +87,11 @@ export default function SectorsFlyoutMenu() {
               leaveTo="opacity-0 translate-y-1"
             >
               <Popover.Panel
-                className={`fixed z-[51] -mt-7 w-full transform px-0.5 sm:px-0 lg:max-w-3xl -ml-2`}
+                className={`fixed z-[51] -mt-7 w-full transform px-0.5 sm:px-0 lg:max-w-3xl -ml-2 sm:w-[99%]`}
               >
-                <Popover.Button className=" absolute z-[51] right-0 mr-2 mt-1 justify-end rounded-full border-2 border-black">
+                {/* <Popover.Button className=" absolute z-[51] right-0 mr-2 mt-1 justify-end rounded-full border-2 border-black">
                   <XMarkIcon className="h-5 w-5" aria-hidden="true" />
-                </Popover.Button>
+                </Popover.Button> */}
 
                 <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="relative flex flex-wrap bg-white pl-2 gap-1 py-3 sm:p-1 ">

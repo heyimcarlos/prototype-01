@@ -9,14 +9,14 @@ type NeighborhoodsState = {
     listingLocations: (ListingLocation & { listings: Listing[] })[];
     // listings: (Listing & { location: Coordinate })[];
   }[];
-  addNeighborhood: (neighrborhoods: {
+  addNeighborhood: (neighborhoods: {
     name: string;
     bounds: JSONValue;
     listingLocations: (ListingLocation & { listings: Listing[] })[];
   }) => void;
   deleteAllNeighborhoods: () => void;
   deleteThisNeighborhood: (
-    neighborhoods:
+    neighborhood:
       | {
           name: string;
           bounds: JSONValue;

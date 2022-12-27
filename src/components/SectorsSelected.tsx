@@ -25,16 +25,30 @@ const SectorsSelected = () => {
 
   const width = useWindowSize();
   let isMobile;
+  let fitOne;
+  let fitTwo;
+  let fitThree;
+  let fitFour;
   if (width) {
-    isMobile = width < 655;
+    isMobile = width < 668;
+    fitOne = width < 605;
+    fitTwo = width >= 605 && width < 855;
+    fitThree = width >= 855 && width < 1165;
+    fitFour = width >= 1165;
   }
+
+  const lastTwo = neighborhoods.slice(-2);
+  const lastThree = neighborhoods.slice(-3);
+  const lastFour = neighborhoods.slice(-4);
+
+  // console.log("lastThree", lastThree);
 
   return (
     <>
-      {isMobile && (
+      {fitOne && (
         <div className=" pt-[0.16rem] fixed z-[51]">
           {neighborhoods.length > 0 && (
-            <div className={`flex ${isMobile ? "" : "ml-1"}`}>
+            <div className={`flex`}>
               <SectorsFlyoutMenu />
               <div
                 className="pr-3 border-2 rounded-xl bg-white flex justify-center items-center"
@@ -71,6 +85,111 @@ const SectorsSelected = () => {
                   <XCircleIcon className="h-5 w-5 ml-1 text-black" />
                 </div>
               </div>
+            </div>
+          )}
+        </div>
+      )}
+      {fitTwo && (
+        <div className=" pt-[0.16rem] fixed z-[51]">
+          {neighborhoods.length > 0 && (
+            <div className={`flex`}>
+              <SectorsFlyoutMenu />
+              {lastTwo.map((sector) => {
+                return (
+                  <div
+                    key={sector.name}
+                    className="pr-3 border-2 rounded-xl bg-white flex justify-center items-center mr-1"
+                  >
+                    <span className="pl-3 text-gray-500">{sector.name}</span>
+                    <div
+                      onClick={() => {
+                        if (neighborhoods.length < 1) return;
+                        if (sector.name === "Custom Boundary") {
+                          setDrawShowTrue();
+                          setGlobalHideFalse();
+                          setShowCustomSearchFalse();
+                          setSearchFalse();
+                          setDrawShowFalse();
+                        }
+                        deleteThisNeighborhood(sector);
+                        setGlobalShowTrue();
+                      }}
+                    >
+                      <XCircleIcon className="h-5 w-5 ml-1 text-black" />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+      {fitThree && (
+        <div className=" pt-[0.16rem] fixed z-[51]">
+          {neighborhoods.length > 0 && (
+            <div className={`flex`}>
+              <SectorsFlyoutMenu />
+              {lastThree.map((sector) => {
+                return (
+                  <div
+                    key={sector.name}
+                    className="pr-3 border-2 rounded-xl bg-white flex justify-center items-center mr-1"
+                  >
+                    <span className="pl-3 text-gray-500">{sector.name}</span>
+                    <div
+                      onClick={() => {
+                        if (neighborhoods.length < 1) return;
+                        if (sector.name === "Custom Boundary") {
+                          setDrawShowTrue();
+                          setGlobalHideFalse();
+                          setShowCustomSearchFalse();
+                          setSearchFalse();
+                          setDrawShowFalse();
+                        }
+                        deleteThisNeighborhood(sector);
+                        setGlobalShowTrue();
+                      }}
+                    >
+                      <XCircleIcon className="h-5 w-5 ml-1 text-black" />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+      {fitFour && (
+        <div className=" pt-[0.16rem] fixed z-[60]">
+          {neighborhoods.length > 0 && (
+            <div className={`flex`}>
+              <SectorsFlyoutMenu />
+              {lastFour.map((sector) => {
+                return (
+                  <div
+                    key={sector.name}
+                    className="pr-3 border-2 rounded-xl bg-white flex justify-center items-center mr-1"
+                  >
+                    <span className="pl-3 text-gray-500">{sector.name}</span>
+                    <div
+                      onClick={() => {
+                        if (neighborhoods.length < 1) return;
+                        if (sector.name === "Custom Boundary") {
+                          setDrawShowTrue();
+                          setGlobalHideFalse();
+                          setShowCustomSearchFalse();
+                          setSearchFalse();
+                          setDrawShowFalse();
+                        }
+                        deleteThisNeighborhood(sector);
+                        setGlobalShowTrue();
+                      }}
+                    >
+                      <XCircleIcon className="h-5 w-5 ml-1 text-black" />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

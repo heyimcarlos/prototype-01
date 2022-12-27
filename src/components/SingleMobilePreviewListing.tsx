@@ -17,6 +17,8 @@ const SingleMobilePreviewListing = ({
   const neighborhood = useSelectedListing((state) => state.neighborhood);
   const setListing = useSelectedListing((state) => state.setListing);
   // console.log(listing, "listing from mobile preview");
+  const listingAddress = useSelectedListing((state) => state.listingAddress);
+
   return (
     <>
       <div
@@ -32,7 +34,7 @@ const SingleMobilePreviewListing = ({
         <div className="h-full w-[60%] ml-2 mt-2 flex">
           <div className="h-auto w-[85%]">
             <span className="">{neighborhood}</span>
-            <span className="block text-xs">{listing.name}</span>
+            <span className="block text-xs">{listingAddress}</span>
           </div>
           <div className="h-auto w-[15%] flex justify-end">
             <HeartIcon className="h-5 w-5 mr-2" />

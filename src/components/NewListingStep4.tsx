@@ -54,7 +54,7 @@ const NewListingStep4 = ({ setStep }) => {
   return (
     <div
       id="start"
-      className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-82.59px)] w-full xl:px-[30rem] overflow-auto scroll-smooth scroll-mt-[22rem] md:scroll-mt-[32rem] mt-[1px] md:mt-[2px]"
+      className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-82.59px)] w-full xl:px-[18rem] 2xl:px-[30rem] overflow-auto scroll-smooth scroll-mt-[22rem] md:scroll-mt-[32rem] mt-[1px] md:mt-[2px]"
     >
       {openPhotos && (
         <PhotosModal
