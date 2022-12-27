@@ -11,51 +11,39 @@ import MapboxMap, {
   type MapRef,
   type MapLayerMouseEvent,
   Marker,
-  PointLike,
 } from "react-map-gl";
 import { env } from "../../env/client.mjs";
 import { trpc } from "@/utils/trpc";
 import type { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
-
-import type {
-  Listing,
-  ListingLocation,
-  ListingLocationStatus,
-} from "@prisma/client";
+import type { Listing, ListingLocation } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import slugify from "@/lib/slugify";
-import { transformIntToMoney } from "@/lib/transformInt";
-
 import "mapbox-gl/dist/mapbox-gl.css";
-
 import { useSidebar } from "@/stores/useSidebar";
 import { useNeighborhoods } from "../../stores/useNeighborhoods";
-
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useGlobalHide } from "@/stores/useGlobalHide";
-
 import DrawControl from "@/components/mapPageComponents/DrawControl";
-
-import { NavigationControl } from "react-map-gl";
-import Head from "next/head.js";
 import { useDrawShow } from "@/stores/useDrawShow";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 import { useDrawControls } from "@/stores/useDrawControls";
-
-import Image from "next/image.js";
-import toolTip from "../../public/assets/images/tooltip.png";
-import polyGif from "../../public/assets/images/ezgif.com-gif-maker (1).gif";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { BackspaceIcon } from "@heroicons/react/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { ArrowPathIcon, ListBulletIcon } from "@heroicons/react/20/solid";
 import MobileListingsSlideOver from "@/components/mapPageComponents/sidebars/MobileListingsSlideOver";
 import type { NeighborhoodsType } from "@/pages/map";
-import Trpc from "@/pages/api/trpc/[trpc].js";
 import useWindowSize from "@/hooks/useWindowSize";
+
+import { NavigationControl } from "react-map-gl";
+import Head from "next/head.js";
+import Image from "next/image.js";
+import toolTip from "../../public/assets/images/tooltip.png";
+import polyGif from "../../public/assets/images/ezgif.com-gif-maker (1).gif";
+import { BackspaceIcon } from "@heroicons/react/24/outline";
+import Trpc from "@/pages/api/trpc/[trpc].js";
 
 type MapProps = {
   initialViewport: {
