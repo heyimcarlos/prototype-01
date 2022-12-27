@@ -7,7 +7,7 @@ import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 import { XCircleIcon } from "@heroicons/react/20/solid";
-import SectorsFlyoutMenu from "@/components/SectorsFlyoutMenu";
+import SectorsFlyoutMenu from "@/components/mapPageComponents/topNavbars/SectorsFlyoutMenu";
 
 const SectorsSelected = () => {
   const neighborhoods = useNeighborhoods((state) => state.neighborhoods);
@@ -24,13 +24,12 @@ const SectorsSelected = () => {
   const setSearchFalse = useDrawControls((state) => state.setSearchFalse);
 
   const width = useWindowSize();
-  let isMobile;
+
   let fitOne;
   let fitTwo;
   let fitThree;
   let fitFour;
   if (width) {
-    isMobile = width < 668;
     fitOne = width < 605;
     fitTwo = width >= 605 && width < 855;
     fitThree = width >= 855 && width < 1165;

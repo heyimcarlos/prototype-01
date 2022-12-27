@@ -1,16 +1,15 @@
 import React from "react";
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useSidebar } from "@/stores/useSidebar";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import MobileListingCard from "./MobileListingCard";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import type { Listing } from "@prisma/client";
-// import { sector } from "@turf/turf";
 import type { NeighborhoodsType } from "@/pages/map";
 import { MapIcon } from "@heroicons/react/20/solid";
-// import { divide } from "lodash";
+
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 type MobileListingSlideOverTypes = {
   listSlide: boolean;
@@ -82,16 +81,6 @@ const MobileListingsSlideOver = ({
                               : neighborhoodsNum
                           } Homes in this area`}
                         </Dialog.Title>
-                        {/* <div className="ml-3 flex h-7 items-center">
-                          <button
-                            type="button"
-                            className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-indigo-500 focus:ring-offset-2"
-                            onClick={() => setListSlide(false)}
-                          >
-                            <span className="sr-only">Close panel</span>
-                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                          </button>
-                        </div> */}
                       </div>
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6">
@@ -100,6 +89,7 @@ const MobileListingsSlideOver = ({
                           <div>No listing to show move the map</div>
                         )}
 
+                      {/*FIRST CALL IF THERE ARE NEIGHBORHOODS SELECTED*/}
                       {neighborhoodsState.map((neighborhood) =>
                         neighborhood.listingLocations.map((listingLocation) => {
                           if (listingLocation.listings.length === 1) {
@@ -130,8 +120,6 @@ const MobileListingsSlideOver = ({
                                       : neighborhood.name
                                   );
                                   setOpen(true);
-                                  // setLeftListing(listing);
-                                  // setLeftSlideOver(true);
                                 }}
                               >
                                 <MobileListingCard
@@ -165,8 +153,6 @@ const MobileListingsSlideOver = ({
                                         : neighborhood.name
                                     );
                                     setOpen(true);
-                                    // setLeftListing(listing);
-                                    // setLeftSlideOver(true);
                                   }}
                                 >
                                   <MobileListingCard
@@ -185,7 +171,6 @@ const MobileListingsSlideOver = ({
                       )}
 
                       {/*SECOND CALL IF THERE ARE NO NEIGHBORHOODS SELECTED*/}
-
                       {neighborhoodsState.length < 1 &&
                         listingLocations.map((listingLocation) => {
                           const neighborhood = neighborhoods.filter(
@@ -204,8 +189,6 @@ const MobileListingsSlideOver = ({
                                   setOpen(true);
                                   setListing(listing);
                                   setNeighborhood(neighborhoodName);
-                                  // setLeftListing(listing);
-                                  // setLeftSlideOver(true);
                                 }}
                               >
                                 <MobileListingCard
@@ -219,9 +202,7 @@ const MobileListingsSlideOver = ({
                     </div>
                     <div
                       onClick={() => setListSlide(false)}
-                      // className="fixed z-[51] h-10 w-[6rem] bg-black bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
                       className="fixed z-[51] h-10 w-[6rem] bg-gray-800 bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
-                      // className="fixed z-[51] h-10 w-[6rem] bg-indigo-600 bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
                     >
                       Map
                       <button type="button" className="ml-1">

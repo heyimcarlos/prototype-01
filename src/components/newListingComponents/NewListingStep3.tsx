@@ -1,4 +1,10 @@
-const NewListingStep3 = ({ setStep }) => {
+import { type Dispatch, type SetStateAction } from "react";
+
+type StepType = {
+  setStep: Dispatch<SetStateAction<string>>;
+};
+
+const NewListingStep3 = ({ setStep }: StepType) => {
   return (
     <div className="w-full h-[calc(100vh-68px)]">
       <div className="h-[45rem] w-full">

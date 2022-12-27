@@ -1,36 +1,30 @@
 import Head from "next/head";
-import Map from "@/components/Map";
-import { useJsApiLoader } from "@react-google-maps/api";
+import Map from "@/components/mapPageComponents/Map";
 import type { GetServerSidePropsContext } from "next";
-import { env } from "@/env/client.mjs";
 import { prisma } from "@/server/db/client";
 import type { inferSSRProps } from "@/lib/types/inferSSRProps";
 import { useRef, useState } from "react";
 import type { MapRef } from "react-map-gl";
-import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 import type { NextPageWithLayout } from "./_app";
 import MapLayout from "@/components/layouts/MapLayout";
 import { useSidebar } from "@/stores/useSidebar";
-import ListingCard from "@/components/ListingCard";
+import ListingCard from "@/components/mapPageComponents/sidebars/ListingCard";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
-import SingleViewSlideOver from "@/components/SingleViewSlideOver";
-import LeftSlideOver from "@/components/LeftSlideOver";
 import { useSelectedListing } from "@/stores/useSelectedListing";
-import SectorsSelected from "@/components/SectorsSelected";
-// import SlideOver from "@/components/SlideOver copy";
-import RightSlideOver from "@/components/RightSlideOver";
+import SlideOver from "@/components/singleViewListing/SlideOver";
 import type { Listing, ListingLocation, Neighborhood } from "@prisma/client";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import SwiperCore, { Pagination } from "swiper";
-import MultiMobilePreviewListing from "@/components/MultiMobilePreviewListing";
-import SingleMobilePreviewListing from "@/components/SingleMobilePreviewListing";
+import MultiMobilePreviewListing from "@/components/mapPageComponents/MultiMobilePreviewListing";
+import SingleMobilePreviewListing from "@/components/mapPageComponents/SingleMobilePreviewListing";
 import useWindowSize from "@/hooks/useWindowSize";
-import SliveOverModalReplacement from "@/components/SliderOverModalReplacement";
+
+import { env } from "@/env/client.mjs";
+import { useJsApiLoader } from "@react-google-maps/api";
+import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
-  // listingLocations,
   neighborhoods,
   initialViewport,
 }) => {
@@ -45,12 +39,11 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   const neighborhoodsState = useNeighborhoods((state) => state.neighborhoods);
 
   const [open, setOpen] = useState(false);
-  const [openRight, setOpenRight] = useState(false);
-  const [leftSlideOver, setLeftSlideOver] = useState(false);
 
   const listing = useSelectedListing((state) => state.listing);
-  const leftListing = useSelectedListing((state) => state.leftListing);
-  const setLeftListing = useSelectedListing((state) => state.setLeftListing);
+  const setListing = useSelectedListing((state) => state.setListing);
+  const setDirection = useSelectedListing((state) => state.setDirection);
+
   const listings = useSelectedListing((state) => state.listings);
   const setListingAddress = useSelectedListing(
     (state) => state.setListingAddress
@@ -97,38 +90,16 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
             mapRef={mapRef}
             neighborhoods={neighborhoods}
             initialViewport={initialViewport}
-            open={open}
-            openRight={openRight}
             setOpen={setOpen}
-            setOpenRight={setOpenRight}
           />
         </div>
 
-        {listing && doesFit && (
-          <RightSlideOver
-            open={openRight}
-            setOpen={setOpenRight}
-            listing={listing}
-          />
-        )}
-
-        {leftListing && doesFit && (
-          <LeftSlideOver
-            open={leftSlideOver}
-            setOpen={setLeftSlideOver}
-            listing={leftListing}
-          />
-        )}
-
+        {/* One for all SlideOver : Mobile, Tablet, and Desktop */}
         {listing && (
-          <SingleViewSlideOver
-            open={open}
-            setOpen={setOpen}
-            listing={listing}
-          />
+          <SlideOver open={open} setOpen={setOpen} listing={listing} />
         )}
 
-        {/*Single Mobile Preview */}
+        {/* Single Mobile Preview */}
         {listing && listings.length < 2 && !doesFit && (
           <SingleMobilePreviewListing
             listing={listing as Listing}
@@ -136,7 +107,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           />
         )}
 
-        {/*Multiple Mobile Preview */}
+        {/* Multiple Mobile Preview */}
         {listings.length > 0 && !doesFit && (
           <div className="h-[10rem] w-[90%] rounded-xl fixed bottom-0 mb-[3rem] flex overflow-hidden">
             <Swiper pagination spaceBetween={0} slidesPerView={1}>
@@ -153,6 +124,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
           </div>
         )}
 
+        {/* Desktop Sidebar with Listings */}
         {doesFit && (
           <div className="min-w-[300px] max-w-[300px] lg:min-w-[575px] lg:max-w-[575px] lg:space-x-1 h-full overflow-y-auto bg-white flex flex-wrap justify-center content-start md:after:justify-start lg:after:mr-[18rem]">
             {listingLocations.length < 1 && neighborhoodsState.length < 1 && (
@@ -172,8 +144,9 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
                     <div
                       key={listing.id}
                       onClick={() => {
-                        setLeftListing(listing);
-                        setLeftSlideOver(true);
+                        setDirection("left");
+                        setListing(listing);
+                        setOpen(true);
                         setListingAddress(location.name);
                         setNeighborhood(sector.name);
                       }}
@@ -197,10 +170,11 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
                     <div
                       key={listing.id}
                       onClick={() => {
-                        setLeftListing(listing);
-                        setLeftSlideOver(true);
+                        setDirection("left");
+                        setListing(listing);
                         setListingAddress(location.name);
                         setNeighborhood("");
+                        setOpen(true);
                       }}
                     >
                       <ListingCard

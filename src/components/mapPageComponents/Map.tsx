@@ -13,13 +13,13 @@ import MapboxMap, {
   Marker,
   PointLike,
 } from "react-map-gl";
-import { env } from "../env/client.mjs";
+import { env } from "../../env/client.mjs";
 import { trpc } from "@/utils/trpc";
 import type { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
 
-import {
+import type {
   Listing,
   ListingLocation,
   ListingLocationStatus,
@@ -31,12 +31,12 @@ import { transformIntToMoney } from "@/lib/transformInt";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import { useSidebar } from "@/stores/useSidebar";
-import { useNeighborhoods } from "../stores/useNeighborhoods";
+import { useNeighborhoods } from "../../stores/useNeighborhoods";
 
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useGlobalHide } from "@/stores/useGlobalHide";
 
-import DrawControl from "@/components/DrawControl";
+import DrawControl from "@/components/mapPageComponents/DrawControl";
 
 import { NavigationControl } from "react-map-gl";
 import Head from "next/head.js";
@@ -52,9 +52,10 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { BackspaceIcon } from "@heroicons/react/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { ArrowPathIcon, ListBulletIcon } from "@heroicons/react/20/solid";
-import MobileListingsSlideOver from "@/components/MobileListingsSlideOver";
+import MobileListingsSlideOver from "@/components/mapPageComponents/sidebars/MobileListingsSlideOver";
 import type { NeighborhoodsType } from "@/pages/map";
 import Trpc from "@/pages/api/trpc/[trpc].js";
+import useWindowSize from "@/hooks/useWindowSize";
 
 type MapProps = {
   initialViewport: {
@@ -62,11 +63,7 @@ type MapProps = {
     latitude: number;
     zoom: number;
   };
-  open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  openRight: boolean;
-  // setOpenRight: any;
-  setOpenRight: Dispatch<SetStateAction<boolean>>;
   mapRef: RefObject<MapRef>;
   neighborhoods: NeighborhoodsType;
 };
@@ -159,7 +156,6 @@ const Map = ({
   mapRef,
   initialViewport,
   setOpen,
-  setOpenRight,
 }: MapProps) => {
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
 
@@ -197,6 +193,7 @@ const Map = ({
   const setSearchFalse = useDrawControls((state) => state.setSearchFalse);
 
   const setListing = useSelectedListing((state) => state.setListing);
+  const setDirection = useSelectedListing((state) => state.setDirection);
   const setNeighborhood = useSelectedListing((state) => state.setNeighborhood);
 
   const setSelectedListings = useSelectedListing((state) => state.setListings);
@@ -205,6 +202,12 @@ const Map = ({
   );
 
   const [listSlide, setListSlide] = useState(false);
+
+  const width = useWindowSize();
+  let notMobile: boolean;
+  if (width) {
+    notMobile = width > 425;
+  }
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -609,7 +612,9 @@ const Map = ({
                     e.originalEvent.stopPropagation();
                     if (!listingLocation.listings[0]) return;
                     if (listingLocation.listings.length < 2) {
+                      setDirection("right");
                       setListing(listingLocation.listings[0]);
+                      if (notMobile) setOpen(true);
                       setSelectedListings([]);
                       setNeighborhood(
                         neighborhood.name === "Custom Boundary"
@@ -617,8 +622,6 @@ const Map = ({
                           : neighborhood.name
                       );
                       setListingAddress(listingLocation.name);
-                      // setOpen(true);
-                      setOpenRight(true);
                     } else {
                       setListing(null);
                       setSelectedListings(listingLocation.listings);

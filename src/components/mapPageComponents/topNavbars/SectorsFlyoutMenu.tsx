@@ -1,13 +1,14 @@
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
-import { XCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useDrawShow } from "@/stores/useDrawShow";
 import { useGlobalHide } from "@/stores/useGlobalHide";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 import { useDrawControls } from "@/stores/useDrawControls";
 import useWindowSize from "@/hooks/useWindowSize";
+
+import { XCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 
 export default function SectorsFlyoutMenu() {
   const neighborhoods = useNeighborhoods((state) => state.neighborhoods);

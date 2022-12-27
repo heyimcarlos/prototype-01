@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { transformIntToMoney } from "@/lib/transformInt";
-import type { Listing, ListingLocation } from "@prisma/client";
 
 type ListingCardTypes = {
   price: number;

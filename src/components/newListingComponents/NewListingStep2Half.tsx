@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import { DndContext, closestCenter, type DragOverEvent } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
@@ -7,9 +7,13 @@ import {
 } from "@dnd-kit/sortable";
 
 import { useNewListing } from "@/stores/useNewListing";
-import SortableItem from "./SortableItem";
+import SortableItem from "./formComponents/SortableItem";
 
-const NewListingStep2Half = ({ setStep }) => {
+type StepType = {
+  setStep: Dispatch<SetStateAction<string>>;
+};
+
+const NewListingStep2Half = ({ setStep }: StepType) => {
   const [selectedDetail, setSelectedDetail] = useState("Property");
   const [customInput, setCustomInput] = useState("");
 
@@ -52,13 +56,15 @@ const NewListingStep2Half = ({ setStep }) => {
 
   // console.log("selectedExteriorAmenities: ", selectedBuildingAmenities);
 
-  function handleDragEnd(event) {
+  function handleDragEnd(event: DragOverEvent) {
     const { active, over } = event;
-
+    if (!over) return;
     if (active.id !== over.id) {
       if (selectedDetail === "Property") {
-        const activeIndex = selectedBuildingAmenities.indexOf(active.id);
-        const overIndex = selectedBuildingAmenities.indexOf(over.id);
+        const activeIndex = selectedBuildingAmenities.indexOf(
+          active.id as string
+        );
+        const overIndex = selectedBuildingAmenities.indexOf(over.id as string);
 
         const newArr = arrayMove(
           selectedBuildingAmenities,
@@ -68,8 +74,10 @@ const NewListingStep2Half = ({ setStep }) => {
 
         setSelectedBuildingAmenities(newArr);
       } else if (selectedDetail === "Interior") {
-        const activeIndex = selectedInteriorAmenities.indexOf(active.id);
-        const overIndex = selectedInteriorAmenities.indexOf(over.id);
+        const activeIndex = selectedInteriorAmenities.indexOf(
+          active.id as string
+        );
+        const overIndex = selectedInteriorAmenities.indexOf(over.id as string);
 
         const newArr = arrayMove(
           selectedInteriorAmenities,
@@ -78,8 +86,10 @@ const NewListingStep2Half = ({ setStep }) => {
         );
         setSelectedInteriorAmenities(newArr);
       } else if (selectedDetail === "Exterior") {
-        const activeIndex = selectedExteriorAmenities.indexOf(active.id);
-        const overIndex = selectedExteriorAmenities.indexOf(over.id);
+        const activeIndex = selectedExteriorAmenities.indexOf(
+          active.id as string
+        );
+        const overIndex = selectedExteriorAmenities.indexOf(over.id as string);
 
         const newArr = arrayMove(
           selectedExteriorAmenities,

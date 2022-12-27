@@ -1,50 +1,28 @@
 import React, { Fragment, type Dispatch, type SetStateAction } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-// import type { ListingWithLocation } from "@/stores/useSelectedListing";
-// import { Grid } from "@material-ui/core";
-// import house from "../../public/assets/images/house1.jpeg";
-import first from "../../public/assets/images/interior/first.webp";
-import second from "../../public/assets/images/interior/second.webp";
-import third from "../../public/assets/images/interior/third.webp";
-import fourth from "../../public/assets/images/interior/fourth.webp";
-import fifth from "../../public/assets/images/interior/fifth.webp";
-import sixth from "../../public/assets/images/interior/sixth.webp";
-// import Link from "next/link";
 import { useRouter } from "next/router";
-import _ from "lodash";
-
 import { useState } from "react";
-
 import { useNewListing } from "@/stores/useNewListing";
-import Divider from "./Divider";
-
+import Divider from "../newListingComponents/formComponents/Divider";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import SwiperCore, { Pagination } from "swiper";
-import image0 from "../../public/assets/images/preview/0.jpg";
-import image1 from "../../public/assets/images/preview/1.jpg";
-import image2 from "../../public/assets/images/preview/2.jpg";
-import image3 from "../../public/assets/images/preview/3.jpg";
-import image4 from "../../public/assets/images/preview/4.jpg";
-import image5 from "../../public/assets/images/preview/5.jpg";
-import image6 from "../../public/assets/images/preview/6.jpg";
-import image7 from "../../public/assets/images/preview/7.jpg";
-import image8 from "../../public/assets/images/preview/8.jpg";
+import image0 from "../../../public/assets/images/preview/0.jpg";
+import image1 from "../../../public/assets/images/preview/1.jpg";
+import image2 from "../../../public/assets/images/preview/2.jpg";
+import image3 from "../../../public/assets/images/preview/3.jpg";
+import image4 from "../../../public/assets/images/preview/4.jpg";
+import image5 from "../../../public/assets/images/preview/5.jpg";
+import image6 from "../../../public/assets/images/preview/6.jpg";
+import image7 from "../../../public/assets/images/preview/7.jpg";
+import image8 from "../../../public/assets/images/preview/8.jpg";
 import PhotosModal from "./PhotosModal";
-import ProfilePlaceholder from "../../public/assets/images/ProfilePlaceholder.avif";
+import ProfilePlaceholder from "../../../public/assets/images/ProfilePlaceholder.avif";
 import type { Listing } from "@prisma/client";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 
-const nums = [
-  { id: 1, img: first },
-  { id: 2, img: second },
-  { id: 3, img: third },
-  { id: 4, img: fourth },
-  { id: 5, img: fifth },
-  { id: 6, img: sixth },
-];
+import { HeartIcon, ShareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 type Props = {
   open: boolean;
@@ -52,7 +30,7 @@ type Props = {
   listing: Listing;
 };
 
-const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
+const SlideOver = ({ open, setOpen, listing }: Props) => {
   const router = useRouter();
 
   const onClose = () => {
@@ -66,6 +44,9 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
 
   const listingAddress = useSelectedListing((state) => state.listingAddress);
   const neighborhood = useSelectedListing((state) => state.neighborhood);
+  const direction = useSelectedListing((state) => state.direction);
+
+  console.log("neighborhood", neighborhood);
 
   const previewImages = [
     image0,
@@ -92,16 +73,24 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-[53]" onClose={onClose}>
-        <div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full">
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
+        <div
+          className={`pointer-events-none fixed inset-y-0 ${
+            direction === "left" ? "left-0" : "right-0"
+          } flex max-w-full`}
+        >
           <Transition.Child
             as={Fragment}
             enter="transform transition ease-in-out duration-500 sm:duration-700"
-            enterFrom="-translate-x-full"
+            enterFrom={
+              direction === "left" ? "-translate-x-full" : "translate-x-full"
+            }
             enterTo="translate-x-0"
             leave="transform transition ease-in-out duration-500 sm:duration-700"
             leaveFrom="translate-x-0"
-            leaveTo="-translate-x-full"
+            leaveTo={
+              direction === "left" ? "-translate-x-full" : "translate-x-full"
+            }
           >
             <Dialog.Panel className="pointer-events-auto w-screen max-w-[82.5rem] md:max-w-[calc(100vw-299px)] lg:max-w-[calc(100vw-574px)] mt-[4.98rem]">
               <div
@@ -109,6 +98,7 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
                 className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-82.59px)] w-full overflow-auto scroll-smooth scroll-mt-[22rem] md:scroll-mt-[32rem] mt-[1px] md:mt-[2px]"
               >
                 <div className="fixed z-10 right-0 mt-3 mr-3 flex h-7 items-center">
+                  {/* <div className="fixed z-10 left-0 mt-3 ml-3 flex h-7 items-center"> */}
                   <button
                     type="button"
                     className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
@@ -134,11 +124,13 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
                     pagination={{ type: "fraction" }}
                     spaceBetween={0}
                     slidesPerView={1}
+                    // allowTouchMove={false}
+                    // navigation={true}
                   >
                     {previewImages.map((image, idx) => (
                       <SwiperSlide
                         key={idx}
-                        draggable={false}
+                        // draggable={false}
                         className="max-h-[16rem] md:max-h-[25.5rem] w-full"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -149,7 +141,6 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
                           className="max-h-[15.5rem] md:max-h-[25.5rem] object-cover"
                           src={image}
                           alt={idx.toString()}
-                          draggable={true}
                         />
                       </SwiperSlide>
                     ))}
@@ -169,7 +160,7 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
                               ${listing.price.toLocaleString()}
                             </h3>
 
-                            <h3 className="text-[14px] flex md:text-[16px] mt-1 lg:text-[20px] lg:mt-0">
+                            <h3 className="text-sm flex md:text-[16px]">
                               <b>{listing.bedrooms}</b>bd |{" "}
                               <b className="ml-1">{listing.fullBathrooms}</b>fba
                               |
@@ -417,4 +408,4 @@ const LeftSlideOver = ({ open, setOpen, listing }: Props) => {
   );
 };
 
-export default LeftSlideOver;
+export default SlideOver;
