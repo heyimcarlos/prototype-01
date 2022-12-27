@@ -1,19 +1,28 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef, type Dispatch, type SetStateAction } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import Image, { type StaticImageData } from "next/image";
+
 import { CheckIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
 import { ArrowsPointingInIcon } from "@heroicons/react/20/solid";
 
-export default function PhotosModal({ setOpenPhotos, openPhotos, photos }) {
-  const [open, setOpen] = useState(true);
+type PhotosModalTypes = {
+  setOpenPhotos: Dispatch<SetStateAction<boolean>>;
+  openPhotos: boolean;
+  photos: StaticImageData[];
+};
 
+export default function PhotosModal({
+  setOpenPhotos,
+  openPhotos,
+  photos,
+}: PhotosModalTypes) {
   const cancelButtonRef = useRef(null);
 
   return (
     <Transition.Root show={openPhotos} as={Fragment}>
       <Dialog
         as="div"
-        className="relative z-30"
+        className="relative z-[53]"
         initialFocus={cancelButtonRef}
         onClose={() => setOpenPhotos(false)}
         onClick={() => setOpenPhotos(false)}
@@ -58,7 +67,12 @@ export default function PhotosModal({ setOpenPhotos, openPhotos, photos }) {
                 >
                   {photos &&
                     photos.map((image, idx) => (
-                      <Image className="mb-2" key={idx} src={image} alt={idx} />
+                      <Image
+                        className="mb-2"
+                        key={idx}
+                        src={image}
+                        alt={idx.toString()}
+                      />
                     ))}
                 </div>
               </Dialog.Panel>

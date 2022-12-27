@@ -1,23 +1,29 @@
-import React, { useRef, useState } from "react";
+import React, {
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
-
 import { env } from "@/env/client.mjs";
 import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
-
 import "mapbox-gl/dist/mapbox-gl.css";
-
 import MapboxMap, {
   type MapRef,
   Marker,
   NavigationControl,
 } from "react-map-gl";
 import { useNewListing } from "@/stores/useNewListing";
-import SectorSelect from "@/components/SectorSelect";
-import HideAddressCheckbox from "@/components/HideAddressCheckbox";
+import SectorSelect from "@/components/newListingComponents/formComponents/SectorSelect";
+import HideAddressCheckbox from "@/components/newListingComponents/formComponents/HideAddressCheckbox";
 import { useDefaultSectors } from "@/stores/useDefaultSectors";
 import Link from "next/link";
 
-const NewListingStep1 = ({ setStep }) => {
+type StepType = {
+  setStep: Dispatch<SetStateAction<string>>;
+};
+
+const NewListingStep1 = ({ setStep }: StepType) => {
   const mapRef = useRef<MapRef>(null);
   const [autocomplete, setAutocomplete] =
     useState<google.maps.places.Autocomplete>();

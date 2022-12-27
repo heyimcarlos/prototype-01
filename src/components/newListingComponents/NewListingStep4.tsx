@@ -1,29 +1,30 @@
-import React from "react";
-
-import { HeartIcon, ShareIcon } from "@heroicons/react/24/outline";
+import React, { type Dispatch, type SetStateAction } from "react";
 import Image from "next/image";
-
 import { useState } from "react";
-
 import { useNewListing } from "@/stores/useNewListing";
-import Divider from "./Divider";
-
+import Divider from "./formComponents/Divider";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import SwiperCore, { Pagination } from "swiper";
-import image0 from "../../public/assets/images/preview/0.jpg";
-import image1 from "../../public/assets/images/preview/1.jpg";
-import image2 from "../../public/assets/images/preview/2.jpg";
-import image3 from "../../public/assets/images/preview/3.jpg";
-import image4 from "../../public/assets/images/preview/4.jpg";
-import image5 from "../../public/assets/images/preview/5.jpg";
-import image6 from "../../public/assets/images/preview/6.jpg";
-import image7 from "../../public/assets/images/preview/7.jpg";
-import image8 from "../../public/assets/images/preview/8.jpg";
-import PhotosModal from "./PhotosModal";
-import ProfilePlaceholder from "../../public/assets/images/ProfilePlaceholder.avif";
+import image0 from "../../../public/assets/images/preview/0.jpg";
+import image1 from "../../../public/assets/images/preview/1.jpg";
+import image2 from "../../../public/assets/images/preview/2.jpg";
+import image3 from "../../../public/assets/images/preview/3.jpg";
+import image4 from "../../../public/assets/images/preview/4.jpg";
+import image5 from "../../../public/assets/images/preview/5.jpg";
+import image6 from "../../../public/assets/images/preview/6.jpg";
+import image7 from "../../../public/assets/images/preview/7.jpg";
+import image8 from "../../../public/assets/images/preview/8.jpg";
+import PhotosModal from "../singleViewListing/PhotosModal";
+import ProfilePlaceholder from "../../../public/assets/images/ProfilePlaceholder.avif";
 
-const NewListingStep4 = ({ setStep }) => {
+import { HeartIcon, ShareIcon } from "@heroicons/react/24/outline";
+
+type StepType = {
+  setStep: Dispatch<SetStateAction<string>>;
+};
+
+const NewListingStep4 = ({ setStep }: StepType) => {
   const newListingState = useNewListing((state) => state);
   const [selected, setSelected] = useState("Contacto");
   const newListing = useNewListing((state) => state);
@@ -42,8 +43,6 @@ const NewListingStep4 = ({ setStep }) => {
 
   SwiperCore.use([Pagination]);
 
-  // console.log("openPhotos", openPhotos);
-
   const half = Math.ceil(newListing.selectedBuildingAmenities.length / 2);
   const firstHalf = newListing.selectedBuildingAmenities.slice(0, half);
   const secondHalf = newListing.selectedBuildingAmenities.slice(half);
@@ -54,7 +53,7 @@ const NewListingStep4 = ({ setStep }) => {
   return (
     <div
       id="start"
-      className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-82.59px)] w-full xl:px-[30rem] overflow-auto scroll-smooth scroll-mt-[22rem] md:scroll-mt-[32rem] mt-[1px] md:mt-[2px]"
+      className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-82.59px)] w-full xl:px-[18rem] 2xl:px-[30rem] overflow-auto scroll-smooth scroll-mt-[22rem] md:scroll-mt-[32rem] mt-[1px] md:mt-[2px]"
     >
       {openPhotos && (
         <PhotosModal
@@ -218,14 +217,10 @@ const NewListingStep4 = ({ setStep }) => {
           >
             <div className="flex w-[30rem] h-auto">
               <div className="inline-flex overflow-hidden rounded-full border-4 border-white max-w-[10rem] h-full md:w-[7rem] mt-0.5 md:mt-1">
-                {/* <div className="inline-flex overflow-hidden rounded-full border-4 border-white w-[5rem] h-full md:w-[7rem]"> */}
                 <Image
                   className="w-[5rem] h-[5rem] md:w-[6.5rem] md:h-[6.5rem]"
-                  // className="w-[6.5rem] h-[6.5rem]"
                   src={ProfilePlaceholder}
                   alt="profile"
-                  // width={100}
-                  // height={100}
                 />
               </div>
 

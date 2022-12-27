@@ -6,7 +6,7 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Logo from "@/components/Logo";
-import Divider from "@/components/Divider";
+import Divider from "@/components/newListingComponents/formComponents/Divider";
 import { Avatar, UserPopover } from "../Avatar";
 import { trpc } from "@/utils/trpc";
 

@@ -2,7 +2,7 @@ import { useFilesReader } from "@/hooks/useFileReader";
 import { TrashIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { type DragEvent, useState, useRef } from "react";
-import { type FileEvent } from "./ImageUploader";
+import { type FileEvent } from "../../ImageUploader";
 
 const MAX_FILE_AMOUNT = 10;
 // type ImagesUploaderProps = {};
