@@ -17,12 +17,9 @@ const RangeSlider = ({ min, max, step }: RangeSlideTypes) => {
   const setMaxPrice = useFilters((state) => state.setMaxPrice);
   const maxPrice = useFilters((state) => state.maxPrice);
 
-  console.log("minPrice", minPrice);
-  console.log("maxPrice", maxPrice);
-
   const handleMin = (e) => {
     if (minPrice + 1500000 < maxPrice) {
-      setMinPrice(e.target.value);
+      setMinPrice(parseInt(e.target.value));
     } else {
       if (parseInt(e.target.value) < maxPrice - 1500000) {
         setMinPrice(parseInt(e.target.value));
@@ -58,7 +55,7 @@ const RangeSlider = ({ min, max, step }: RangeSlideTypes) => {
           </h1>
           <button>
             <ArrowPathIcon
-              className="h-5 w-5"
+              className="h-5 w-5 "
               onClick={() => {
                 setReset(false);
                 setMinPrice(2500000);

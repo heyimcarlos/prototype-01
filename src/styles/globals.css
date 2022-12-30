@@ -70,8 +70,9 @@ input[type="range"]::-webkit-slider-thumb {
   width: 24px;
   height: 24px;
   border-radius: 50%;
+  /* color: red; */
   -webkit-appearance: none;
-  @apply bg-green-500;
+  @apply bg-indigo-600;
 
   /* @apply w-6 h-6 appearance-none pointer-events-auto; */
 }

@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import create from "zustand";
 
 type FiltersState = {

@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Popover, Transition } from "@headlessui/react";
 
 import useWindowSize from "@/hooks/useWindowSize";
@@ -9,16 +9,27 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import RangeSlider from "./Slider";
-import Slider from "./Slider";
+import { Formik, Form, Field } from "formik";
+import router, { useRouter } from "next/router";
+import { useFilters } from "@/stores/useFilters";
 
 export default function FiltersFlyoutMenu() {
   const width = useWindowSize();
+  const { query } = useRouter();
+  const setMinPrice = useFilters((state) => state.setMinPrice);
 
   let isMobile;
-
   if (width) {
     isMobile = width < 425;
   }
+
+  const initialValues = {
+    minPrice: query.minPrice || 0,
+  };
+
+  useEffect(() => {
+    if (query.minPrice) setMinPrice(parseInt(query.minPrice as string));
+  });
 
   return (
     <>
@@ -49,19 +60,44 @@ export default function FiltersFlyoutMenu() {
                   <XMarkIcon className="h-5 w-5" aria-hidden="true" />
                 </Popover.Button> */}
 
-              {/* <Formik */}
-              <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                <div className="relative flex flex-wrap bg-white pl-2 gap-1 py-3 sm:p-1 ">
-                  <form>
-                    <RangeSlider
-                      min={0}
-                      max={30000000}
-                      step={100000}
-                      //
-                    />
-                  </form>
-                </div>
-              </div>
+              <Formik
+                initialValues={initialValues}
+                onSubmit={(values) => {
+                  console.log("values", values);
+                  router.replace(
+                    {
+                      pathname: "/map",
+                      query: values,
+                    },
+                    undefined,
+                    { shallow: true }
+                  );
+                }}
+              >
+                {/* {({ values }) => ( */}
+                {({ values }) => (
+                  <Form>
+                    <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                      <div className="relative flex flex-wrap bg-white pl-2 gap-1 py-3 sm:p-1 ">
+                        <Field
+                          name="minPrice"
+                          as={RangeSlider}
+                          min={0}
+                          max={30000000}
+                          step={100000}
+                          value={10}
+                        />
+                      </div>
+                    </div>
+                    <button
+                      type="submit"
+                      className="inline ml-2 border-2 border-black h-10 px-2 rounded-lg bg-white"
+                    >
+                      Apply Filters
+                    </button>
+                  </Form>
+                )}
+              </Formik>
             </Popover.Panel>
           </Transition>
         </>
