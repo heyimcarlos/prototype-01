@@ -62,8 +62,8 @@ export default function NewFiltersFlyoutMenu({
     maxPrice: maxPrice,
     listingType: listingType,
     bedrooms: bedrooms,
-    fullBathroom: fullBathrooms,
-    halfBathroom: halfBathrooms,
+    fullBathrooms: fullBathrooms,
+    halfBathrooms: halfBathrooms,
   };
 
   useEffect(() => {

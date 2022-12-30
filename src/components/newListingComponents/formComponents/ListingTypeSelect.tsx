@@ -13,7 +13,15 @@ function classNames(...classes: string[]) {
 }
 
 export default function ListingTypeSelect({ listingType, setListingType }) {
-  const [selected, setSelected] = useState(listingTypes[0]);
+  const [selected, setSelected] = useState(
+    listingType === listingTypes[0]?.name
+      ? listingType[0]
+      : listingType === listingTypes[1]?.name
+      ? listingTypes[1]
+      : listingType === listingTypes[2]?.name
+      ? listingTypes[2]
+      : null
+  );
 
   return (
     <Listbox value={selected} onChange={setSelected}>

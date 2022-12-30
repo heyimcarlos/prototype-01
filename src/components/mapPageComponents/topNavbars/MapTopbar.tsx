@@ -5,20 +5,35 @@ import SectorsSelected from "./SectorsSelected";
 import useWindowSize from "@/hooks/useWindowSize";
 import FiltersFlyoutMenu from "./FiltersFlyoutMenu";
 import NewFiltersFlyoutMenu from "./NewFiltersFlyoutMenu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GetServerSidePropsContext } from "next";
 import { prisma } from "@/server/db/client";
+import { useRouter } from "next/router";
 
 const MapTopbar = () => {
   const neighborhoods = useNeighborhoods((state) => state.neighborhoods);
   const width = useWindowSize();
 
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(30000000);
-  const [bedrooms, setBedrooms] = useState(0);
-  const [fullBathrooms, setFullBathrooms] = useState(0);
-  const [halfBathrooms, setHalfBathrooms] = useState(0);
-  const [listingType, setListingType] = useState("For Sale & Rent");
+  const { query } = useRouter();
+
+  const [minPrice, setMinPrice] = useState(
+    query.minPrice ? parseInt(query.minPrice as string) : 0
+  );
+  const [maxPrice, setMaxPrice] = useState(
+    query.maxPrice ? parseInt(query.maxPrice as string) : 30000000
+  );
+  const [bedrooms, setBedrooms] = useState(
+    query.bedrooms ? parseInt(query.bedrooms as string) : 0
+  );
+  const [fullBathrooms, setFullBathrooms] = useState(
+    query.fullBathrooms ? parseInt(query.fullBathrooms as string) : 0
+  );
+  const [halfBathrooms, setHalfBathrooms] = useState(
+    query.halfBathrooms ? parseInt(query.halfBathrooms as string) : 0
+  );
+  const [listingType, setListingType] = useState(
+    query.listingType ? query.listingType : "For Sale & Rent"
+  );
 
   // const neighborhoods = await prisma.neighborhood.findMany({
   //   include: {
