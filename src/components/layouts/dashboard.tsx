@@ -1,11 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { Dialog as HeadlessUIDialog, Transition } from "@headlessui/react";
-import {
-  Bars3BottomLeftIcon,
-  CogIcon,
-  HomeIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { CogIcon, HomeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Logo from "@/components/Logo";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -22,12 +17,12 @@ const Sidebar = () => {
   const router = useRouter();
 
   return (
-    <aside className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-[0.3rem] px-4">
+    <aside className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white px-4 pt-[0.3rem]">
       <div className="flex flex-shrink-0 items-center">
         <Logo />
       </div>
       <div className="mt-5 flex flex-grow flex-col">
-        <nav className="space-y-1 flex-1 pb-4">
+        <nav className="flex-1 space-y-1 pb-4">
           {navigation.map((item) => {
             const isActive = router.pathname === item.href;
             return (
@@ -36,9 +31,9 @@ const Sidebar = () => {
                 href={{ pathname: item.href, query: `open=${true}` }}
                 className={classNames(
                   isActive
-                    ? "bg-indigo-50 border-indigo-500 text-indigo-500"
-                    : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50",
-                  "group border-l-4 p-2 flex items-center text-sm font-medium rounded-md"
+                    ? "border-indigo-500 bg-indigo-50 text-indigo-500"
+                    : "border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                  "group flex items-center rounded-md border-l-4 p-2 text-sm font-medium"
                 )}
               >
                 <item.icon
@@ -46,7 +41,7 @@ const Sidebar = () => {
                     isActive
                       ? "text-indigo-500"
                       : "text-gray-400 group-hover:text-gray-500",
-                    "mr-3 flex-shrink-0 h-6 w-6"
+                    "mr-3 h-6 w-6 flex-shrink-0"
                   )}
                   aria-hidden="true"
                 />
@@ -56,7 +51,7 @@ const Sidebar = () => {
           })}
         </nav>
       </div>
-      <div className="hidden md:inline mb-6">
+      <div className="mb-6 hidden md:inline">
         <UserDropdown />
       </div>
     </aside>
@@ -100,7 +95,7 @@ function TopNav() {
       <div className="sticky z-10 flex w-full items-center justify-between border-b border-gray-100 bg-gray-50 p-4 sm:relative lg:hidden">
         <button
           type="button"
-          className="items-center text-sm font-medium relative rounded-md transition-colors text-gray-900 dark:text-darkgray-900 flex justify-center min-h-[36px] min-w-[36px]  hover:bg-gray-100 focus:bg-gray-100 dark:hover:bg-darkgray-200 dark:focus:bg-darkgray-200 focus:outline-none focus:ring-2 focus:ring-offset focus:ring-gray-900 dark:focus:ring-white"
+          className="dark:text-darkgray-900 dark:hover:bg-darkgray-200 dark:focus:bg-darkgray-200 focus:ring-offset relative flex min-h-[36px] min-w-[36px] items-center justify-center rounded-md text-sm  font-medium text-gray-900 transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
           onClick={() => setOpen(true)}
         >
           <span className="sr-only">Open sidebar</span>
@@ -111,7 +106,7 @@ function TopNav() {
             href="/dashboard"
             className="flex items-center space-x-2 rounded-md px-2 py-1 hover:bg-gray-200"
           >
-            <ArrowSmallLeftIcon className="text-gray-700 w-6 h-6" />
+            <ArrowSmallLeftIcon className="h-6 w-6 text-gray-700" />
             <p className="font-semibold text-black">Dashboard</p>
           </Link>
         )}
@@ -177,7 +172,7 @@ const Dialog = ({
                 <div className="absolute top-1 right-1 z-10 p-1">
                   <button
                     type="button"
-                    className="flex items-center justify-center h-12 w-12 rounded-full hover:bg-gray-300 focus:outline-none"
+                    className="flex h-12 w-12 items-center justify-center rounded-full hover:bg-gray-300 focus:outline-none"
                     onClick={closeDialog}
                   >
                     <XMarkIcon
