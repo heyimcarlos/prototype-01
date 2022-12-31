@@ -1,13 +1,9 @@
 // import PreferenceForm from "./PreferenceForm";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import SectorsSelected from "./SectorsSelected";
-// import { AdjustmentsHorizontalIcon } from "@heroicons/react/20/solid";
 import useWindowSize from "@/hooks/useWindowSize";
 import FiltersFlyoutMenu from "./FiltersFlyoutMenu";
-import NewFiltersFlyoutMenu from "./NewFiltersFlyoutMenu";
-import { useEffect, useState } from "react";
-import { GetServerSidePropsContext } from "next";
-import { prisma } from "@/server/db/client";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { useRouter } from "next/router";
 
 const MapTopbar = () => {
@@ -53,12 +49,8 @@ const MapTopbar = () => {
         {neighborhoods.length > 0 && <SectorsSelected />}
       </div>
 
-      {/* <div className="pt-[0.2rem] fixed z-[51] right-0 mr-1.5">
-        <FiltersFlyoutMenu />
-      </div> */}
-
       <div className="pt-[0.2rem] fixed z-[51] right-0 mr-1.5">
-        <NewFiltersFlyoutMenu
+        <FiltersFlyoutMenu
           minPrice={minPrice}
           setMinPrice={setMinPrice}
           maxPrice={maxPrice}
@@ -69,10 +61,8 @@ const MapTopbar = () => {
           setFullBathrooms={setFullBathrooms}
           halfBathrooms={halfBathrooms}
           setHalfBathrooms={setHalfBathrooms}
-          listingType={listingType}
-          setListingType={setListingType}
-
-          // getFilteredListings={getFilteredListings}
+          listingType={listingType as string}
+          setListingType={setListingType as Dispatch<SetStateAction<string>>}
         />
       </div>
     </div>
