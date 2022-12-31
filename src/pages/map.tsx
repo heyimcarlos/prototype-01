@@ -214,6 +214,7 @@ export const getServerSideProps = async ({
   const neighborhoods = await prisma.neighborhood.findMany({
     include: {
       listingLocations: { include: { listings: {}, neighborhood: {} } },
+
     },
   });
 

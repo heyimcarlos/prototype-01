@@ -1,7 +1,7 @@
 import React, { type Dispatch, type SetStateAction } from "react";
 import Image from "next/image";
 import { useState } from "react";
-import { useNewListing } from "@/stores/useNewListing";
+import { NewListingState, useNewListing } from "@/stores/useNewListing";
 import Divider from "./formComponents/Divider";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
@@ -17,6 +17,9 @@ import image7 from "../../../public/assets/images/preview/7.jpg";
 import image8 from "../../../public/assets/images/preview/8.jpg";
 import PhotosModal from "../singleViewListing/PhotosModal";
 import ProfilePlaceholder from "../../../public/assets/images/ProfilePlaceholder.avif";
+import { trpc } from "@/utils/trpc";
+import { useRouter } from "next/router";
+import slugify from "@/lib/slugify";
 
 // import { HeartIcon, ShareIcon } from "@heroicons/react/24/outline";
 
@@ -29,6 +32,45 @@ const NewListingStep4 = ({ setStep }: StepType) => {
   const [selected, setSelected] = useState("Contacto");
   const newListing = useNewListing((state) => state);
   const [openPhotos, setOpenPhotos] = useState(false);
+  const router = useRouter()
+  const mutation = trpc.listing.create.useMutation({
+    onSuccess(data) {
+      router.push('/dashboard')
+    }
+  })
+  const handleSubmit = (listingState: NewListingState) => {
+    mutation.mutate({
+      name: listingState.name,
+      bio: 'bio',
+      propertyType: 'HOUSE',
+      squareFeet: listingState.meters,
+      listingType: 'RENT',
+      halfBathrooms: listingState.halfBathrooms,
+      bedrooms: listingState.bedrooms,
+      price: listingState.price,
+      fullBathrooms: listingState.fullBathrooms,
+      currency: 'DOP',
+      neighborhoodSlug: slugify(listingState.sector),
+      listingDetail: {
+        buildingAmenities: listingState.buildingAmenities,
+        exteriorAmenities: listingState.exteriorAmenities,
+        interiorAmenities: listingState.interiorAmenities,
+        lotSquareFeet: 0,
+        yearBuilt: 2018,
+        yearRemodeled: 2021,
+      },
+      listingLocation: {
+        googlePlaceId: listingState.placeId,
+        city: 'Santo Domingo',
+        country: 'Republica Dominicana',
+        lat: String(listingState.lat),
+        lng: String(listingState.lng),
+        name: 'Edificio 1',
+        state: 'Distrito Nacional',
+        formattedAddress: listingState.fullAddress
+      },
+    })
+  }
   const previewImages = [
     image0,
     image1,
@@ -76,7 +118,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
           </button>
           <button
             className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-xl md:py-2 md:px-4"
-            onClick={() => setStep("step 4")}
+            onClick={() => handleSubmit(newListingState)}
           >
             Publish
           </button>
@@ -149,55 +191,50 @@ const NewListingStep4 = ({ setStep }: StepType) => {
         >
           <a
             href="#Contacto"
-            className={`inline pb-2 md:pb-3 ${
-              selected === "Contacto"
-                ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
-                : ""
-            }`}
+            className={`inline pb-2 md:pb-3 ${selected === "Contacto"
+              ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
+              : ""
+              }`}
             onClick={() => setSelected("Contacto")}
           >
             Contacto
           </a>
           <a
             href="#Descripción"
-            className={`inline   ${
-              selected === "Descripción"
-                ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
-                : ""
-            }`}
+            className={`inline   ${selected === "Descripción"
+              ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
+              : ""
+              }`}
             onClick={() => setSelected("Descripción")}
           >
             Descripción
           </a>
           <a
             href="#Propiedad"
-            className={`inline   ${
-              selected === "Propiedad"
-                ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
-                : ""
-            }`}
+            className={`inline   ${selected === "Propiedad"
+              ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
+              : ""
+              }`}
             onClick={() => setSelected("Propiedad")}
           >
             Propiedad
           </a>
           <a
             href="#Interior"
-            className={`inline   ${
-              selected === "Interior"
-                ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
-                : ""
-            }`}
+            className={`inline   ${selected === "Interior"
+              ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
+              : ""
+              }`}
             onClick={() => setSelected("Interior")}
           >
             Interior
           </a>
           <a
             href="#start"
-            className={`inline ${
-              selected === "start"
-                ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
-                : ""
-            }`}
+            className={`inline ${selected === "start"
+              ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
+              : ""
+              }`}
             onClick={() => setSelected("start")}
           >
             Start
