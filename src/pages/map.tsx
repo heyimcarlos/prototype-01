@@ -20,9 +20,9 @@ import MultiMobilePreviewListing from "@/components/mapPageComponents/MultiMobil
 import SingleMobilePreviewListing from "@/components/mapPageComponents/SingleMobilePreviewListing";
 import useWindowSize from "@/hooks/useWindowSize";
 
-import { env } from "@/env/client.mjs";
-import { useJsApiLoader } from "@react-google-maps/api";
-import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
+// import { env } from "@/env/client.mjs";
+// import { useJsApiLoader } from "@react-google-maps/api";
+// import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   neighborhoods,
@@ -84,8 +84,8 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="w-full h-[calc(100vh-48px-33.6px)] flex justify-center">
-        <div className="w-full h-full">
+      <main className="flex h-[calc(100vh-48px-33.6px)] w-full justify-center">
+        <div className="h-full w-full">
           <Map
             mapRef={mapRef}
             neighborhoods={neighborhoods}
@@ -109,7 +109,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
         {/* Multiple Mobile Preview */}
         {listings.length > 0 && !doesFit && (
-          <div className="h-[10rem] w-[90%] rounded-xl fixed bottom-0 mb-[3rem] flex overflow-hidden">
+          <div className="fixed bottom-0 mb-[3rem] flex h-[10rem] w-[90%] overflow-hidden rounded-xl">
             <Swiper pagination spaceBetween={0} slidesPerView={1}>
               {listings.map((listing) => (
                 <SwiperSlide key={listing.id}>
@@ -126,7 +126,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
         {/* Desktop Sidebar with Listings */}
         {doesFit && (
-          <div className="min-w-[300px] max-w-[300px] lg:min-w-[575px] lg:max-w-[575px] lg:space-x-1 h-full overflow-y-auto bg-white flex flex-wrap justify-center content-start md:after:justify-start lg:after:mr-[18rem]">
+          <div className="flex h-full min-w-[300px] max-w-[300px] flex-wrap content-start justify-center overflow-y-auto bg-white md:after:justify-start lg:min-w-[575px] lg:max-w-[575px] lg:space-x-1 lg:after:mr-[18rem]">
             {listingLocations.length < 1 && neighborhoodsState.length < 1 && (
               <div>No listing to show move the map</div>
             )}
@@ -137,7 +137,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
               </div>
             )}
 
-            <div className="min-w-[300px] max-w-[300px] lg:min-w-[575px] lg:max-w-[575px] lg:space-x-1 h-full overflow-y-auto bg-white flex flex-wrap justify-center content-start md:after:justify-start lg:after:mr-[18rem]">
+            <div className="flex h-full min-w-[300px] max-w-[300px] flex-wrap content-start justify-center overflow-y-auto bg-white md:after:justify-start lg:min-w-[575px] lg:max-w-[575px] lg:space-x-1 lg:after:mr-[18rem]">
               {neighborhoodsState.map((sector) =>
                 sector.listingLocations.map((location) => {
                   return location.listings.map((listing) => (

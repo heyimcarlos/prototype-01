@@ -8,7 +8,7 @@ import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 import { useDrawControls } from "@/stores/useDrawControls";
 import useWindowSize from "@/hooks/useWindowSize";
 
-import { XCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { XCircleIcon } from "@heroicons/react/20/solid";
 
 export default function SectorsFlyoutMenu() {
   const neighborhoods = useNeighborhoods((state) => state.neighborhoods);
@@ -43,7 +43,7 @@ export default function SectorsFlyoutMenu() {
         <Popover className={`${isMobile ? "inline" : "-ml-[0.5px]"} sm:ml-1`}>
           <>
             <Popover.Button
-              className={`text-gray-500 px-2.5 mr-[0.2rem] border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900`}
+              className={`mr-[0.2rem] rounded-xl border-2 bg-white px-2.5 text-base font-medium text-gray-500 hover:text-gray-900`}
             >
               <span>{`${neighborhoods.length - 1} More`}</span>
             </Popover.Button>
@@ -58,17 +58,17 @@ export default function SectorsFlyoutMenu() {
               leaveTo="opacity-0 translate-y-1"
             >
               <Popover.Panel
-                className={`fixed z-[51] -mt-7 w-full transform px-0.5 sm:px-0 max-w-[28.5rem] -ml-2`}
+                className={`fixed z-[51] -mt-7 -ml-2 w-full max-w-[28.5rem] transform px-0.5 sm:px-0`}
               >
                 {/* <Popover.Button className=" absolute z-[51] right-0 mr-2 mt-1 justify-end rounded-full border-2 border-black">
                   <XMarkIcon className="h-5 w-5" aria-hidden="true" />
                 </Popover.Button> */}
 
                 <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div className="relative flex flex-wrap bg-white pl-2 gap-1 py-3 sm:p-1 ">
+                  <div className="relative flex flex-wrap gap-1 bg-white py-3 pl-2 sm:p-1 ">
                     {neighborhoods.map((neighborhood) => (
                       <div
-                        className="pr-3 border-2 rounded-xl bg-white flex justify-center items-center py-[0.03rem]"
+                        className="flex items-center justify-center rounded-xl border-2 bg-white py-[0.03rem] pr-3"
                         key={neighborhood.name}
                       >
                         <span className="pl-3">{neighborhood.name}</span>
@@ -85,7 +85,7 @@ export default function SectorsFlyoutMenu() {
                             setGlobalShowTrue();
                           }}
                         >
-                          <XCircleIcon className="h-5 w-5 text-black ml-1" />
+                          <XCircleIcon className="ml-1 h-5 w-5 text-black" />
                         </div>
                       </div>
                     ))}

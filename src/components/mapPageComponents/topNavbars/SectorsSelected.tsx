@@ -1,5 +1,5 @@
 import React from "react";
-import useWindowSize from "@/hooks/useWindowSize";
+// import useWindowSize from "@/hooks/useWindowSize";
 import { useDrawControls } from "@/stores/useDrawControls";
 import { useDrawShow } from "@/stores/useDrawShow";
 import { useGlobalHide } from "@/stores/useGlobalHide";
@@ -25,12 +25,12 @@ const SectorsSelected = () => {
 
   return (
     <>
-      <div className=" pt-[0.16rem] fixed z-[51]">
+      <div className=" fixed z-[51] pt-[0.16rem]">
         {neighborhoods.length > 0 && (
           <div className={`flex`}>
             <SectorsFlyoutMenu />
             <div
-              className="pr-3 border-2 rounded-xl bg-white flex justify-center items-center"
+              className="flex items-center justify-center rounded-xl border-2 bg-white pr-3"
               key={
                 neighborhoods.length > 0
                   ? neighborhoods[neighborhoods.length - 1]?.name
@@ -61,7 +61,7 @@ const SectorsSelected = () => {
                   setGlobalShowTrue();
                 }}
               >
-                <XCircleIcon className="h-5 w-5 ml-1 text-black" />
+                <XCircleIcon className="ml-1 h-5 w-5 text-black" />
               </div>
             </div>
           </div>

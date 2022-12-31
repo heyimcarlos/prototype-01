@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { type Dispatch, Fragment, type SetStateAction, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
@@ -12,26 +12,34 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function ListingTypeSelect({ listingType, setListingType }) {
-  const [selected, setSelected] = useState(
-    listingType === listingTypes[0]?.name
+type Props = {
+  listingType: string;
+  setListingType: Dispatch<SetStateAction<string>>;
+};
+
+export default function ListingTypeSelect({
+  listingType,
+  setListingType,
+}: Props) {
+  const [selected, setSelected] = useState(() => {
+    return listingType === listingTypes[0]?.name
       ? listingType[0]
       : listingType === listingTypes[1]?.name
-      ? listingTypes[1]
-      : listingType === listingTypes[2]?.name
-      ? listingTypes[2]
-      : null
-  );
+        ? listingTypes[1]
+        : listingType === listingTypes[2]?.name
+          ? listingTypes[2]
+          : null
+  })
 
   return (
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
         <>
           <div className="relative w-full">
-            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 md:py-3 pl-3 pr-10 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-md md:text-xl">
-              {listingType === "" && (
+            <Listbox.Button className="text-md relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl">
+              {listingType === "" && selected && (
                 <span className="block truncate text-gray-500">
-                  {selected?.name}
+                  {typeof selected === 'string' ? selected : selected.name}
                 </span>
               )}
               {listingType !== "" && (
@@ -53,13 +61,13 @@ export default function ListingTypeSelect({ listingType, setListingType }) {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute z-10 mt-1 max-h-[9.9rem] w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-md md:text-xl">
+              <Listbox.Options className="text-md absolute z-10 mt-1 max-h-[9.9rem] w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:text-xl">
                 {listingTypes.map((type) => (
                   <Listbox.Option
                     key={type.id}
                     className={({ active }) =>
                       classNames(
-                        active ? "text-white bg-indigo-600" : "text-gray-900",
+                        active ? "bg-indigo-600 text-white" : "text-gray-900",
                         "relative cursor-default select-none py-2 pl-8 pr-4"
                       )
                     }

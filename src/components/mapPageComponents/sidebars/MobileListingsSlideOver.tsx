@@ -9,7 +9,7 @@ import type { Listing } from "@prisma/client";
 import type { NeighborhoodsType } from "@/pages/map";
 import { MapIcon } from "@heroicons/react/20/solid";
 
-import { XMarkIcon } from "@heroicons/react/24/outline";
+// import { XMarkIcon } from "@heroicons/react/24/outline";
 
 type MobileListingSlideOverTypes = {
   listSlide: boolean;
@@ -70,10 +70,10 @@ const MobileListingsSlideOver = ({
                   className="pointer-events-auto w-screen"
                   draggable={true}
                 >
-                  <div className="flex h-full flex-col overflow-y-scroll bg-white py-2 shadow-xl items-center">
-                    <div className="px-4 sm:px-6 -mb-4">
+                  <div className="flex h-full flex-col items-center overflow-y-scroll bg-white py-2 shadow-xl">
+                    <div className="-mb-4 px-4 sm:px-6">
                       <div className="flex items-start justify-between">
-                        <Dialog.Title className="text-md font-medium text-gray-900 mt-[0.1rem]">
+                        <Dialog.Title className="text-md mt-[0.1rem] font-medium text-gray-900">
                           {`${
                             listingLocations.length > 0 &&
                             neighborhoodsState.length < 1
@@ -183,7 +183,7 @@ const MobileListingsSlideOver = ({
                           return listingLocation.listings.map((listing) => {
                             return (
                               <div
-                                className="flex justify-center mb-2"
+                                className="mb-2 flex justify-center"
                                 key={listing.id}
                                 onClick={() => {
                                   setOpen(true);
@@ -202,7 +202,7 @@ const MobileListingsSlideOver = ({
                     </div>
                     <div
                       onClick={() => setListSlide(false)}
-                      className="fixed z-[51] h-10 w-[6rem] bg-gray-800 bottom-0 rounded-full mb-2 flex items-center justify-center text-white"
+                      className="fixed bottom-0 z-[51] mb-2 flex h-10 w-[6rem] items-center justify-center rounded-full bg-gray-800 text-white"
                     >
                       Map
                       <button type="button" className="ml-1">

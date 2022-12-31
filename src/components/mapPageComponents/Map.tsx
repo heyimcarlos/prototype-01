@@ -39,13 +39,12 @@ import MobileListingsSlideOver from "@/components/mapPageComponents/sidebars/Mob
 import type { NeighborhoodsType } from "@/pages/map";
 import useWindowSize from "@/hooks/useWindowSize";
 
-import { NavigationControl } from "react-map-gl";
-import Head from "next/head.js";
-import Image from "next/image.js";
-import toolTip from "../../public/assets/images/tooltip.png";
-import polyGif from "../../public/assets/images/ezgif.com-gif-maker (1).gif";
-import { BackspaceIcon } from "@heroicons/react/24/outline";
-import Trpc from "@/pages/api/trpc/[trpc].js";
+// import { NavigationControl } from "react-map-gl";
+// import Head from "next/head.js";
+// import Image from "next/image.js";
+// import toolTip from "../../public/assets/images/tooltip.png";
+// import polyGif from "../../public/assets/images/ezgif.com-gif-maker (1).gif";
+// import { BackspaceIcon } from "@heroicons/react/24/outline";
 import { useMemo } from "react";
 
 type MapProps = {
@@ -71,8 +70,8 @@ const CustomMarker = ({
   neighborhood,
   onClick,
   names,
-  curZoom,
-}: CustomMarkerPropsTypes) => {
+}: // curZoom,
+CustomMarkerPropsTypes) => {
   const [show, setShow] = useState(true);
   const globalShow = useGlobalShow((state) => state.globalShow);
   const globalHide = useGlobalHide((state) => state.globalHide);

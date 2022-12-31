@@ -1,14 +1,14 @@
 // import PreferenceForm from "./PreferenceForm";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import SectorsSelected from "./SectorsSelected";
-import useWindowSize from "@/hooks/useWindowSize";
+// import useWindowSize from "@/hooks/useWindowSize";
 import FiltersFlyoutMenu from "./FiltersFlyoutMenu";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { useRouter } from "next/router";
 
 const MapTopbar = () => {
   const neighborhoods = useNeighborhoods((state) => state.neighborhoods);
-  const width = useWindowSize();
+  // const width = useWindowSize();
 
   const { query } = useRouter();
 
@@ -44,12 +44,12 @@ const MapTopbar = () => {
   // };
 
   return (
-    <div className="bg-indigo-600 h-[2.1rem] w-full">
-      <div className="w-full flex justify-start ml-2">
+    <div className="h-[2.1rem] w-full bg-indigo-600">
+      <div className="ml-2 flex w-full justify-start">
         {neighborhoods.length > 0 && <SectorsSelected />}
       </div>
 
-      <div className="pt-[0.2rem] fixed z-[51] right-0 mr-1.5">
+      <div className="fixed right-0 z-[51] mr-1.5 pt-[0.2rem]">
         <FiltersFlyoutMenu
           minPrice={minPrice}
           setMinPrice={setMinPrice}

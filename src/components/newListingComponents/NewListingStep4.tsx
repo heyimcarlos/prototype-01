@@ -18,7 +18,7 @@ import image8 from "../../../public/assets/images/preview/8.jpg";
 import PhotosModal from "../singleViewListing/PhotosModal";
 import ProfilePlaceholder from "../../../public/assets/images/ProfilePlaceholder.avif";
 
-import { HeartIcon, ShareIcon } from "@heroicons/react/24/outline";
+// import { HeartIcon, ShareIcon } from "@heroicons/react/24/outline";
 
 type StepType = {
   setStep: Dispatch<SetStateAction<string>>;
@@ -53,7 +53,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
   return (
     <div
       id="start"
-      className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-82.59px)] w-full xl:px-[18rem] 2xl:px-[30rem] overflow-auto scroll-smooth scroll-mt-[22rem] md:scroll-mt-[32rem] mt-[1px] md:mt-[2px]"
+      className="mt-[1px] h-[calc(100vh-55.59px)] w-full scroll-mt-[22rem] overflow-auto scroll-smooth md:mt-[2px] md:h-[calc(100vh-82.59px)] md:scroll-mt-[32rem] xl:px-[18rem] 2xl:px-[30rem]"
     >
       {openPhotos && (
         <PhotosModal
@@ -64,18 +64,18 @@ const NewListingStep4 = ({ setStep }: StepType) => {
       )}
 
       <div id="imagesAndTopElement" className="w-full ">
-        <div className="w-full flex justify-center space-x-6 pb-1.5 absolute mt-3 z-20 md:text-xl xl:relative xl:-mb-[3.5rem]">
-          <button className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl">
+        <div className="absolute z-20 mt-3 flex w-full justify-center space-x-6 pb-1.5 md:text-xl xl:relative xl:-mb-[3.5rem]">
+          <button className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-xl md:py-2 md:px-4">
             Save & Exit
           </button>
           <button
-            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+            className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-xl md:py-2 md:px-4"
             onClick={() => setStep("step 3")}
           >
             Back
           </button>
           <button
-            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+            className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-xl md:py-2 md:px-4"
             onClick={() => setStep("step 4")}
           >
             Publish
@@ -90,14 +90,14 @@ const NewListingStep4 = ({ setStep }: StepType) => {
             <SwiperSlide
               key={idx}
               draggable={false}
-              className="max-h-[16rem] md:max-h-[25.5rem] w-full"
+              className="max-h-[16rem] w-full md:max-h-[25.5rem]"
               onClick={(e) => {
                 e.stopPropagation();
                 setOpenPhotos(true);
               }}
             >
               <Image
-                className="max-h-[15.5rem] md:max-h-[25.5rem] object-cover"
+                className="max-h-[15.5rem] object-cover md:max-h-[25.5rem]"
                 src={image}
                 alt={idx.toString()}
               />
@@ -108,18 +108,18 @@ const NewListingStep4 = ({ setStep }: StepType) => {
 
       <div
         id="firstInfoAndNavBar"
-        className="bg-white sticky top-0 z-30 -mt-[6px] md:py-2 xl:border-l-2 xl:border-r-2 xl:border-black/20"
+        className="sticky top-0 z-30 -mt-[6px] bg-white md:py-2 xl:border-l-2 xl:border-r-2 xl:border-black/20"
       >
-        <div className="flow-root flex items-end px-4">
+        <div className="flex flow-root items-end px-4">
           <div className="flex-1">
             <div>
               <div className="flex justify-end">
-                <div className="flex justify-between w-full">
-                  <h3 className="text-xl font-bold text-gray-900 mt-[0.15rem] md:text-2xl">
+                <div className="flex w-full justify-between">
+                  <h3 className="mt-[0.15rem] text-xl font-bold text-gray-900 md:text-2xl">
                     ${newListingState.price.toLocaleString()}
                   </h3>
 
-                  <h3 className=" pt-2 md:pt-1 text-sm flex md:text-xl">
+                  <h3 className=" flex pt-2 text-sm md:pt-1 md:text-xl">
                     <b>{newListingState.bedrooms}</b> bd |{" "}
                     <b className="ml-1">
                       {newListingState.fullBathrooms +
@@ -132,7 +132,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
                 </div>
               </div>
 
-              <p className="block text-md text-gray-500 mt-1 md:text-xl">
+              <p className="text-md mt-1 block text-gray-500 md:text-xl">
                 {newListingState.sector} -{" "}
                 {newListingState.hide
                   ? "Dirección no disponible"
@@ -145,7 +145,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
         <Divider />
         <div
           id="Navbar"
-          className="flex justify-evenly pt-2 bg-white md:pt-3 text-sm md:text-xl"
+          className="flex justify-evenly bg-white pt-2 text-sm md:pt-3 md:text-xl"
         >
           <a
             href="#Contacto"
@@ -208,17 +208,17 @@ const NewListingStep4 = ({ setStep }: StepType) => {
 
       <div
         id="detailsContainer"
-        className="h-[calc(100vh-38px-54.39px-55.59px)] md:h-[calc(100vh-58px-94.59px-55.59px)] w-full overflow-auto scroll-smooth xl:border-l-2 xl:border-r-2 xl:border-black/20"
+        className="h-[calc(100vh-38px-54.39px-55.59px)] w-full overflow-auto scroll-smooth md:h-[calc(100vh-58px-94.59px-55.59px)] xl:border-l-2 xl:border-r-2 xl:border-black/20"
       >
         <div className="px-4 py-1">
           <div
             id="Contacto"
-            className="mb-3 scroll-mt-[30rem] flex flex-col md:flex-row"
+            className="mb-3 flex scroll-mt-[30rem] flex-col md:flex-row"
           >
-            <div className="flex w-[30rem] h-auto">
-              <div className="inline-flex overflow-hidden rounded-full border-4 border-white max-w-[10rem] h-full md:w-[7rem] mt-0.5 md:mt-1">
+            <div className="flex h-auto w-[30rem]">
+              <div className="mt-0.5 inline-flex h-full max-w-[10rem] overflow-hidden rounded-full border-4 border-white md:mt-1 md:w-[7rem]">
                 <Image
-                  className="w-[5rem] h-[5rem] md:w-[6.5rem] md:h-[6.5rem]"
+                  className="h-[5rem] w-[5rem] md:h-[6.5rem] md:w-[6.5rem]"
                   src={ProfilePlaceholder}
                   alt="profile"
                 />
@@ -226,8 +226,8 @@ const NewListingStep4 = ({ setStep }: StepType) => {
 
               <div className="mt-1 flex-1 md:ml-3 md:mt-4">
                 <div className="mt-3">
-                  <div className="flex items-center -mb-1">
-                    <h3 className="text-xl font-bold text-gray-900 text-lg md:text-xl">
+                  <div className="-mb-1 flex items-center">
+                    <h3 className="text-xl text-lg font-bold text-gray-900 md:text-xl">
                       Ashley Porter
                     </h3>
                     <span className="ml-2.5 inline-block h-2 w-2 flex-shrink-0 rounded-full bg-green-400">
@@ -240,7 +240,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
                 </div>
               </div>
             </div>
-            <div className="mt-2 w-full flex flex-col flex-wrap space-y-1 md:space-y-2 text-sm md:text-lg">
+            <div className="mt-2 flex w-full flex-col flex-wrap space-y-1 text-sm md:space-y-2 md:text-lg">
               <button
                 type="button"
                 className="inline-flex w-full flex-shrink-0 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2  font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:flex-1"
@@ -258,10 +258,10 @@ const NewListingStep4 = ({ setStep }: StepType) => {
 
           <dl id="Descripción" className="space-y-8">
             <div className="flex flex-col">
-              <dt className="text-sm font-medium text-gray-500 w-40 flex-shrink-0 pt-3 md:text-lg">
+              <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
                 Descripción
               </dt>
-              <dd className="mt-1 text-sm text-gray-900 col-span-2 mt-0 ml-6 md:text-lg">
+              <dd className="col-span-2 mt-1 mt-0 ml-6 text-sm text-gray-900 md:text-lg">
                 <p>
                   Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor
                   autem eum, eaque enim alias, laudantium totam sed quam
@@ -273,25 +273,25 @@ const NewListingStep4 = ({ setStep }: StepType) => {
 
             <Divider />
             <div id="Propiedad">
-              <dt className="text-sm font-medium text-gray-500 w-40 flex-shrink-0 pt-3 md:text-lg">
+              <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
                 Property Amenities
               </dt>
-              <div className="w-full flex mt-2 ">
-                <div className="w-[50%] flex flex-col text-md md:text-lg">
+              <div className="mt-2 flex w-full ">
+                <div className="text-md flex w-[50%] flex-col md:text-lg">
                   {firstHalf.map((amen) => (
                     <div
                       key={amen}
-                      className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md mt-1 max-w-[100%]"
+                      className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1 px-2"
                     >
                       {amen}
                     </div>
                   ))}
                 </div>
-                <div className="w-[50%] flex flex-col ml-1 text-md md:text-lg">
+                <div className="text-md ml-1 flex w-[50%] flex-col md:text-lg">
                   {secondHalf.map((amen) => (
                     <div
                       key={amen}
-                      className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md mt-1  max-w-[100%]"
+                      className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1  px-2"
                     >
                       {amen}
                     </div>
@@ -301,25 +301,25 @@ const NewListingStep4 = ({ setStep }: StepType) => {
             </div>
             <Divider />
             <div id="Interior">
-              <dt className="text-sm font-medium text-gray-500 w-40 flex-shrink-0 pt-3 md:text-lg">
+              <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
                 Interior Amenities
               </dt>
-              <div className="w-full flex mt-2 ">
-                <div className="w-[50%] flex flex-col text-md md:text-lg">
+              <div className="mt-2 flex w-full ">
+                <div className="text-md flex w-[50%] flex-col md:text-lg">
                   {intFirstHalf.map((amen) => (
                     <div
                       key={amen}
-                      className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md mt-1 max-w-[100%]"
+                      className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1 px-2"
                     >
                       {amen}
                     </div>
                   ))}
                 </div>
-                <div className="w-[50%] flex flex-col ml-1 text-md md:text-lg">
+                <div className="text-md ml-1 flex w-[50%] flex-col md:text-lg">
                   {intSecondHalf.map((amen) => (
                     <div
                       key={amen}
-                      className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md mt-1  max-w-[100%]"
+                      className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1  px-2"
                     >
                       {amen}
                     </div>
@@ -329,14 +329,14 @@ const NewListingStep4 = ({ setStep }: StepType) => {
             </div>
             <Divider />
             <div id="Exterior">
-              <dt className="text-sm font-medium text-gray-500 w-40 flex-shrink-0 pt-3 md:text-lg">
+              <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
                 Exterior Amenities
               </dt>
-              <div className="flex flex-col flex-wrap mt-2 space-y-1 text-md md:text-lg">
+              <div className="text-md mt-2 flex flex-col flex-wrap space-y-1 md:text-lg">
                 {newListing.selectedExteriorAmenities.map((amen) => (
                   <div
                     key={amen}
-                    className="w-fit border-[1px] border-indigo-600 py-1 px-2 rounded-md"
+                    className="w-fit rounded-md border-[1px] border-indigo-600 py-1 px-2"
                   >
                     {amen}
                   </div>
@@ -345,7 +345,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
             </div>
           </dl>
         </div>
-        <div className="h-full flex justify-center items-center">
+        <div className="flex h-full items-center justify-center">
           Legal info about ntornos
         </div>
       </div>

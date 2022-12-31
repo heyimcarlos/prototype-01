@@ -46,7 +46,7 @@ export default function FiltersFlyoutMenu({
   setListingType,
 }: FiltersFlyoutMenuTypes) {
   const width = useWindowSize();
-  const progressRef = useRef(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   let isMobile;
   if (width) {
@@ -97,7 +97,7 @@ export default function FiltersFlyoutMenu({
       <Popover className={`${isMobile ? "inline" : "-ml-[0.5px]"} sm:ml-1`}>
         <>
           <Popover.Button
-            className={`text-gray-500 px-2 border-2 rounded-xl bg-white text-base font-medium hover:text-gray-900`}
+            className={`rounded-xl border-2 bg-white px-2 text-base font-medium text-gray-500 hover:text-gray-900`}
           >
             <AdjustmentsHorizontalIcon className="h-6 w-6" />
           </Popover.Button>
@@ -111,10 +111,10 @@ export default function FiltersFlyoutMenu({
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-1"
           >
-            <Popover.Panel className=" fixed z-[51] right-0 -mt-8 w-full transform px-0.5 sm:px-1 max-w-[40rem] ">
-              <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white max-h-[40rem]">
+            <Popover.Panel className=" fixed right-0 z-[51] -mt-8 w-full max-w-[40rem] transform px-0.5 sm:px-1 ">
+              <div className="max-h-[40rem] overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
                 <form
-                  className="w-full h-wull flex flex-wrap justify-center"
+                  className="h-wull flex w-full flex-wrap justify-center"
                   onSubmit={(e) => {
                     e.preventDefault();
                     router.replace(
@@ -127,17 +127,17 @@ export default function FiltersFlyoutMenu({
                     );
                   }}
                 >
-                  <div className="flex flex-col bg-white rounded-lg px-6 py-3">
+                  <div className="flex flex-col rounded-lg bg-white px-6 py-3">
                     {/* <div>PRICE RANGE SLIDER</div> */}
 
                     <h2 className="text-xl font-bold text-gray-800 ">
                       {" "}
                       Price Range
                     </h2>
-                    <p className="font-semibold text-md text-gray-700">
+                    <p className="text-md font-semibold text-gray-700">
                       Use slider or enter min and max price
                     </p>
-                    <div className="flex justify-between items-center my-1 mb-6 ">
+                    <div className="my-1 mb-6 flex items-center justify-between ">
                       <div className="rounded-md">
                         <span className="p-2 font-semibold"> Min</span>
                         <input
@@ -149,7 +149,7 @@ export default function FiltersFlyoutMenu({
                           value={minPrice.toLocaleString()}
                         />
                       </div>
-                      <div className="w-4 h-10 flex justify-center items-center mt-5 px-3 font-semibold">
+                      <div className="mt-5 flex h-10 w-4 items-center justify-center px-3 font-semibold">
                         -
                       </div>
                       <div className=" ">
@@ -167,14 +167,14 @@ export default function FiltersFlyoutMenu({
                     <div className="mb-4">
                       <div className="slider relative h-1 rounded-md bg-gray-300">
                         <div
-                          className="progress absolute h-1 bg-indigo-400 rounded "
+                          className="progress absolute h-1 rounded bg-indigo-400 "
                           ref={progressRef}
                         ></div>
                       </div>
 
                       <div className="range-input relative">
                         <input
-                          className="range-min absolute w-full -top-1 h-1 bg-transparent appearance-none pointer-events-none"
+                          className="range-min pointer-events-none absolute -top-1 h-1 w-full appearance-none bg-transparent"
                           onChange={handleMin}
                           type="range"
                           min={0}
@@ -184,7 +184,7 @@ export default function FiltersFlyoutMenu({
                         />
 
                         <input
-                          className="range-max absolute w-full -top-1 h-1 bg-transparent appearance-none pointer-events-none"
+                          className="range-max pointer-events-none absolute -top-1 h-1 w-full appearance-none bg-transparent"
                           onChange={handleMax}
                           type="range"
                           min={0}
@@ -197,11 +197,11 @@ export default function FiltersFlyoutMenu({
 
                     {/* <div>LISTING TYPE</div> */}
 
-                    <div className="w-full xl:w-[49%] flex justify-center mb-2">
+                    <div className="mb-2 flex w-full justify-center xl:w-[49%]">
                       <div className="relative w-full ">
                         <label
                           htmlFor="name"
-                          className="text-xl font-bold text-gray-800 mb-1"
+                          className="mb-1 text-xl font-bold text-gray-800"
                         >
                           Listing Type
                         </label>
@@ -214,18 +214,18 @@ export default function FiltersFlyoutMenu({
 
                     {/* <div>BEDROOMS</div> */}
 
-                    <div className="w-full xl:w-[49%] flex justify-center mb-2">
+                    <div className="mb-2 flex w-full justify-center xl:w-[49%]">
                       <div className="relative w-full ">
                         <label
                           htmlFor="name"
-                          className="text-xl font-bold text-gray-800 mb-1"
+                          className="mb-1 text-xl font-bold text-gray-800"
                         >
                           Bedrooms
                         </label>
-                        <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-2 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
+                        <div className=" relative inline flex w-full cursor-default rounded-md border border-gray-300 bg-white py-2 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl">
                           <button
                             type="button"
-                            className="w-[33%] flex justify-center items-center border-r border-gray-300 font-bold"
+                            className="flex w-[33%] items-center justify-center border-r border-gray-300 font-bold"
                             onClick={() => {
                               if (bedrooms >= 1) {
                                 setBedrooms(bedrooms - 1);
@@ -234,12 +234,12 @@ export default function FiltersFlyoutMenu({
                           >
                             -
                           </button>
-                          <div className="w-[33%] flex justify-center">
+                          <div className="flex w-[33%] justify-center">
                             {bedrooms}
                           </div>
                           <button
                             type="button"
-                            className="w-[33%] flex justify-center items-center border-l border-gray-300 font-bold"
+                            className="flex w-[33%] items-center justify-center border-l border-gray-300 font-bold"
                             onClick={() => setBedrooms(bedrooms + 1)}
                           >
                             +
@@ -250,18 +250,18 @@ export default function FiltersFlyoutMenu({
 
                     {/* <div>FULL BATHROOMS</div> */}
 
-                    <div className="w-full xl:w-[49%] flex justify-center mb-2">
+                    <div className="mb-2 flex w-full justify-center xl:w-[49%]">
                       <div className="relative w-full ">
                         <label
                           htmlFor="name"
-                          className="text-xl font-bold text-gray-800 mb-1"
+                          className="mb-1 text-xl font-bold text-gray-800"
                         >
                           Full Bathrooms
                         </label>
-                        <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-2 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
+                        <div className=" relative inline flex w-full cursor-default rounded-md border border-gray-300 bg-white py-2 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl">
                           <button
                             type="button"
-                            className="w-[33%] flex justify-center items-center border-r border-gray-300 font-bold"
+                            className="flex w-[33%] items-center justify-center border-r border-gray-300 font-bold"
                             onClick={() => {
                               if (fullBathrooms >= 1) {
                                 setFullBathrooms(fullBathrooms - 1);
@@ -270,12 +270,12 @@ export default function FiltersFlyoutMenu({
                           >
                             -
                           </button>
-                          <div className="w-[33%] flex justify-center">
+                          <div className="flex w-[33%] justify-center">
                             {fullBathrooms}
                           </div>
                           <button
                             type="button"
-                            className="w-[33%] flex justify-center items-center border-l border-gray-300 font-bold"
+                            className="flex w-[33%] items-center justify-center border-l border-gray-300 font-bold"
                             onClick={() => setFullBathrooms(fullBathrooms + 1)}
                           >
                             +
@@ -286,18 +286,18 @@ export default function FiltersFlyoutMenu({
 
                     {/* <div>HALF BATHROOMS</div> */}
 
-                    <div className="w-full xl:w-[49%] flex justify-center">
+                    <div className="flex w-full justify-center xl:w-[49%]">
                       <div className="relative w-full ">
                         <label
                           htmlFor="name"
-                          className="text-xl font-bold text-gray-800 mb-1"
+                          className="mb-1 text-xl font-bold text-gray-800"
                         >
                           Half Bathrooms
                         </label>
-                        <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-2 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
+                        <div className=" relative inline flex w-full cursor-default rounded-md border border-gray-300 bg-white py-2 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl">
                           <button
                             type="button"
-                            className="w-[33%] flex justify-center items-center border-r border-gray-300 font-bold"
+                            className="flex w-[33%] items-center justify-center border-r border-gray-300 font-bold"
                             onClick={() => {
                               if (halfBathrooms >= 1) {
                                 setHalfBathrooms(halfBathrooms - 1);
@@ -306,12 +306,12 @@ export default function FiltersFlyoutMenu({
                           >
                             -
                           </button>
-                          <div className="w-[33%] flex justify-center">
+                          <div className="flex w-[33%] justify-center">
                             {halfBathrooms}
                           </div>
                           <button
                             type="button"
-                            className="w-[33%] flex justify-center items-center border-l border-gray-300 font-bold"
+                            className="flex w-[33%] items-center justify-center border-l border-gray-300 font-bold"
                             onClick={() => setHalfBathrooms(halfBathrooms + 1)}
                           >
                             +
@@ -322,7 +322,7 @@ export default function FiltersFlyoutMenu({
                   </div>
                   <button
                     type="submit"
-                    className="inline ml-2 border-2 border-black h-10 px-2 rounded-lg bg-white mb-2"
+                    className="ml-2 mb-2 inline h-10 rounded-lg border-2 border-black bg-white px-2"
                   >
                     Apply Filters
                   </button>

@@ -3,11 +3,7 @@ import React, { useMemo, useState } from "react";
 import type { NextPageWithLayout } from "../_app";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ChevronDownIcon,
-  MagnifyingGlassIcon,
-  CalendarIcon,
-} from "@heroicons/react/20/solid";
+import { MagnifyingGlassIcon, CalendarIcon } from "@heroicons/react/20/solid";
 import GridIcon from "@/components/icons/grid";
 import {
   ListBulletIcon,
@@ -33,7 +29,7 @@ const Card = ({
   return (
     <div
       aria-labelledby={label}
-      className="shadow overflow-hidden border border-gray-300 rounded-md bg-white p-6"
+      className="overflow-hidden rounded-md border border-gray-300 bg-white p-6 shadow"
     >
       {children}
     </div>
@@ -59,7 +55,7 @@ const ProfileOverview = ({ user }: { user?: UserMeOutput }) => {
               className="h-20 w-20"
             />
           </div>
-          <div className=" text-center mt-4 sm:my-auto  sm:pt-1 sm:text-left">
+          <div className=" mt-4 text-center sm:my-auto  sm:pt-1 sm:text-left">
             <p className="text-sm font-medium text-gray-400">Welcome back,</p>
             <p className="text-xl font-bold sm:text-2xl">
               {user.name || user.email?.split("@")[0]}
@@ -76,7 +72,7 @@ function DashboardGridItem({ listing }: { listing: Listing }) {
     <li>
       <Link href={`/listing/${listing.slug}`}>
         <div className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
-          <div className="aspect-w-3 aspect-h-4 bg-gray-200 group-hover:opacity-75 sm:aspect-none h-60 ">
+          <div className="aspect-w-3 aspect-h-4 sm:aspect-none h-60 bg-gray-200 group-hover:opacity-75 ">
             <Image
               src={randomImage}
               alt="Listing"
@@ -121,7 +117,7 @@ function DashboardListItem({ listing }: { listing: Listing }) {
     <li className="mb-4">
       <Link
         href={`/listing/${listing.slug}`}
-        className="group flex hover:bg-gray-50 bg-white overflow-hidden shadow rounded-md"
+        className="group flex overflow-hidden rounded-md bg-white shadow hover:bg-gray-50"
       >
         <div className="w-[10rem] group-hover:opacity-75">
           <Image
@@ -129,13 +125,13 @@ function DashboardListItem({ listing }: { listing: Listing }) {
             width={256}
             height={0}
             alt=""
-            className="w-full h-full object-cover object-center"
+            className="h-full w-full object-cover object-center"
           />
         </div>
-        <div className="px-4 py-4 sm:px-6 w-full">
+        <div className="w-full px-4 py-4 sm:px-6">
           <h3 className="">{listing.name}</h3>
           <div className="flex items-center justify-between">
-            <p className="truncate text-sm font-medium text-indigo-600 w-40 sm:w-full">
+            <p className="w-40 truncate text-sm font-medium text-indigo-600 sm:w-full">
               {listing.bio}
             </p>
             <div className="ml-2 flex flex-shrink-0">
@@ -275,12 +271,12 @@ const DashboardPage: NextPageWithLayout = () => {
             </div>
           </div>
         </div>
-        <div className="inline-flex items-center justify-center relative border border-gray-300 rounded-md max-w-full select-none bg-white">
+        <div className="relative inline-flex max-w-full select-none items-center justify-center rounded-md border border-gray-300 bg-white">
           <button
             onClick={toggleListingViewMode}
             className={classNames(
               listingViewMode === "GRID" ? "" : "text-gray-300",
-              "h-10 w-10 p-2 border-r flex justify-center items-center"
+              "flex h-10 w-10 items-center justify-center border-r p-2"
             )}
           >
             <div className="sr-only">Grid view</div>
@@ -298,9 +294,9 @@ const DashboardPage: NextPageWithLayout = () => {
           </button>
         </div>
         <Link href="/new">
-          <button className="min-w-[120px] flex items-center justify-between bg-white border border-gray-300 py-2 px-4 rounded-md">
+          <button className="flex min-w-[120px] items-center justify-between rounded-md border border-gray-300 bg-white py-2 px-4">
             Add New
-            <PlusCircleIcon className="h-5 w-5 ml-2" />
+            <PlusCircleIcon className="ml-2 h-5 w-5" />
           </button>
         </Link>
       </div>

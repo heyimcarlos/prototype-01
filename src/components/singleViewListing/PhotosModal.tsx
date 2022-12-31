@@ -2,8 +2,8 @@ import { Fragment, useRef, type Dispatch, type SetStateAction } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Image, { type StaticImageData } from "next/image";
 
-import { CheckIcon } from "@heroicons/react/24/outline";
-import { ArrowsPointingInIcon } from "@heroicons/react/20/solid";
+// import { CheckIcon } from "@heroicons/react/24/outline";
+// import { ArrowsPointingInIcon } from "@heroicons/react/20/solid";
 
 type PhotosModalTypes = {
   setOpenPhotos: Dispatch<SetStateAction<boolean>>;
@@ -60,7 +60,7 @@ export default function PhotosModal({
                   </div>
                 </div> */}
                 <div
-                  className="w-full h-full bg-white"
+                  className="h-full w-full bg-white"
                   onClick={() => {
                     setOpenPhotos(false);
                   }}
