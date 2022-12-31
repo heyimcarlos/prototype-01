@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { debounce } from "lodash";
 import { useState } from "react";
 
 const useWindowSize = () => {
   const [width, setWidth] = useState<number>();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const windowListener = useCallback(
     debounce(() => {
       if (window) setWidth(window.innerWidth);
@@ -18,7 +19,7 @@ const useWindowSize = () => {
       window.addEventListener("resize", windowListener);
     }
     return () => window.removeEventListener("resize", windowListener);
-  }, []);
+  }, [windowListener]);
 
   return width;
 };

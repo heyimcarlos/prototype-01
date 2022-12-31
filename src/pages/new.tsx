@@ -4,11 +4,11 @@ import React, { useState } from "react";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
-import NewListingStep1 from "@/components/NewListingStep1";
-import NewListingStep2 from "@/components/NewListingStep2";
-import NewListingStep2Half from "@/components/NewListingStep2Half";
-import NewListingStep3 from "@/components/NewListingStep3";
-import NewListingStep4 from "@/components/NewListingStep4";
+import NewListingStep1 from "@/components/newListingComponents/NewListingStep1";
+import NewListingStep2 from "@/components/newListingComponents/NewListingStep2";
+import NewListingStep2Half from "@/components/newListingComponents/NewListingStep2Half";
+import NewListingStep3 from "@/components/newListingComponents/NewListingStep3";
+import NewListingStep4 from "@/components/newListingComponents/NewListingStep4";
 
 const New = () => {
   const [step, setStep] = useState("step 1");

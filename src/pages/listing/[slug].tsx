@@ -7,7 +7,7 @@ type Props = {
   query?: string;
 };
 
-const DashboardListing: NextPageWithLayout<Props> = (props) => {
+const DashboardListing: NextPageWithLayout<Props> = ({}) => {
   const { query } = useRouter();
   return <div>listing: {query.slug}</div>;
 };

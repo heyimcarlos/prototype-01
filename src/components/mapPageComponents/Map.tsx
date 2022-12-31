@@ -11,50 +11,41 @@ import MapboxMap, {
   type MapRef,
   type MapLayerMouseEvent,
   Marker,
-  PointLike,
 } from "react-map-gl";
-import { env } from "../env/client.mjs";
+import { env } from "../../env/client.mjs";
 import { trpc } from "@/utils/trpc";
 import type { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
 
-import {
-  Listing,
-  ListingLocation,
-  ListingLocationStatus,
-} from "@prisma/client";
+import { type Listing, type ListingLocation } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import slugify from "@/lib/slugify";
-import { transformIntToMoney } from "@/lib/transformInt";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-
 import { useSidebar } from "@/stores/useSidebar";
-import { useNeighborhoods } from "../stores/useNeighborhoods";
-
+import { useNeighborhoods } from "../../stores/useNeighborhoods";
 import { useGlobalShow } from "@/stores/useGlobalShow";
 import { useGlobalHide } from "@/stores/useGlobalHide";
-
-import DrawControl from "@/components/DrawControl";
-
-import { NavigationControl } from "react-map-gl";
-import Head from "next/head.js";
+import DrawControl from "@/components/mapPageComponents/DrawControl";
 import { useDrawShow } from "@/stores/useDrawShow";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 import { useDrawControls } from "@/stores/useDrawControls";
-
-import Image from "next/image.js";
-import toolTip from "../../public/assets/images/tooltip.png";
-import polyGif from "../../public/assets/images/ezgif.com-gif-maker (1).gif";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { BackspaceIcon } from "@heroicons/react/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { ArrowPathIcon, ListBulletIcon } from "@heroicons/react/20/solid";
-import MobileListingsSlideOver from "@/components/MobileListingsSlideOver";
+import MobileListingsSlideOver from "@/components/mapPageComponents/sidebars/MobileListingsSlideOver";
 import type { NeighborhoodsType } from "@/pages/map";
-import Trpc from "@/pages/api/trpc/[trpc].js";
+import useWindowSize from "@/hooks/useWindowSize";
+
+// import { NavigationControl } from "react-map-gl";
+// import Head from "next/head.js";
+// import Image from "next/image.js";
+// import toolTip from "../../public/assets/images/tooltip.png";
+// import polyGif from "../../public/assets/images/ezgif.com-gif-maker (1).gif";
+// import { BackspaceIcon } from "@heroicons/react/24/outline";
+import { useMemo } from "react";
 
 type MapProps = {
   initialViewport: {
@@ -62,7 +53,6 @@ type MapProps = {
     latitude: number;
     zoom: number;
   };
-  open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   mapRef: RefObject<MapRef>;
   neighborhoods: NeighborhoodsType;
@@ -73,97 +63,42 @@ type CustomMarkerPropsTypes = {
   onClick: ({ slug }: { slug: string }) => void;
   names: string[];
   mapRef?: RefObject<MapRef>;
+  curZoom: number | undefined;
 };
 
 const CustomMarker = ({
   neighborhood,
   onClick,
   names,
-}: CustomMarkerPropsTypes) => {
+}: // curZoom,
+CustomMarkerPropsTypes) => {
   const [show, setShow] = useState(true);
   const globalShow = useGlobalShow((state) => state.globalShow);
   const globalHide = useGlobalHide((state) => state.globalHide);
   const setGlobalShowFalse = useGlobalShow((state) => state.setGlobalShowFalse);
 
-  if (globalShow === true && show === false) setShow(true);
-
-  let amount = 0;
-  neighborhood.listingLocations.forEach((listingLocation) => {
-    if (listingLocation.listings.length > 1) {
-      amount += listingLocation.listings.length;
-    } else {
-      amount += 1;
+  // @TODO: refactor to align with react lifecycle.
+  // if (globalShow === true && show === false) setShow(true);
+  useEffect(() => {
+    if (globalShow && !show) {
+      setShow(true);
     }
-  });
+  }, [globalShow, show]);
 
-  // let space;
-  // const spaceOne: PointLike = [0, -10];
-  // const spaceTwo: PointLike = [0, -19];
-  // if (neighborhood.name === "Bella Vista") space = spaceOne;
-  // if (neighborhood.name === "Evaristo Morales") space = spaceTwo;
-  // if (neighborhood.name === "La Julia") space = spaceOne;
-  // if (neighborhood.name === "El Manguito") space = spaceTwo;
+  // @TODO: refactor to align with react lifecycle.
+  const amount = useMemo(() => {
+    let amount = 0;
+    neighborhood.listingLocations.forEach((listingLocation) => {
+      if (listingLocation.listings.length > 1) {
+        amount += listingLocation.listings.length;
+      } else {
+        amount += 1;
+      }
+    });
+    return amount;
+  }, [neighborhood.listingLocations]);
 
   const slug = neighborhood.slug;
-
-  return (
-    <>
-      {!globalHide && show && !names.includes(neighborhood.name) && (
-        <Marker
-          onClick={(e) => {
-            // e.originalEvent.cancelBubble
-            // e.originalEvent.preventDefault();
-            e.originalEvent.stopPropagation();
-            onClick({ slug });
-            setShow(false);
-            setGlobalShowFalse();
-          }}
-          anchor="bottom"
-          key={`marker-${neighborhood.id}`}
-          latitude={parseFloat(neighborhood.lat)}
-          longitude={parseFloat(neighborhood.lng)}
-          // offset={space}
-        >
-          <div className="bg-indigo-600 cursor-pointer w-10 h-10 rounded-full flex justify-center items-center">
-            <span className="text-sm font-semibold text-white">{amount}</span>
-          </div>
-        </Marker>
-      )}
-    </>
-  );
-};
-
-const CustomMarker2 = ({
-  neighborhood,
-  onClick,
-  names,
-  curZoom,
-}: CustomMarkerPropsTypes) => {
-  const [show, setShow] = useState(true);
-  const globalShow = useGlobalShow((state) => state.globalShow);
-  const globalHide = useGlobalHide((state) => state.globalHide);
-  const setGlobalShowFalse = useGlobalShow((state) => state.setGlobalShowFalse);
-
-  if (globalShow === true && show === false) setShow(true);
-
-  let amount = 0;
-  neighborhood.listingLocations.forEach((listingLocation) => {
-    if (listingLocation.listings.length > 1) {
-      amount += listingLocation.listings.length;
-    } else {
-      amount += 1;
-    }
-  });
-
-  const slug = neighborhood.slug;
-
-  let display;
-
-  if (curZoom > 13) {
-    display = { display: "inline" };
-  } else {
-    display = { display: "none" };
-  }
 
   return (
     <>
@@ -180,10 +115,15 @@ const CustomMarker2 = ({
           latitude={parseFloat(neighborhood.lat)}
           longitude={parseFloat(neighborhood.lng)}
           offset={[0, 33]}
-          style={display}
+          style={{ display: "inline" }}
         >
-          <div className="p-1 px-2 cursor-pointer rounded-full flex justify-center items-center bg-white border-2 border-indigo-600 marker">
-            <span className="text-[12px] font-bold">{neighborhood.name}</span>
+          <div className="marker flex cursor-pointer items-center justify-center rounded-full border-2 border-indigo-600 bg-white p-2 px-2">
+            <span className="text-[13px] font-bold">
+              <div className="mr-1 inline rounded-full border-2 border-indigo-600 bg-indigo-600 p-1 px-2 text-white">
+                {amount}
+              </div>
+              {neighborhood.name}
+            </span>
           </div>
         </Marker>
       )}
@@ -201,8 +141,6 @@ const Map = ({
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
 
   const [curListingId, setCurListingId] = useState("");
-
-  const [drawPolyToolTip, setDrawPolyToolTip] = useState(false);
 
   const setListings = useSidebar((state) => state.setListings);
 
@@ -234,11 +172,21 @@ const Map = ({
   const setSearchFalse = useDrawControls((state) => state.setSearchFalse);
 
   const setListing = useSelectedListing((state) => state.setListing);
+  const setDirection = useSelectedListing((state) => state.setDirection);
   const setNeighborhood = useSelectedListing((state) => state.setNeighborhood);
 
   const setSelectedListings = useSelectedListing((state) => state.setListings);
+  const setListingAddress = useSelectedListing(
+    (state) => state.setListingAddress
+  );
 
   const [listSlide, setListSlide] = useState(false);
+
+  const width = useWindowSize();
+  let notMobile: boolean;
+  if (width) {
+    notMobile = width > 425;
+  }
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -264,7 +212,6 @@ const Map = ({
 
   const neighborhoodMutation = trpc.map.public.getNeighborhood.useMutation({
     onSuccess: (data) => {
-      // console.log("data", data);
       if (!names.includes(data.name)) {
         addNeighborhood({
           name: data.name,
@@ -336,6 +283,7 @@ const Map = ({
         });
       }
     }
+    console.log("listingLocations from Drag", listingsLocations);
     const flattened = listingsLocations.flat();
     setListings(flattened);
   };
@@ -425,25 +373,11 @@ const Map = ({
     setDrawShowFalse();
   };
 
-  // console.log("sectors", neighborhoodsState[0]?.bounds);
-
-  // const [curZoom, setCurZoom] = useState(0);
-
-  // mapRef?.current?.on("zoom", () => {
-  // const markers = document.getElementsByName("marker")[0];
-  // markers.
-  // console.log("marker 1", markers);
-  //  const scalePercent = 1 + (mapRef?.current?.getZoom() - 8) * 0.4;
-  //  const svgElement = marker.getElement().children[0];
-  //  svgElement.style.transform = `scale(${scalePercent})`;
-  //  svgElement.style.transformOrigin = "bottom";
-  // });
-
   const [curZoom, setCurZoom] = useState<number | undefined>(0);
 
   return (
     <>
-      <div className="w-full h-full">
+      <div className="h-full w-full">
         <MapboxMap
           id="mapa"
           ref={mapRef}
@@ -464,21 +398,7 @@ const Map = ({
             setCurZoom(e.viewState.zoom);
           }}
         >
-          {/* <Marker
-            latitude={18.445770384723648}
-            longitude={-69.96954362555962}
-            style={{
-              fontSize: "18px",
-              fontWeight: "700",
-              color: "#465c85",
-              fontFamily: "DIN PRO BOLD",
-              // fontFamily: "DIN PRO BOLD",
-            }}
-          >
-            RENACIMIENTO
-          </Marker> */}
-
-          <div className="h-full w-full flex justify-center items-start">
+          <div className="flex h-full w-full items-start justify-center">
             <button
               onClick={() => {
                 setDrawShowTrue();
@@ -495,7 +415,7 @@ const Map = ({
                 }
               }}
               className={
-                "absolute z-19 p-2 px-3 bg-[#ffffff] text-black m-2 rounded-lg border-2 border-black text-xs"
+                "z-19 absolute m-2 rounded-lg border-2 border-black bg-[#ffffff] p-2 px-3 text-xs text-black"
               }
             >
               {search ? "Search this area" : "Draw"}
@@ -505,7 +425,7 @@ const Map = ({
               if (neighborhood.name === "Custom Boundary") {
                 return (
                   <button
-                    className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 ml-[7.4rem] rounded-lg border-2 border-black"
+                    className="absolute z-20 mt-2 ml-[7.4rem] rounded-lg border-2 border-black bg-[#ffffff] p-2 px-3 text-black"
                     key={neighborhood.name}
                     onClick={() => {
                       deleteThisSector(neighborhood);
@@ -520,7 +440,7 @@ const Map = ({
 
             {drawShow && (
               <button
-                className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 mr-[11rem] rounded-lg border-2 border-black"
+                className="absolute z-20 mt-2 mr-[11rem] rounded-lg border-2 border-black bg-[#ffffff] p-2 px-3 text-black"
                 onClick={() => {
                   setDrawShowFalse();
                   setTimeout(() => {
@@ -541,7 +461,7 @@ const Map = ({
 
             {drawShow && (
               <button
-                className="absolute z-20 p-2 px-3 bg-[#ffffff] text-black mt-2 ml-[11rem] rounded-lg border-2 border-black"
+                className="absolute z-20 mt-2 ml-[11rem] rounded-lg border-2 border-black bg-[#ffffff] p-2 px-3 text-black"
                 onClick={() => {
                   setSearchFalse();
                   setGlobalHideFalse();
@@ -553,7 +473,7 @@ const Map = ({
             )}
 
             <div
-              className="absolute z-19 bottom-0 p-2 px-3 bg-[#ffffff] text-black m-2 rounded-lg border-2 border-black text-xs"
+              className="z-19 absolute bottom-0 m-2 rounded-lg border-2 border-black bg-[#ffffff] p-2 px-3 text-xs text-black"
               // className="bg-white w-full h-10 absolute bottom-0 z-10 rounded-tr-2xl rounded-tl-2xl flex justify-center items-center"
               onClick={() => {
                 setListSlide(true);
@@ -594,7 +514,7 @@ const Map = ({
             )}
           </div> */}
 
-          {/* 
+          {/*
           <NavigationControl
             position="top-left"
             style={{ marginBottom: "2rem" }}
@@ -625,19 +545,24 @@ const Map = ({
 
           {/* INFO: NEIGHBORHOODS MARKERS FOR THE MAIN CLUSTERS */}
 
-          {neighborhoods?.map((neighborhood) => (
+          {neighborhoods?.map((neighborhood) => {
+            if (neighborhood.listingLocations.length > 0) {
+              return (
+                <CustomMarker
+                  key={`marker-${neighborhood.id}`}
+                  neighborhood={neighborhood}
+                  onClick={() => {
+                    const slug = neighborhood.slug;
+                    neighborhoodMutation.mutate({ slug });
+                  }}
+                  names={names}
+                  curZoom={curZoom}
+                />
+              );
+            }
+          })}
+          {/* {neighborhoods?.map((neighborhood) => (
             <CustomMarker
-              key={`marker-${neighborhood.id}`}
-              neighborhood={neighborhood}
-              onClick={() => {
-                const slug = neighborhood.slug;
-                neighborhoodMutation.mutate({ slug });
-              }}
-              names={names}
-            />
-          ))}
-          {neighborhoods?.map((neighborhood) => (
-            <CustomMarker2
               key={`marker-${neighborhood.id}`}
               neighborhood={neighborhood}
               onClick={() => {
@@ -647,7 +572,7 @@ const Map = ({
               names={names}
               curZoom={curZoom}
             />
-          ))}
+          ))} */}
 
           {/* @INFO: LISTINGLOCATIONS MARKERS WITHIN NEIGHBORHOOD BOUNDS */}
 
@@ -665,13 +590,16 @@ const Map = ({
                     e.originalEvent.stopPropagation();
                     if (!listingLocation.listings[0]) return;
                     if (listingLocation.listings.length < 2) {
+                      setDirection("right");
                       setListing(listingLocation.listings[0]);
+                      if (notMobile) setOpen(true);
                       setSelectedListings([]);
                       setNeighborhood(
                         neighborhood.name === "Custom Boundary"
                           ? neighborhoodName
                           : neighborhood.name
                       );
+                      setListingAddress(listingLocation.name);
                     } else {
                       setListing(null);
                       setSelectedListings(listingLocation.listings);
@@ -680,6 +608,7 @@ const Map = ({
                           ? neighborhoodName
                           : neighborhood.name
                       );
+                      setListingAddress(listingLocation.name);
                     }
                   }}
                   latitude={parseFloat(listingLocation.lat)}
@@ -687,7 +616,7 @@ const Map = ({
                   key={`listing-${listingLocation.id}`}
                 >
                   <div
-                    className={`bg-green-500 cursor-pointer py-1 px-2 rounded-full flex justify-center items-center border-[0.05rem] border-black`}
+                    className={`flex cursor-pointer items-center justify-center rounded-full border-[0.05rem] border-black bg-green-500 py-1 px-2`}
                     style={{
                       opacity: curListingId
                         ? Number(curListingId) === listingLocation.id

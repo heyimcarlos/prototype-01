@@ -1,10 +1,10 @@
+/* eslint-disable @next/next/no-page-custom-font */
 import Head from "next/head";
 import type { NextPageWithLayout } from "@/pages/_app";
 import Section1 from "@/components/home/section-1";
 import AppLayout from "@/components/layouts/AppLayout";
 
 const Home: NextPageWithLayout = () => {
-
   return (
     <>
       <Head>
@@ -13,6 +13,7 @@ const Home: NextPageWithLayout = () => {
         <link rel="icon" href="/favicon.ico" />
 
         <link key="4" rel="preconnect" href="https://fonts.gstatic.com" />
+        {/* @TODO: move font loading to _document */}
         <link
           key="3"
           href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap"
@@ -20,12 +21,12 @@ const Home: NextPageWithLayout = () => {
         />
       </Head>
       <>
-          <Section1 />
-          <div>Check this cool houses</div>
-        </>
+        <Section1 />
+        <div>Check this cool houses</div>
+      </>
     </>
   );
-}
+};
 
 Home.layout = AppLayout;
 

@@ -3,6 +3,15 @@ import { CSS } from "@dnd-kit/utilities";
 import { ChevronUpDownIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import React from "react";
 
+type SortableItemTypes = {
+  id: string;
+  amen: string;
+  amenities: string[];
+  setAmenities: (param: string[]) => void;
+  selectedAmenities: string[];
+  setSelectedAmenities: (param: string[]) => void;
+};
+
 const SortableItem = ({
   id,
   amen,
@@ -10,7 +19,7 @@ const SortableItem = ({
   setAmenities,
   selectedAmenities,
   setSelectedAmenities,
-}) => {
+}: SortableItemTypes) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: id });
 

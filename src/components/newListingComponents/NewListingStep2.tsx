@@ -1,9 +1,13 @@
-import React from "react";
-import PropertyTypeSelect from "@/components/PropertyTypeSelect";
-import PropertyConditionSelect from "@/components/PropertyConditionSelect";
+import React, { type Dispatch, type SetStateAction } from "react";
+import PropertyTypeSelect from "@/components/newListingComponents/formComponents/PropertyTypeSelect";
+import PropertyConditionSelect from "@/components/newListingComponents/formComponents/PropertyConditionSelect";
 import { useNewListing } from "@/stores/useNewListing";
 
-const NewListingStep2 = ({ setStep }) => {
+type StepType = {
+  setStep: Dispatch<SetStateAction<string>>;
+};
+
+const NewListingStep2 = ({ setStep }: StepType) => {
   const setRecordName = useNewListing((state) => state.setRecordName);
   const recordName = useNewListing((state) => state.recordName);
 

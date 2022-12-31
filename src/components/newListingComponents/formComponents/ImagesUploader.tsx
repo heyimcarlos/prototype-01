@@ -2,13 +2,14 @@ import { useFilesReader } from "@/hooks/useFileReader";
 import { TrashIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { type DragEvent, useState, useRef } from "react";
-import { type FileEvent } from "./ImageUploader";
+import { type FileEvent } from "../../ImageUploader";
 
 const MAX_FILE_AMOUNT = 10;
 // type ImagesUploaderProps = {};
 
 export function ImagesUploader() {
-  const [inDropZone, setInDropZone] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setInDropZone] = useState<boolean>(false);
   const fileInputRef = useRef("");
 
   const [{ results, files }, setFiles, deleteFile] = useFilesReader({
@@ -90,7 +91,7 @@ export function ImagesUploader() {
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        className="flex justify-center rounded-md border-2 border-dashed border-gray-300 my-6 px-6 pt-5 pb-6"
+        className="my-6 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6"
       >
         <div className="space-y-1 text-center">
           <svg
@@ -140,15 +141,15 @@ export function ImagesUploader() {
                   key={`result-${idx}`}
                   className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white"
                 >
-                  <div className="absolute right-0 m-2 z-10 ">
+                  <div className="absolute right-0 z-10 m-2 ">
                     <button
                       onClick={() => deleteFile(result.name)}
-                      className="flex items-center p-2 bg-gray-500 rounded-full"
+                      className="flex items-center rounded-full bg-gray-500 p-2"
                     >
-                      <TrashIcon className="w-5 h-5 opacity-100 text-white" />
+                      <TrashIcon className="h-5 w-5 text-white opacity-100" />
                     </button>
                   </div>
-                  <div className="aspect-w-3 aspect-h-4 bg-gray-200 group-hover:opacity-75 sm:aspect-none h-60 ">
+                  <div className="aspect-w-3 aspect-h-4 sm:aspect-none h-60 bg-gray-200 group-hover:opacity-75 ">
                     <Image
                       src={result.data}
                       alt=""

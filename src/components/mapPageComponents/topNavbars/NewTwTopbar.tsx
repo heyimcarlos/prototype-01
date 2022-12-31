@@ -1,27 +1,10 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
 import Link from "next/link";
 
-// function classNames(...classes) {
-//   return classes.filter(Boolean).join(" ");
-// }
+// import Image from "next/image";
 
 export default function NewTwTopbar() {
   return (
@@ -31,17 +14,17 @@ export default function NewTwTopbar() {
           <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
             <div className="flex h-[3rem] justify-between">
               <div className="flex px-2 lg:px-0">
-                <div className="flex flex-shrink-0 items-center -ml-[0.5rem] -mt-[0.1rem] -mr-[0.5rem]">
+                <div className="-ml-[0.5rem] -mt-[0.1rem] -mr-[0.5rem] flex flex-shrink-0 items-center">
                   <Link href="/" className="">
                     <span className="sr-only">ntornos</span>
-                    <div className="font-['Libre_Baskerville'] text-3xl ml-0 inline md:text-3xl md:-ml-1">
+                    <div className="ml-0 inline font-['Libre_Baskerville'] text-3xl md:-ml-1 md:text-3xl">
                       <span className="text-indigo-600">n</span>
                       <span className="text-black">tornos</span>
                     </div>
                   </Link>
                 </div>
 
-                <div className="flex flex-1 items-center justify-center px-2 lg:ml-6 lg:justify-end ml-2 -mr-[1.6rem]">
+                <div className="ml-2 -mr-[1.6rem] flex flex-1 items-center justify-center px-2 lg:ml-6 lg:justify-end">
                   <div className="w-full max-w-lg lg:max-w-xs">
                     <label htmlFor="search" className="sr-only">
                       Search
@@ -118,11 +101,11 @@ export default function NewTwTopbar() {
                   <div>
                     <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                       <span className="sr-only">Open user menu</span>
-                      <img
+                      {/* <img
                         className="h-8 w-8 rounded-full"
                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                         alt=""
-                      />
+                      /> */}
                     </Menu.Button>
                   </div>
                   <Transition
@@ -178,7 +161,7 @@ export default function NewTwTopbar() {
             </div>
           </div>
 
-          <Disclosure.Panel className="lg:hidden fixed z-[52] bg-white w-full border-b-2">
+          <Disclosure.Panel className="fixed z-[52] w-full border-b-2 bg-white lg:hidden">
             <div className="space-y-1 pt-2 pb-3">
               {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800" */}
               <Disclosure.Button
@@ -213,11 +196,11 @@ export default function NewTwTopbar() {
             <div className="border-t border-gray-200 pt-4 pb-3">
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
-                  <img
+                  {/* <img
                     className="h-10 w-10 rounded-full"
                     src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                     alt=""
-                  />
+                  /> */}
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">
