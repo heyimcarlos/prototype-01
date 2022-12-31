@@ -141,7 +141,13 @@ const publicMapRouter = router({
           slug: input.slug,
         },
         include: {
-          listingLocations: { include: { listings: true } },
+          listingLocations: {
+            include: {
+              listings: {
+                include: { listingDetail: true, listingLocation: true },
+              },
+            },
+          },
         },
       });
 
