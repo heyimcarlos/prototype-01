@@ -18,7 +18,12 @@ import type { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
 
-import { type Listing, type ListingLocation } from "@prisma/client";
+import {
+  type ListingDetail,
+  type Neighborhood,
+  type Listing,
+  type ListingLocation,
+} from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import slugify from "@/lib/slugify";
 
@@ -31,12 +36,15 @@ import DrawControl from "@/components/mapPageComponents/DrawControl";
 import { useDrawShow } from "@/stores/useDrawShow";
 import { useShowCustomSearch } from "@/stores/useShowCustomSearch";
 import { useDrawControls } from "@/stores/useDrawControls";
-import { useSelectedListing } from "@/stores/useSelectedListing";
+import {
+  type ListingWithListingDetail,
+  useSelectedListing,
+} from "@/stores/useSelectedListing";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { ArrowPathIcon, ListBulletIcon } from "@heroicons/react/20/solid";
 import MobileListingsSlideOver from "@/components/mapPageComponents/sidebars/MobileListingsSlideOver";
-import type { NeighborhoodsType } from "@/pages/map";
+
 import useWindowSize from "@/hooks/useWindowSize";
 
 // import { NavigationControl } from "react-map-gl";
@@ -55,7 +63,13 @@ type MapProps = {
   };
   setOpen: Dispatch<SetStateAction<boolean>>;
   mapRef: RefObject<MapRef>;
-  neighborhoods: NeighborhoodsType;
+  neighborhoods: (Neighborhood & {
+    listingLocations: (ListingLocation & {
+      listings: (Listing & {
+        listingDetail: ListingDetail | null;
+      })[];
+    })[];
+  })[];
 };
 
 type CustomMarkerPropsTypes = {
@@ -215,20 +229,24 @@ const Map = ({
       if (!names.includes(data.name)) {
         addNeighborhood({
           name: data.name,
-          bounds: data.bounds,
+          bounds: data.bounds as Position[],
           listingLocations: data.listingLocations,
         });
       }
+      // if (!names.includes(data.name)) {
+      //   addNeighborhood(data);
+      // }
 
       const neighborhoodAsFeature = transformPlaceToFeature(data);
       if (neighborhoodAsFeature) fitBounds(neighborhoodAsFeature);
 
       const listings: (ListingLocation & {
-        listings: Listing[];
+        listings: ListingWithListingDetail[];
       })[] = [];
       data.listingLocations.map((listingLocation) => {
         listings.push(listingLocation);
       });
+      console.log("listings from getNeighborhood", listings);
       setListings(listings);
     },
   });
@@ -267,7 +285,9 @@ const Map = ({
     if (!mapRef.current) return;
     const map = mapRef.current.getMap();
     const bounds = map.getBounds();
-    const listingsLocations: (ListingLocation & { listings: Listing[] })[] = [];
+    const listingsLocations: (ListingLocation & {
+      listings: ListingWithListingDetail[];
+    })[] = [];
     for (const neighborhood of neighborhoods) {
       if (
         bounds.contains({
@@ -341,7 +361,8 @@ const Map = ({
     if (!mapRef.current) return;
     const map = mapRef.current.getMap();
     const bounds = map.getBounds();
-    const customListings = [] as (ListingLocation & { listings: Listing[] })[];
+    const customListings: MapProps["neighborhoods"][number]["listingLocations"] =
+      [];
 
     for (const neighborhood of neighborhoods) {
       if (
@@ -363,7 +384,7 @@ const Map = ({
       }
     }
 
-    if (customPolyBounds && !names.includes("Custom Boundary")) {
+    if (customPolyBounds?.[0] && !names.includes("Custom Boundary")) {
       addNeighborhood({
         name: "Custom Boundary",
         bounds: customPolyBounds[0],
@@ -544,6 +565,7 @@ const Map = ({
           )}
 
           {/* INFO: NEIGHBORHOODS MARKERS FOR THE MAIN CLUSTERS */}
+          {/* INFO: SHOWING ONLY THE ONES THAT HAVE LISTING LOCATIONS INSIDE */}
 
           {neighborhoods?.map((neighborhood) => {
             if (neighborhood.listingLocations.length > 0) {
@@ -561,6 +583,9 @@ const Map = ({
               );
             }
           })}
+
+          {/* INFO: SHOWING ALL THE NEIGHBORHOODS EVEN IF THEY DONT HAVE LISTING LOCATIONS INSIDE */}
+
           {/* {neighborhoods?.map((neighborhood) => (
             <CustomMarker
               key={`marker-${neighborhood.id}`}
@@ -591,7 +616,12 @@ const Map = ({
                     if (!listingLocation.listings[0]) return;
                     if (listingLocation.listings.length < 2) {
                       setDirection("right");
+                      // if(listingLocation.listings[0].listingDetail.)
                       setListing(listingLocation.listings[0]);
+                      console.log(
+                        "listing from neighborhoodState",
+                        listingLocation.listings[0]
+                      );
                       if (notMobile) setOpen(true);
                       setSelectedListings([]);
                       setNeighborhood(

@@ -1,19 +1,19 @@
+import { type GetNeighborhoodOutput } from "@/server/trpc/router/map";
+
 import type { Listing, ListingLocation } from "@prisma/client";
+import { type Position } from "@turf/turf";
 import type { JSONValue } from "superjson/dist/types";
 import create from "zustand";
 
+type CustomNeighborhoodType = {
+  name: string;
+  bounds: Position[];
+  listingLocations: GetNeighborhoodOutput["listingLocations"];
+};
+
 type NeighborhoodsState = {
-  neighborhoods: {
-    name: string;
-    bounds: JSONValue;
-    listingLocations: (ListingLocation & { listings: Listing[] })[];
-    // listings: (Listing & { location: Coordinate })[];
-  }[];
-  addNeighborhood: (neighborhoods: {
-    name: string;
-    bounds: JSONValue;
-    listingLocations: (ListingLocation & { listings: Listing[] })[];
-  }) => void;
+  neighborhoods: CustomNeighborhoodType[];
+  addNeighborhood: (neighborhood: CustomNeighborhoodType) => void;
   deleteAllNeighborhoods: () => void;
   deleteThisNeighborhood: (
     neighborhood:

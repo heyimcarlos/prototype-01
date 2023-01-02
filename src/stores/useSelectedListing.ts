@@ -1,11 +1,19 @@
-import type { Listing } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import create from "zustand";
 
+const listingWithListingDetail = Prisma.validator<Prisma.ListingArgs>()({
+  include: { listingDetail: true },
+});
+
+export type ListingWithListingDetail = Prisma.ListingGetPayload<
+  typeof listingWithListingDetail
+>;
+
 export type SelectedListingState = {
-  listing: Listing | null;
-  setListing: (listing: Listing | null) => void;
-  listings: Listing[];
-  setListings: (listings: Listing[]) => void;
+  listing: ListingWithListingDetail | null;
+  setListing: (listing: ListingWithListingDetail | null) => void;
+  listings: ListingWithListingDetail[];
+  setListings: (listings: ListingWithListingDetail[]) => void;
   neighborhood: string;
   setNeighborhood: (neighborhood: string) => void;
   listingAddress: string;

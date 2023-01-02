@@ -5,6 +5,8 @@ import * as turf from "@turf/turf";
 import { env } from "@/env/client.mjs";
 import { mapPreference } from "@/lib/types/mapPreferences";
 import { TRPCError } from "@trpc/server";
+// import { Router } from "next/router";
+import { type RouterOutputs } from "@/utils/trpc";
 
 const mapboxApiUrl = "https://api.mapbox.com/directions/v5/mapbox";
 const PreferenceObjectValidator = z.object({
@@ -144,7 +146,7 @@ const publicMapRouter = router({
           listingLocations: {
             include: {
               listings: {
-                include: { listingDetail: true, listingLocation: true },
+                include: { listingDetail: true },
               },
             },
           },
@@ -233,3 +235,6 @@ export const mapRouter = mergeRouters(
     public: publicMapRouter,
   })
 );
+
+export type GetNeighborhoodOutput =
+  RouterOutputs["map"]["public"]["getNeighborhood"];
