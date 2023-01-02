@@ -1,85 +1,105 @@
 import create from "zustand";
 
 export type NewListingState = {
-  placeId: string;
-  setPlaceId: (param: string) => void;
-  fullAddress: string;
-  setFullAddress: (param: string) => void;
   name: string;
-  setName: (param: string) => void;
   lat: number;
-  setLat: (param: number) => void;
   lng: number;
-  setLng: (param: number) => void;
-  hide: boolean;
-  setHide: (param: boolean) => void;
+  fullAddress: string;
+  placeId: string;
   sector: string;
-  setSector: (param: string) => void;
+  hide: boolean;
+
   recordName: string;
-  setRecordName: (param: string) => void;
-  propertyType: string;
-  setPropertyType: (param: string) => void;
-  condition: string;
-  setCondition: (param: string) => void;
-  bedrooms: number;
-  setBedrooms: (param: number) => void;
-  fullBathrooms: number;
-  setFullBathrooms: (param: number) => void;
-  halfBathrooms: number;
-  setHalfBathrooms: (param: number) => void;
-  meters: number;
-  setMeters: (param: number) => void;
-  maintenance: number;
-  setMaintenance: (param: number) => void;
   price: number;
+  bedrooms: number;
+  fullBathrooms: number;
+  halfBathrooms: number;
+  meters: number;
+  propertyType: string;
+  selectedBuildingAmenities: string[];
+  selectedInteriorAmenities: string[];
+  selectedExteriorAmenities: string[];
+  
+  condition: string;
+  maintenance: number;
+  
+  setName: (param: string) => void;
+  setLat: (param: number) => void;
+  setLng: (param: number) => void;
+  setFullAddress: (param: string) => void;
+  setPlaceId: (param: string) => void;
+  setSector: (param: string) => void;
+  setHide: (param: boolean) => void;
+  
+  setRecordName: (param: string) => void;
   setPrice: (param: number) => void;
+  setBedrooms: (param: number) => void;
+  setFullBathrooms: (param: number) => void;
+  setHalfBathrooms: (param: number) => void;
+  setMeters: (param: number) => void;
+  setPropertyType: (param: string) => void;
+  setSelectedBuildingAmenities: (param: string[]) => void;
+  setSelectedInteriorAmenities: (param: string[]) => void;
+  setSelectedExteriorAmenities: (param: string[]) => void;
+  
+  setCondition: (param: string) => void;
+  setMaintenance: (param: number) => void;
+  
   buildingAmenities: string[];
   setBuildingAmenities: (param: string[]) => void;
-  selectedBuildingAmenities: string[];
-  setSelectedBuildingAmenities: (param: string[]) => void;
   interiorAmenities: string[];
   setInteriorAmenities: (param: string[]) => void;
-  selectedInteriorAmenities: string[];
-  setSelectedInteriorAmenities: (param: string[]) => void;
   exteriorAmenities: string[];
   setExteriorAmenities: (param: string[]) => void;
-  selectedExteriorAmenities: string[];
-  setSelectedExteriorAmenities: (param: string[]) => void;
 };
 
 export const useNewListing = create<NewListingState>((set) => ({
-  placeId: "",
-  setPlaceId: (param) => set(() => ({ placeId: param })),
-  fullAddress: "",
-  setFullAddress: (param) => set(() => ({ fullAddress: param })),
   name: "",
-  setName: (param) => set(() => ({ name: param })),
   lat: 0,
-  setLat: (param) => set(() => ({ lat: param })),
   lng: 0,
-  setLng: (param) => set(() => ({ lng: param })),
-  hide: false,
-  setHide: (param) => set(() => ({ hide: param })),
+  fullAddress: "",
+  placeId: "",
   sector: "",
-  setSector: (param) => set(() => ({ sector: param })),
+  hide: false,
+
   recordName: "",
-  setRecordName: (param) => set(() => ({ recordName: param })),
-  propertyType: "",
-  setPropertyType: (param) => set(() => ({ propertyType: param })),
-  condition: "",
-  setCondition: (param) => set(() => ({ condition: param })),
-  bedrooms: 0,
-  setBedrooms: (param) => set(() => ({ bedrooms: param })),
-  fullBathrooms: 0,
-  setFullBathrooms: (param) => set(() => ({ fullBathrooms: param })),
-  halfBathrooms: 0,
-  setHalfBathrooms: (param) => set(() => ({ halfBathrooms: param })),
-  meters: 0,
-  setMeters: (param) => set(() => ({ meters: param })),
-  maintenance: 0,
-  setMaintenance: (param) => set(() => ({ maintenance: param })),
   price: 0,
+  bedrooms: 0,
+  fullBathrooms: 0,
+  halfBathrooms: 0,
+  meters: 0,
+  propertyType: "",
+  selectedBuildingAmenities: [],
+  selectedInteriorAmenities: [],
+  selectedExteriorAmenities: [],
+  
+  setName: (param) => set(() => ({ name: param })),
+  setLat: (param) => set(() => ({ lat: param })),
+  setLng: (param) => set(() => ({ lng: param })),
+  setFullAddress: (param) => set(() => ({ fullAddress: param })),
+  setPlaceId: (param) => set(() => ({ placeId: param })),
+  setSector: (param) => set(() => ({ sector: param })),
+  setHide: (param) => set(() => ({ hide: param })),
+  
+  setRecordName: (param) => set(() => ({ recordName: param })),
   setPrice: (param) => set(() => ({ price: param })),
+  setBedrooms: (param) => set(() => ({ bedrooms: param })),
+  setFullBathrooms: (param) => set(() => ({ fullBathrooms: param })),
+  setHalfBathrooms: (param) => set(() => ({ halfBathrooms: param })),
+  setMeters: (param) => set(() => ({ meters: param })),
+  setPropertyType: (param) => set(() => ({ propertyType: param })),
+  setSelectedBuildingAmenities: (param) =>
+  set(() => ({ selectedBuildingAmenities: param })),
+  setSelectedInteriorAmenities: (param) =>
+  set(() => ({ selectedInteriorAmenities: param })),
+  setSelectedExteriorAmenities: (param) =>
+    set(() => ({ selectedExteriorAmenities: param })),
+  
+  condition: "",
+  maintenance: 0,
+  setCondition: (param) => set(() => ({ condition: param })),
+  setMaintenance: (param) => set(() => ({ maintenance: param })),
+  
   buildingAmenities: [
     "Año de constr. ",
     "Piso ",
@@ -112,9 +132,6 @@ export const useNewListing = create<NewListingState>((set) => ({
     "Airbnb friendly",
   ],
   setBuildingAmenities: (param) => set(() => ({ buildingAmenities: param })),
-  selectedBuildingAmenities: [],
-  setSelectedBuildingAmenities: (param) =>
-    set(() => ({ selectedBuildingAmenities: param })),
   interiorAmenities: [
     "Linea blanca",
     "Calentador",
@@ -128,9 +145,6 @@ export const useNewListing = create<NewListingState>((set) => ({
     "Comedor",
   ],
   setInteriorAmenities: (param) => set(() => ({ interiorAmenities: param })),
-  selectedInteriorAmenities: [],
-  setSelectedInteriorAmenities: (param) =>
-    set(() => ({ selectedInteriorAmenities: param })),
   exteriorAmenities: [
     "Parqueo rotonda",
     "Ventanas rodantes",
@@ -138,7 +152,4 @@ export const useNewListing = create<NewListingState>((set) => ({
     "Palmas en la entrada",
   ],
   setExteriorAmenities: (param) => set(() => ({ exteriorAmenities: param })),
-  selectedExteriorAmenities: [],
-  setSelectedExteriorAmenities: (param) =>
-    set(() => ({ selectedExteriorAmenities: param })),
 }));

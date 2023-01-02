@@ -56,17 +56,17 @@ const loggedInListingRouter = router({
 
     const listing = await ctx.prisma.listing.create({
       data: {
+        name: input.name,
+        propertyType: input.propertyType,
+        currency: input.currency,
+        price: input.price,
+        squareFeet: input.squareFeet,
         bedrooms: input.bedrooms,
-        bio: input.bio,
         fullBathrooms: input.fullBathrooms,
         halfBathrooms: input.halfBathrooms,
-        price: input.price,
-        currency: input.currency,
-        name: input.name,
+        bio: input.bio,
         slug: slugify(input.name),
-        squareFeet: input.squareFeet,
         listingType: input.listingType,
-        propertyType: input.propertyType,
         user: {
           connect: {
             id: ctx.user.id
