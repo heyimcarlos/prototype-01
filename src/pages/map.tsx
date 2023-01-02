@@ -12,7 +12,7 @@ import ListingCard from "@/components/mapPageComponents/sidebars/ListingCard";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import SlideOver from "@/components/singleViewListing/SlideOver";
-import { type Listing } from "@prisma/client";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import SwiperCore, { Pagination } from "swiper";
@@ -103,10 +103,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
         {/* Single Mobile Preview */}
         {listing && listings.length < 2 && !doesFit && (
-          <SingleMobilePreviewListing
-            listing={listing as Listing}
-            setOpen={setOpen}
-          />
+          <SingleMobilePreviewListing listing={listing} setOpen={setOpen} />
         )}
 
         {/* Multiple Mobile Preview */}
@@ -116,7 +113,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
               {listings.map((listing) => (
                 <SwiperSlide key={listing.id}>
                   <MultiMobilePreviewListing
-                    listing={listing as Listing}
+                    listing={listing}
                     setOpen={setOpen}
                   />
                   .
