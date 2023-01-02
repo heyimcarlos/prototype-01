@@ -1,9 +1,14 @@
-import React, { Fragment, type Dispatch, type SetStateAction } from "react";
+import React, {
+  Fragment,
+  useMemo,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useNewListing } from "@/stores/useNewListing";
+
 import Divider from "../newListingComponents/formComponents/Divider";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
@@ -19,57 +24,66 @@ import image7 from "../../../public/assets/images/preview/7.jpg";
 import image8 from "../../../public/assets/images/preview/8.jpg";
 import PhotosModal from "./PhotosModal";
 import ProfilePlaceholder from "../../../public/assets/images/ProfilePlaceholder.avif";
-import type { Listing } from "@prisma/client";
+
 import { useSelectedListing } from "@/stores/useSelectedListing";
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { type GetNeighborhoodOutput } from "@/server/trpc/router/map";
 
 type Props = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  listing: Listing;
+  listing: GetNeighborhoodOutput["listingLocations"][number]["listings"][number];
 };
 
+const previewImages = [
+  image0,
+  image1,
+  image2,
+  image3,
+  image4,
+  image5,
+  image6,
+  image7,
+  image8,
+];
+
 const SlideOver = ({ open, setOpen, listing }: Props) => {
+  const [selected, setSelected] = useState("Contacto");
+  const [openPhotos, setOpenPhotos] = useState(false);
+  const listingAddress = useSelectedListing((state) => state.listingAddress);
+  const neighborhood = useSelectedListing((state) => state.neighborhood);
+  const direction = useSelectedListing((state) => state.direction);
   const router = useRouter();
 
   const onClose = () => {
     router.push(router.pathname, undefined, { shallow: true });
   };
 
-  const newListingState = useNewListing((state) => state);
-  const [selected, setSelected] = useState("Contacto");
-  const newListing = useNewListing((state) => state);
-  const [openPhotos, setOpenPhotos] = useState(false);
-
-  const listingAddress = useSelectedListing((state) => state.listingAddress);
-  const neighborhood = useSelectedListing((state) => state.neighborhood);
-  const direction = useSelectedListing((state) => state.direction);
-
-  console.log("neighborhood", neighborhood);
-
-  const previewImages = [
-    image0,
-    image1,
-    image2,
-    image3,
-    image4,
-    image5,
-    image6,
-    image7,
-    image8,
-  ];
-
   SwiperCore.use([Pagination]);
 
-  // console.log("openPhotos", openPhotos);
+  const buildingAmenities = useMemo(() => {
+    const buildingAmenities =
+      (listing.listingDetail?.buildingAmenities as string[]) || [];
 
-  const half = Math.ceil(newListing.selectedBuildingAmenities.length / 2);
-  const firstHalf = newListing.selectedBuildingAmenities.slice(0, half);
-  const secondHalf = newListing.selectedBuildingAmenities.slice(half);
-  const intHalf = Math.ceil(newListing.selectedInteriorAmenities.length / 2);
-  const intFirstHalf = newListing.selectedInteriorAmenities.slice(0, intHalf);
-  const intSecondHalf = newListing.selectedInteriorAmenities.slice(intHalf);
+    const half = Math.ceil(buildingAmenities.length / 2);
+    const firstHalf = buildingAmenities.slice(0, half);
+    const secondHalf = buildingAmenities.slice(half);
+
+    return [firstHalf, secondHalf];
+  }, [listing.listingDetail?.buildingAmenities]);
+
+  const interiorAmenities = useMemo(() => {
+    const interiorAmenities =
+      (listing.listingDetail?.interiorAmenities as string[]) || [];
+
+    if (interiorAmenities.length === 0) return [];
+    const intHalf = Math.ceil(interiorAmenities.length / 2);
+    const intFirstHalf = interiorAmenities.slice(0, intHalf);
+    const intSecondHalf = interiorAmenities.slice(intHalf);
+
+    return [intFirstHalf, intSecondHalf];
+  }, [listing.listingDetail?.interiorAmenities]);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -181,7 +195,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
 
                         <p className="text-md mt-1 block text-gray-500 md:text-xl">
                           {neighborhood} -{" "}
-                          {newListingState.hide
+                          {listing.visibility
                             ? "Dirección no disponible"
                             : listingAddress}
                           <span className="ml-2">{}</span>
@@ -328,7 +342,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         </dt>
                         <div className="mt-2 flex w-full ">
                           <div className="text-md flex w-[50%] flex-col md:text-lg">
-                            {firstHalf.map((amen) => (
+                            {buildingAmenities[0]?.map((amen) => (
                               <div
                                 key={amen}
                                 className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1 px-2"
@@ -338,7 +352,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                             ))}
                           </div>
                           <div className="text-md ml-1 flex w-[50%] flex-col md:text-lg">
-                            {secondHalf.map((amen) => (
+                            {buildingAmenities[1]?.map((amen) => (
                               <div
                                 key={amen}
                                 className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1  px-2"
@@ -356,7 +370,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         </dt>
                         <div className="mt-2 flex w-full ">
                           <div className="text-md flex w-[50%] flex-col md:text-lg">
-                            {intFirstHalf.map((amen) => (
+                            {interiorAmenities[0]?.map((amen) => (
                               <div
                                 key={amen}
                                 className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1 px-2"
@@ -366,7 +380,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                             ))}
                           </div>
                           <div className="text-md ml-1 flex w-[50%] flex-col md:text-lg">
-                            {intSecondHalf.map((amen) => (
+                            {interiorAmenities[1]?.map((amen) => (
                               <div
                                 key={amen}
                                 className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1  px-2"
@@ -378,7 +392,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         </div>
                       </div>
                       <Divider />
-                      <div id="Exterior">
+                      {/* <div id="Exterior">
                         <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
                           Exterior Amenities
                         </dt>
@@ -392,7 +406,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </div> */}
                     </dl>
                   </div>
                   <div className="flex h-full items-center justify-center">

@@ -12,7 +12,7 @@ import ListingCard from "@/components/mapPageComponents/sidebars/ListingCard";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import { useSelectedListing } from "@/stores/useSelectedListing";
 import SlideOver from "@/components/singleViewListing/SlideOver";
-import type { Listing, ListingLocation, Neighborhood } from "@prisma/client";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import SwiperCore, { Pagination } from "swiper";
@@ -32,6 +32,8 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   //   googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   //   libraries: GOOGLE_MAP_LIBRARIES,
   // });
+
+  // console.log("neighborhoods", neighborhoods)
 
   const mapRef = useRef<MapRef>(null);
 
@@ -101,10 +103,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
         {/* Single Mobile Preview */}
         {listing && listings.length < 2 && !doesFit && (
-          <SingleMobilePreviewListing
-            listing={listing as Listing}
-            setOpen={setOpen}
-          />
+          <SingleMobilePreviewListing listing={listing} setOpen={setOpen} />
         )}
 
         {/* Multiple Mobile Preview */}
@@ -114,7 +113,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
               {listings.map((listing) => (
                 <SwiperSlide key={listing.id}>
                   <MultiMobilePreviewListing
-                    listing={listing as Listing}
+                    listing={listing}
                     setOpen={setOpen}
                   />
                   .
@@ -201,11 +200,16 @@ MapPage.layout = MapLayout;
 // @INFO: Server side fetching of neighborhoods
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-export type NeighborhoodsType = (Neighborhood & {
-  listingLocations: (ListingLocation & {
-    listings: Listing[];
-  })[];
-})[];
+// export type NeighborhoodsType = (Neighborhood & {
+//   listingLocations: (ListingLocation & {
+//     listings: Listing[];
+//   })[];
+// })[];
+
+// export const NeighborhoodsType = Prisma.validator<Prisma.NeighborhoodArgs>()({
+//   select: {listingLocations: {include: {listings: {include: listingL}}}},
+//   include: {}
+// })
 
 export const getServerSideProps = async ({
   query,
@@ -213,8 +217,9 @@ export const getServerSideProps = async ({
   //
   const neighborhoods = await prisma.neighborhood.findMany({
     include: {
-      listingLocations: { include: { listings: {}, neighborhood: {} } },
-
+      listingLocations: {
+        include: { listings: { include: { listingDetail: true } } },
+      },
     },
   });
 

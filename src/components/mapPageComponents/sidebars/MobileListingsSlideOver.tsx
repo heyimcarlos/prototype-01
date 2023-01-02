@@ -4,9 +4,17 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useSidebar } from "@/stores/useSidebar";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import MobileListingCard from "./MobileListingCard";
-import { useSelectedListing } from "@/stores/useSelectedListing";
-import type { Listing } from "@prisma/client";
-import type { NeighborhoodsType } from "@/pages/map";
+import {
+  type ListingWithListingDetail,
+  useSelectedListing,
+} from "@/stores/useSelectedListing";
+import type {
+  Listing,
+  ListingDetail,
+  ListingLocation,
+  Neighborhood,
+} from "@prisma/client";
+// import type { NeighborhoodsType } from "@/pages/map";
 import { MapIcon } from "@heroicons/react/20/solid";
 
 // import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -15,7 +23,13 @@ type MobileListingSlideOverTypes = {
   listSlide: boolean;
   setListSlide: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  neighborhoods: NeighborhoodsType;
+  neighborhoods: (Neighborhood & {
+    listingLocations: (ListingLocation & {
+      listings: (Listing & {
+        listingDetail: ListingDetail | null;
+      })[];
+    })[];
+  })[];
 };
 
 const MobileListingsSlideOver = ({
@@ -93,7 +107,7 @@ const MobileListingsSlideOver = ({
                       {neighborhoodsState.map((neighborhood) =>
                         neighborhood.listingLocations.map((listingLocation) => {
                           if (listingLocation.listings.length === 1) {
-                            let listing: Listing | null;
+                            let listing: ListingWithListingDetail | null;
 
                             if (listingLocation.listings[0])
                               listing = listingLocation.listings[0];
