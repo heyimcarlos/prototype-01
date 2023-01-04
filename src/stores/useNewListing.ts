@@ -1,4 +1,5 @@
 import create from "zustand";
+import { type PropertyType } from "@prisma/client";
 
 export type NewListingState = {
   name: string;
@@ -15,14 +16,15 @@ export type NewListingState = {
   fullBathrooms: number;
   halfBathrooms: number;
   meters: number;
-  propertyType: string;
+  propertyType: PropertyType;
+
   selectedBuildingAmenities: string[];
   selectedInteriorAmenities: string[];
   selectedExteriorAmenities: string[];
-  
+
   condition: string;
   maintenance: number;
-  
+
   setName: (param: string) => void;
   setLat: (param: number) => void;
   setLng: (param: number) => void;
@@ -30,21 +32,21 @@ export type NewListingState = {
   setPlaceId: (param: string) => void;
   setSector: (param: string) => void;
   setHide: (param: boolean) => void;
-  
+
   setRecordName: (param: string) => void;
   setPrice: (param: number) => void;
   setBedrooms: (param: number) => void;
   setFullBathrooms: (param: number) => void;
   setHalfBathrooms: (param: number) => void;
   setMeters: (param: number) => void;
-  setPropertyType: (param: string) => void;
+  setPropertyType: (param: PropertyType) => void;
   setSelectedBuildingAmenities: (param: string[]) => void;
   setSelectedInteriorAmenities: (param: string[]) => void;
   setSelectedExteriorAmenities: (param: string[]) => void;
-  
+
   setCondition: (param: string) => void;
   setMaintenance: (param: number) => void;
-  
+
   buildingAmenities: string[];
   setBuildingAmenities: (param: string[]) => void;
   interiorAmenities: string[];
@@ -68,11 +70,11 @@ export const useNewListing = create<NewListingState>((set) => ({
   fullBathrooms: 0,
   halfBathrooms: 0,
   meters: 0,
-  propertyType: "",
+  propertyType: "Type of property" as unknown as PropertyType,
   selectedBuildingAmenities: [],
   selectedInteriorAmenities: [],
   selectedExteriorAmenities: [],
-  
+
   setName: (param) => set(() => ({ name: param })),
   setLat: (param) => set(() => ({ lat: param })),
   setLng: (param) => set(() => ({ lng: param })),
@@ -80,26 +82,27 @@ export const useNewListing = create<NewListingState>((set) => ({
   setPlaceId: (param) => set(() => ({ placeId: param })),
   setSector: (param) => set(() => ({ sector: param })),
   setHide: (param) => set(() => ({ hide: param })),
-  
+
   setRecordName: (param) => set(() => ({ recordName: param })),
   setPrice: (param) => set(() => ({ price: param })),
   setBedrooms: (param) => set(() => ({ bedrooms: param })),
   setFullBathrooms: (param) => set(() => ({ fullBathrooms: param })),
   setHalfBathrooms: (param) => set(() => ({ halfBathrooms: param })),
   setMeters: (param) => set(() => ({ meters: param })),
-  setPropertyType: (param) => set(() => ({ propertyType: param })),
+  setPropertyType: (param: PropertyType) =>
+    set(() => ({ propertyType: param })),
   setSelectedBuildingAmenities: (param) =>
-  set(() => ({ selectedBuildingAmenities: param })),
+    set(() => ({ selectedBuildingAmenities: param })),
   setSelectedInteriorAmenities: (param) =>
-  set(() => ({ selectedInteriorAmenities: param })),
+    set(() => ({ selectedInteriorAmenities: param })),
   setSelectedExteriorAmenities: (param) =>
     set(() => ({ selectedExteriorAmenities: param })),
-  
+
   condition: "",
   maintenance: 0,
   setCondition: (param) => set(() => ({ condition: param })),
   setMaintenance: (param) => set(() => ({ maintenance: param })),
-  
+
   buildingAmenities: [
     "Año de constr. ",
     "Piso ",

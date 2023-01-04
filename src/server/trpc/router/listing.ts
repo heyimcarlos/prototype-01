@@ -30,7 +30,9 @@ const loggedInListingRouter = router({
         bedrooms: z.number(),
         fullBathrooms: z.number(),
         halfBathrooms: z.number(),
-        squareFeet: z.number(),
+        meters: z.number(),
+        condition: z.string(),
+        maintenance: z.number(),
         listingType: z.nativeEnum(ListingType),
         propertyType: z.nativeEnum(PropertyType),
         neighborhoodSlug: z.string(),
@@ -63,16 +65,18 @@ const loggedInListingRouter = router({
       const listing = await ctx.prisma.listing.create({
         data: {
           name: input.name,
-          propertyType: input.propertyType,
           currency: input.currency,
           price: input.price,
-          squareFeet: input.squareFeet,
+          meters: input.meters,
+          condition: input.condition,
+          maintenance: input.maintenance,
+          listingType: input.listingType,
+          propertyType: input.propertyType,
           bedrooms: input.bedrooms,
           fullBathrooms: input.fullBathrooms,
           halfBathrooms: input.halfBathrooms,
           bio: input.bio,
           slug: slugify(input.name),
-          listingType: input.listingType,
           user: {
             connect: {
               id: ctx.user.id,

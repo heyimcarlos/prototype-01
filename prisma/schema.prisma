@@ -102,7 +102,9 @@ model Listing {
   bedrooms          Int
   fullBathrooms     Int
   halfBathrooms     Int
-  squareFeet        Int
+  meters            Int               @default(0)
+  condition         String            @default("Second use")
+  maintenance       Int               @default(0)
   listingType       ListingType
   propertyType      PropertyType
   listingLocation   ListingLocation   @relation(fields: [listingLocationId], references: [id])

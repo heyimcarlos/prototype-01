@@ -56,6 +56,8 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
   const direction = useSelectedListing((state) => state.direction);
   const router = useRouter();
 
+  console.log("LISTING:", listing);
+
   const onClose = () => {
     router.push(router.pathname, undefined, { shallow: true });
   };
@@ -186,7 +188,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                                   hba |
                                 </span>
                               )}
-                              <b className="mx-1">{listing.squareFeet}</b>
+                              <b className="mx-1">{listing.meters}</b>
                               metros
                               <sup className="mt-2.5">2</sup>
                             </h3>

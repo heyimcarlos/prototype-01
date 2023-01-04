@@ -50,7 +50,7 @@ const SingleMobilePreviewListing = ({
               <b>
                 {listing ? listing.fullBathrooms + listing.halfBathrooms : null}
               </b>{" "}
-              ba | <b>{listing?.squareFeet}</b> sqft
+              ba | <b>{listing?.meters}</b> sqft
             </span>
 
             <span className="block">${listing?.price.toLocaleString()}</span>
