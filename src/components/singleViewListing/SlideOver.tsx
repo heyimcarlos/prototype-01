@@ -56,7 +56,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
   const direction = useSelectedListing((state) => state.direction);
   const router = useRouter();
 
-  console.log("LISTING:", listing);
+  // console.log("LISTING:", listing);
 
   const onClose = () => {
     router.push(router.pathname, undefined, { shallow: true });
@@ -108,13 +108,18 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
               direction === "left" ? "-translate-x-full" : "translate-x-full"
             }
           >
-            <Dialog.Panel className="pointer-events-auto mt-[4.98rem] w-screen max-w-[82.5rem] md:max-w-[calc(100vw-299px)] lg:max-w-[calc(100vw-574px)]">
+            <Dialog.Panel
+              className={`pointer-events-auto mt-[5.1rem] w-screen ${
+                direction === "left"
+                  ? "lg:max-w-[calc(100vw-574px)]"
+                  : "lg:max-w-[calc(575px)]"
+              } xl:mt-[5.1rem] `}
+            >
               <div
-                id="start"
-                className="mt-[1px] h-[calc(100vh-55.59px)] w-full scroll-mt-[22rem] overflow-auto scroll-smooth md:mt-[2px] md:h-[calc(100vh-82.59px)] md:scroll-mt-[32rem]"
+                id="Start"
+                className=" h-[calc(100vh-48px-35.19px)] w-full scroll-mt-[100rem] overflow-auto scroll-smooth bg-white md:scroll-mt-[32rem]"
               >
-                <div className="fixed right-0 z-10 mt-3 mr-3 flex h-7 items-center">
-                  {/* <div className="fixed z-10 left-0 mt-3 ml-3 flex h-7 items-center"> */}
+                <div className="absolute right-0 z-10 mt-3 mr-3 flex h-7 items-center">
                   <button
                     type="button"
                     className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
@@ -135,7 +140,10 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                   />
                 )}
 
-                <div id="imagesAndTopElement" className="w-full ">
+                <div
+                  id="imagesAndTopElement"
+                  className="w-full bg-black bg-opacity-10"
+                >
                   <Swiper
                     pagination={{ type: "fraction" }}
                     spaceBetween={0}
@@ -143,6 +151,10 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                     // allowTouchMove={false}
                     // navigation={true}
                   >
+                    <div className="border-1 absolute top-0 z-[50] ml-3 mt-3 h-auto w-auto rounded-lg bg-black bg-opacity-60 px-3 pb-0.5 pt-0.5 font-bold text-white">
+                      {listing.listingType[0] +
+                        listing.listingType.slice(1).toLocaleLowerCase()}
+                    </div>
                     {previewImages.map((image, idx) => (
                       <SwiperSlide
                         key={idx}
@@ -154,7 +166,11 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         }}
                       >
                         <Image
-                          className="max-h-[15.5rem] object-cover md:max-h-[25.5rem]"
+                          className={`${
+                            direction === "left"
+                              ? "md:max-h-[25.5rem]"
+                              : "md:max-h-[18rem]"
+                          } max-h-[15.5rem] object-cover`}
                           src={image}
                           alt={idx.toString()}
                         />
@@ -165,18 +181,18 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
 
                 <div
                   id="firstInfoAndNavBar"
-                  className="sticky top-0 z-30 -mt-[6px] bg-white md:py-2 xl:border-l-2 xl:border-r-2 xl:border-black/20"
+                  className="sticky top-0 z-30 -mt-[6px] bg-white md:py-2 lg:border-r-2"
                 >
-                  <div className="flex flow-root items-end px-4">
+                  <div className="flex flow-root items-end px-3">
                     <div className="flex-1">
                       <div>
                         <div className="flex justify-end">
                           <div className="flex w-full justify-between">
-                            <h3 className="mt-[0.15rem] text-xl font-bold text-gray-900 md:text-2xl">
+                            <h3 className=" text-xl font-bold text-gray-900 md:text-2xl">
                               ${listing.price.toLocaleString()}
                             </h3>
 
-                            <h3 className="flex text-sm md:text-[16px]">
+                            <h3 className="mt-1 flex text-sm md:text-[16px]">
                               <b>{listing.bedrooms}</b>bd |{" "}
                               <b className="ml-1">{listing.fullBathrooms}</b>fba
                               |
@@ -195,26 +211,35 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                           </div>
                         </div>
 
-                        <p className="text-md mt-1 block text-gray-500 md:text-xl">
-                          {neighborhood} -{" "}
-                          {listing.visibility
-                            ? "Dirección no disponible"
-                            : listingAddress}
-                          <span className="ml-2">{}</span>
-                        </p>
+                        <div className="flex">
+                          <p className="block text-base text-gray-500 md:text-xl">
+                            {neighborhood} -{" "}
+                            {listing.visibility === "HIDDEN"
+                              ? "Dirección no disponible"
+                              : listingAddress}
+                          </p>
+                          <span className="absolute right-0 mr-3 mt-0.5">
+                            mant.
+                            <span className="ml-2 font-bold">
+                              {listing.maintenance.toLocaleString()}
+                            </span>
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                   <Divider />
                   <div
                     id="Navbar"
-                    className="flex justify-evenly bg-white pt-2 text-sm md:pt-3 md:text-xl"
+                    className={`flex justify-evenly bg-white pt-2 text-sm md:pt-3 ${
+                      direction === "left" ? "md:text-xl" : "md:text-lg"
+                    }`}
                   >
                     <a
                       href="#Contacto"
                       className={`inline pb-2 md:pb-3 ${
                         selected === "Contacto"
-                          ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
+                          ? "border-b-2 border-indigo-600 text-indigo-500"
                           : ""
                       }`}
                       onClick={() => setSelected("Contacto")}
@@ -223,9 +248,9 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                     </a>
                     <a
                       href="#Descripción"
-                      className={`inline   ${
+                      className={`inline pb-2 md:pb-3 ${
                         selected === "Descripción"
-                          ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
+                          ? "border-b-2 border-indigo-600 text-indigo-500"
                           : ""
                       }`}
                       onClick={() => setSelected("Descripción")}
@@ -234,9 +259,9 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                     </a>
                     <a
                       href="#Propiedad"
-                      className={`inline   ${
+                      className={`inline pb-2 md:pb-3 ${
                         selected === "Propiedad"
-                          ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
+                          ? "border-b-2 border-indigo-600 text-indigo-500"
                           : ""
                       }`}
                       onClick={() => setSelected("Propiedad")}
@@ -245,9 +270,9 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                     </a>
                     <a
                       href="#Interior"
-                      className={`inline   ${
+                      className={`inline pb-2 md:pb-3 ${
                         selected === "Interior"
-                          ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
+                          ? "border-b-2 border-indigo-600 text-indigo-500"
                           : ""
                       }`}
                       onClick={() => setSelected("Interior")}
@@ -255,13 +280,13 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                       Interior
                     </a>
                     <a
-                      href="#start"
-                      className={`inline ${
-                        selected === "start"
-                          ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
+                      href="#Start"
+                      className={`inline pb-2 md:pb-3 ${
+                        selected === "Start"
+                          ? "border-b-2 border-indigo-600 text-indigo-500"
                           : ""
                       }`}
-                      onClick={() => setSelected("start")}
+                      onClick={() => setSelected("Start")}
                     >
                       Start
                     </a>
@@ -271,12 +296,14 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
 
                 <div
                   id="detailsContainer"
-                  className="h-[calc(100vh-38px-54.39px-55.59px)] w-full overflow-auto scroll-smooth bg-white md:h-[calc(100vh-58px-94.59px-55.59px)] xl:border-l-2 xl:border-r-2 xl:border-black/20"
+                  className={`h-[calc(100vh-48px-35.19px-52px-32px)] w-full overflow-auto scroll-smooth bg-white md:h-[calc(100vh-58px-94.59px-55.59px)] lg:border-r-2`}
                 >
                   <div className="px-4 py-1">
                     <div
                       id="Contacto"
-                      className="mb-3 flex scroll-mt-[30rem] flex-col md:flex-row"
+                      className={`mb-3 flex scroll-mt-[100rem] flex-col ${
+                        direction === "left" ? "md:flex-row" : "md:flex-col"
+                      }`}
                     >
                       <div className="flex h-auto w-[30rem]">
                         <div className="mt-0.5 inline-flex h-full max-w-[10rem] overflow-hidden rounded-full border-4 border-white md:mt-1 md:w-[7rem]">
@@ -291,7 +318,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                           />
                         </div>
 
-                        <div className="mt-1 flex-1 md:ml-3 md:mt-4">
+                        <div className="mt-2 flex-1 md:ml-3 md:mt-4">
                           <div className="mt-3">
                             <div className="-mb-1 flex items-center">
                               <h3 className="text-xl text-lg font-bold text-gray-900 md:text-xl">
@@ -328,8 +355,15 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                         <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
                           Descripción
                         </dt>
-                        <dd className="col-span-2 mt-1 mt-0 ml-6 text-sm text-gray-900 md:text-lg">
-                          <p>
+                        <dd className="col-span-2 mt-1 mt-0 text-sm text-gray-900 md:text-lg">
+                          <div className="mt-2 text-[16px] font-semibold">
+                            {listing.propertyType[0] +
+                              listing.propertyType
+                                .slice(1)
+                                .toLocaleLowerCase()}{" "}
+                            - {listing.condition}
+                          </div>
+                          <p className="mt-2 text-[16px]">
                             {listing.bio
                               ? listing.bio
                               : "Lorem ipsum dolor sit amet consectetur adipisicingelit. Dolor autem eum, eaque enim alias, laudantium totam sed quam similique omnis quidem provident doloribus optio labore esse consequatur magni? Voluptas."}

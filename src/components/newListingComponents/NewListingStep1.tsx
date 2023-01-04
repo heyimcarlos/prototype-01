@@ -18,6 +18,7 @@ import SectorSelect from "@/components/newListingComponents/formComponents/Secto
 import HideAddressCheckbox from "@/components/newListingComponents/formComponents/HideAddressCheckbox";
 import { useDefaultSectors } from "@/stores/useDefaultSectors";
 import Link from "next/link";
+import ListingTypeSelect from "./formComponents/ListingTypeSelect";
 
 type StepType = {
   setStep: Dispatch<SetStateAction<string>>;
@@ -51,6 +52,9 @@ const NewListingStep1 = ({ setStep }: StepType) => {
   const fullAddress = useNewListing((state) => state.fullAddress);
 
   const setSector = useNewListing((state) => state.setSector);
+
+  const listingType = useNewListing((state) => state.listingType);
+  const setListingType = useNewListing((state) => state.setListingType);
 
   const onPlaceChanged = () => {
     if (autocomplete) {
@@ -100,9 +104,9 @@ const NewListingStep1 = ({ setStep }: StepType) => {
   if (!isLoaded) return <div>loading...</div>;
   return (
     <>
-      <div className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-80.59px)] w-full flex flex-col items-center ">
+      <div className="flex h-[calc(100vh-55.59px)] w-full flex-col items-center md:h-[calc(100vh-80.59px)] ">
         {/* <div>MAP for searching address</div> */}
-        <div className="w-full flex flex-col flex-1 h-[15rem] max-h-[25rem] mt-0.5 md:max-h-[35rem] xl:max-w-[55rem] xl:mt-3 xl:overflow-hidden xl:rounded-tr-md xl:rounded-tl-md  xl:border-t-2 xl:border-l-2 xl:border-r-2 xl:border-black/20 xl:drop-shadow-2xl">
+        <div className="mt-0.5 flex h-[15rem] max-h-[25rem] w-full flex-1 flex-col md:max-h-[35rem] xl:mt-3 xl:max-w-[55rem] xl:overflow-hidden xl:rounded-tr-md xl:rounded-tl-md  xl:border-t-2 xl:border-l-2 xl:border-r-2 xl:border-black/20 xl:drop-shadow-2xl">
           <MapboxMap
             id="mapa"
             ref={mapRef}
@@ -131,9 +135,9 @@ const NewListingStep1 = ({ setStep }: StepType) => {
 
         {/* -------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
-        <div className="w-full h-full flex flex-1 flex-col items-center justify-evenly bg-white pt-6 xl:max-w-[55rem] xl:pb-3 xl:rounded-br-md xl:rounded-bl-md xl:border-l-2 xl:border-r-2 xl:border-b-2 xl:border-black/20 xl:drop-shadow-xl">
-          <div className="flex w-[95%] mx-[1rem] -mt-5 shadow-lg xl:shadow-none">
-            <div className="min-w-0 flex-1 flex flex-col items-start justify-end ">
+        <div className="flex h-full w-full flex-1 flex-col items-center justify-evenly bg-white pt-6 xl:max-w-[55rem] xl:rounded-br-md xl:rounded-bl-md xl:border-l-2 xl:border-r-2 xl:border-b-2 xl:border-black/20 xl:pb-3 xl:drop-shadow-xl">
+          <div className="mx-[1rem] -mt-5 flex w-[95%] shadow-lg xl:shadow-none">
+            <div className="flex min-w-0 flex-1 flex-col items-start justify-end ">
               <label htmlFor="search" className="sr-only">
                 Initial search
               </label>
@@ -164,32 +168,38 @@ const NewListingStep1 = ({ setStep }: StepType) => {
                   placeholder={"Enter property address"}
                   value={fullAddress}
                   // value={fullAddress ? fullAddress : undefined}
-                  className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 md:py-3 xl:py-2 pl-3 pr-10 text-left shadow-sm xl:shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
+                  className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl xl:py-2 xl:shadow-md"
                 />
               </Autocomplete>
             </div>
           </div>
 
-          <div className="flex flex-col w-[95%] mx-[1rem]">
+          <div className="mx-[1rem] flex w-[95%] flex-col">
             <SectorSelect />
           </div>
+          <div className="mx-[1rem] flex w-[95%] flex-col">
+            <ListingTypeSelect
+              listingType={listingType}
+              setListingType={setListingType}
+            />
+          </div>
 
-          <div className="w-[95%] flex flex-col items-center pt-1">
+          <div className="flex w-[95%] flex-col items-center pt-1">
             <HideAddressCheckbox />
           </div>
         </div>
-        <div className="w-full flex justify-center space-x-6 mb-3 md:mb-6 text-md md:text-2xl xl:mt-3">
+        <div className="text-md mb-3 flex w-full justify-center space-x-6 md:mb-6 md:text-2xl xl:mt-3">
           {/* <div className="rounded-xl py-1 px-2 bg-indigo-600 text-white shadow-xl">
             Save & Exit
           </div> */}
           <Link
             href="/dashboard"
-            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-lg"
+            className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-lg md:py-2 md:px-4"
           >
             Back
           </Link>
           <button
-            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-lg"
+            className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-lg md:py-2 md:px-4"
             onClick={() => setStep("step 2")}
           >
             Continue

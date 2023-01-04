@@ -74,7 +74,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
   let doesFit;
   const width = useWindowSize();
-  if (width) doesFit = width > 768;
+  if (width) doesFit = width > 1024;
 
   // if (!isLoaded) return <div>Loading...</div>;
 
@@ -108,7 +108,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
         {/* Multiple Mobile Preview */}
         {listings.length > 0 && !doesFit && (
-          <div className="fixed bottom-0 mb-[3rem] flex h-[10rem] w-[90%] overflow-hidden rounded-xl">
+          <div className="fixed bottom-0 mb-[3rem] flex h-[10rem] w-[90%] max-w-[28rem] overflow-hidden rounded-xl">
             <Swiper pagination spaceBetween={0} slidesPerView={1}>
               {listings.map((listing) => (
                 <SwiperSlide key={listing.id}>
@@ -125,7 +125,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
         {/* Desktop Sidebar with Listings */}
         {doesFit && (
-          <div className="flex h-full min-w-[300px] max-w-[300px] flex-wrap content-start justify-center overflow-y-auto bg-white md:after:justify-start lg:min-w-[575px] lg:max-w-[575px] lg:space-x-1 lg:after:mr-[18rem]">
+          <div className="flex h-full min-w-[300px] max-w-[300px] flex-wrap content-start justify-center overflow-y-auto bg-white md:after:justify-start lg:min-w-[575px] lg:after:mr-[18rem] ">
             {listingLocations.length < 1 && neighborhoodsState.length < 1 && (
               <div>No listing to show move the map</div>
             )}
@@ -136,11 +136,12 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
               </div>
             )}
 
-            <div className="flex h-full min-w-[300px] max-w-[300px] flex-wrap content-start justify-center overflow-y-auto bg-white md:after:justify-start lg:min-w-[575px] lg:max-w-[575px] lg:space-x-1 lg:after:mr-[18rem]">
+            <div className="flex h-full w-full flex-wrap content-start justify-center overflow-y-auto bg-white md:after:justify-center lg:after:mr-[18rem] xl:min-w-[575px]">
               {neighborhoodsState.map((sector) =>
                 sector.listingLocations.map((location) => {
                   return location.listings.map((listing) => (
                     <div
+                      className="mx-0.5"
                       key={listing.id}
                       onClick={() => {
                         setDirection("left");

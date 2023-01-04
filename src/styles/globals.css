@@ -30,7 +30,7 @@ body {
   position: absolute !important;
   left: unset !important;
   right: 0 !important;
-  margin-right: 1rem;
+  margin-right: 0.75rem;
   background-color: rgb(0, 0, 0, 0.6);
   color: white;
   border-radius: 10%;

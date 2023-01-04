@@ -1,11 +1,12 @@
-import { type Dispatch, Fragment, type SetStateAction, useState } from "react";
+import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { type ListingType } from "@prisma/client";
 
 const listingTypes = [
-  { id: 0, name: "For Sale & Rent" },
+  { id: 0, name: "Rent" },
   { id: 1, name: "Sale" },
-  { id: 3, name: "Rent" },
+  { id: 2, name: "For Sale & Rent" },
 ];
 
 function classNames(...classes: string[]) {
@@ -13,8 +14,8 @@ function classNames(...classes: string[]) {
 }
 
 type Props = {
-  listingType: string;
-  setListingType: Dispatch<SetStateAction<string>>;
+  listingType: ListingType;
+  setListingType: (param: ListingType) => void;
 };
 
 export default function ListingTypeSelect({
@@ -25,25 +26,34 @@ export default function ListingTypeSelect({
     return listingType === listingTypes[0]?.name
       ? listingType[0]
       : listingType === listingTypes[1]?.name
-        ? listingTypes[1]
-        : listingType === listingTypes[2]?.name
-          ? listingTypes[2]
-          : null
-  })
+      ? listingTypes[1]
+      : listingType === listingTypes[2]?.name
+      ? listingTypes[2]
+      : null;
+  });
 
   return (
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
         <>
           <div className="relative w-full">
-            <Listbox.Button className="text-md relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl">
-              {listingType === "" && selected && (
+            <Listbox.Label className="text-sm font-medium text-gray-700 md:text-xl">
+              Type
+            </Listbox.Label>
+            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl lg:py-2">
+              {listingType === ("Type of listing" as unknown) && (
                 <span className="block truncate text-gray-500">
-                  {typeof selected === 'string' ? selected : selected.name}
+                  Type of listing
                 </span>
               )}
-              {listingType !== "" && (
-                <span className="block truncate">{listingType}</span>
+              {listingType !== ("Type of listing" as unknown) && (
+                <span className="block truncate">
+                  {listingType === "SALEANDRENT"
+                    ? "For Sale & Rent"
+                    : listingType === "RENT"
+                    ? "Rent"
+                    : "Sale"}
+                </span>
               )}
 
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -73,7 +83,13 @@ export default function ListingTypeSelect({
                     }
                     value={type}
                     onClick={() => {
-                      setListingType(type.name);
+                      setListingType(
+                        type.name === "For Sale & Rent"
+                          ? "SALEANDRENT"
+                          : type.name === "Rent"
+                          ? "RENT"
+                          : "SALE"
+                      );
                     }}
                   >
                     {({ selected, active }) => (
