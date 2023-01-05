@@ -201,7 +201,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                   <div
                     className="w-full overflow-y-auto bg-white 2xl:h-[calc(100vh-33.59px-50px)] 2xl:overflow-y-auto"
                     onClick={() => {
-                      setOpenPhotos(false);
+                      setOpenPhotos(true);
                     }}
                   >
                     {previewImages &&
@@ -218,18 +218,26 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
 
                 <div>
                   {is2xl && direction === "left" && (
-                    <div className="z-40 flex h-[3rem] w-full justify-end border-r-2 pt-3 pb-10">
-                      <button
-                        type="button"
-                        className="mr-3 h-7 rounded-md border-2 bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
-                        onClick={() => {
-                          onClose();
-                          setOpen(false);
-                        }}
-                      >
-                        <span className="sr-only">Close panel</span>
-                        <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                      </button>
+                    <div className="z-40 flex h-[3rem] w-full border-r-2 pt-3 pb-10">
+                      <div className="ml-3 flex w-[50%] justify-start">
+                        <div className=" border-1 z-[40] h-7 rounded-lg bg-black bg-opacity-60 px-3 pb-0.5 pt-0.5 font-bold text-white">
+                          {listing.listingType[0] +
+                            listing.listingType.slice(1).toLocaleLowerCase()}
+                        </div>
+                      </div>
+                      <div className="mr-3 flex w-[50%] justify-end">
+                        <button
+                          type="button"
+                          className="h-7 rounded-md border-2 bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
+                          onClick={() => {
+                            onClose();
+                            setOpen(false);
+                          }}
+                        >
+                          <span className="sr-only">Close panel</span>
+                          <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                        </button>
+                      </div>
                     </div>
                   )}
                   <div
