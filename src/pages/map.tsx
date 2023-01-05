@@ -100,6 +100,9 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         {listing && (
           <SlideOver open={open} setOpen={setOpen} listing={listing} />
         )}
+        {/* {listing && (
+          <SlideOver2xl open={open} setOpen={setOpen} listing={listing} />
+        )} */}
 
         {/* Single Mobile Preview */}
         {listing && listings.length < 2 && !doesFit && (

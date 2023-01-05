@@ -5,6 +5,7 @@ import SectorsSelected from "./SectorsSelected";
 import FiltersFlyoutMenu from "./FiltersFlyoutMenu";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { useRouter } from "next/router";
+import { type ListingType } from "@prisma/client";
 
 const MapTopbar = () => {
   const neighborhoods = useNeighborhoods((state) => state.neighborhoods);
@@ -27,8 +28,8 @@ const MapTopbar = () => {
   const [halfBathrooms, setHalfBathrooms] = useState(
     query.halfBathrooms ? parseInt(query.halfBathrooms as string) : 0
   );
-  const [listingType, setListingType] = useState(
-    query.listingType ? query.listingType : "For Sale & Rent"
+  const [listingType, setListingType] = useState<ListingType>(
+    query.listingType ? (query.listingType as ListingType) : "SALEANDRENT"
   );
 
   // const neighborhoods = await prisma.neighborhood.findMany({
@@ -61,7 +62,7 @@ const MapTopbar = () => {
           setFullBathrooms={setFullBathrooms}
           halfBathrooms={halfBathrooms}
           setHalfBathrooms={setHalfBathrooms}
-          listingType={listingType as string}
+          listingType={listingType}
           setListingType={setListingType as Dispatch<SetStateAction<string>>}
         />
       </div>
