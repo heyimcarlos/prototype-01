@@ -22,6 +22,16 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-wrap: break-word;
+
+  overflow-x: hidden;
+}
+
+.swiper-button-prev {
+  color: black !important;
+}
+
+.swiper-button-next {
+  color: black !important;
 }
 
 .swiper-pagination-fraction.swiper-pagination.swiper-pagination-horizontal {

@@ -1,5 +1,6 @@
 import React, {
   Fragment,
+  useEffect,
   useMemo,
   type Dispatch,
   type SetStateAction,
@@ -12,7 +13,7 @@ import { useState } from "react";
 import Divider from "../newListingComponents/formComponents/Divider";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-import SwiperCore, { Pagination } from "swiper";
+import SwiperCore, { Navigation, Pagination } from "swiper";
 import image0 from "../../../public/assets/images/preview/0.jpg";
 import image1 from "../../../public/assets/images/preview/1.jpg";
 import image2 from "../../../public/assets/images/preview/2.jpg";
@@ -58,6 +59,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
   const router = useRouter();
 
   // console.log("LISTING:", listing);
+  const [innerOpen, setInnerOpen] = useState(false);
 
   const onClose = () => {
     router.push(router.pathname, undefined, { shallow: true });
@@ -96,9 +98,20 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
   const showCarousel =
     direction === "right" || (!is2xl && direction === "left");
 
+  useEffect(() => {
+    if (open === true) {
+      setInnerOpen(true);
+    }
+    if (open === false) {
+      setInnerOpen(false);
+    }
+  }, [open]);
+
+  // console.log("open", open);
+
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+    <Transition.Root show={innerOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={() => null}>
         <div
           className={`pointer-events-none fixed inset-y-0 ${
             direction === "left" ? "left-0" : "right-0"
@@ -108,7 +121,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
             as={Fragment}
             enter="transform transition ease-in-out duration-500 sm:duration-700"
             enterFrom={
-              direction === "left" ? "-translate-x-full" : "translate-x-full"
+              direction === "left" ? "-translate-x-full " : "translate-x-full "
             }
             enterTo="translate-x-0"
             leave="transform transition ease-in-out duration-500 sm:duration-700"
@@ -120,8 +133,8 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
             <Dialog.Panel
               className={`pointer-events-auto mt-[5.1rem] w-screen ${
                 direction === "left"
-                  ? "lg:max-w-[calc(100vw-574px)]"
-                  : "lg:max-w-[calc(575px)]"
+                  ? "lg:max-w-[calc(100vw-588px)]"
+                  : "lg:max-w-[calc(588px)]"
               } xl:mt-[5.1rem] `}
             >
               <div
@@ -146,7 +159,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                       type="button"
                       className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
                       onClick={() => {
-                        onClose();
+                        // onClose();
                         setOpen(false);
                       }}
                     >
@@ -166,7 +179,9 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                       spaceBetween={0}
                       slidesPerView={1}
                       // allowTouchMove={false}
-                      // navigation={true}
+                      navigation={true}
+                      // onNavigationNext={}
+                      modules={[Pagination, Navigation]}
                     >
                       <div className="border-1 absolute top-0 z-[50] ml-3 mt-3 h-auto w-auto rounded-lg bg-black bg-opacity-60 px-3 pb-0.5 pt-0.5 font-bold text-white">
                         {listing.listingType[0] +
@@ -187,7 +202,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                               direction === "left"
                                 ? "md:max-h-[25.5rem]"
                                 : "md:max-h-[18rem]"
-                            } max-h-[15.5rem] object-cover`}
+                            } max-h-[15.5rem] select-none object-cover`}
                             src={image}
                             alt={idx.toString()}
                           />
@@ -218,7 +233,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
 
                 <div>
                   {is2xl && direction === "left" && (
-                    <div className="z-40 flex h-[3rem] w-full border-r-2 pt-3 pb-10">
+                    <div className="z-40 flex h-[3rem] w-full  pt-3 pb-10">
                       <div className="ml-3 flex w-[50%] justify-start">
                         <div className=" border-1 z-[40] h-7 rounded-lg bg-black bg-opacity-60 px-3 pb-0.5 pt-0.5 font-bold text-white">
                           {listing.listingType[0] +
@@ -242,7 +257,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                   )}
                   <div
                     id="firstInfoAndNavBar"
-                    className={`sticky top-0 z-30 -mt-[6px] bg-white md:py-2 lg:border-r-2 ${
+                    className={`sticky top-0 z-30 -mt-[6px] bg-white md:py-2 ${
                       direction === "left" ? "2xl:py-0" : ""
                     }`}
                   >
@@ -361,7 +376,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
 
                   <div
                     id="detailsContainer"
-                    className={`h-[calc(100vh-48px-35.19px-52px-32px)] w-full overflow-auto scroll-smooth bg-white md:h-[calc(100vh-58px-94.59px-55.59px)] lg:border-r-2 ${
+                    className={`h-[calc(100vh-48px-35.19px-52px-32px)] w-full overflow-auto scroll-smooth bg-white md:h-[calc(100vh-58px-94.59px-55.59px)] ${
                       direction === "left"
                         ? "2xl:h-[calc(100vh-60px-54px-33.59px-48px-52px)] 2xl:overflow-y-auto"
                         : ""

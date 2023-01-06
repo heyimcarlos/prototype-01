@@ -86,13 +86,14 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="flex h-[calc(100vh-48px-33.6px)] w-full justify-center">
+      <main className="flex h-[calc(100vh-48px-33.6px)] w-full justify-center bg-white">
         <div className="h-full w-full">
           <Map
             mapRef={mapRef}
             neighborhoods={neighborhoods}
             initialViewport={initialViewport}
             setOpen={setOpen}
+            open={open}
           />
         </div>
 
@@ -100,9 +101,6 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
         {listing && (
           <SlideOver open={open} setOpen={setOpen} listing={listing} />
         )}
-        {/* {listing && (
-          <SlideOver2xl open={open} setOpen={setOpen} listing={listing} />
-        )} */}
 
         {/* Single Mobile Preview */}
         {listing && listings.length < 2 && !doesFit && (
@@ -128,18 +126,18 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
 
         {/* Desktop Sidebar with Listings */}
         {doesFit && (
-          <div className="flex h-full min-w-[300px] max-w-[300px] flex-wrap content-start justify-center overflow-y-auto bg-white md:after:justify-start lg:min-w-[575px] lg:after:mr-[18rem] ">
+          <div className="flex h-full max-w-[588px] flex-wrap content-start justify-center overflow-y-auto border-l-2 border-black/20 bg-black bg-opacity-10 md:after:justify-start lg:min-w-[575px] lg:after:mr-[18rem] ">
             {listingLocations.length < 1 && neighborhoodsState.length < 1 && (
               <div>No listing to show move the map</div>
             )}
 
             {listingLocations.length > 0 && (
-              <div className="">
+              <div className="rounded-lg border-2 bg-white px-2">
                 <span>{totalListings()} Homes in this area</span>
               </div>
             )}
 
-            <div className="flex h-full w-full flex-wrap content-start justify-center overflow-y-auto bg-white md:after:justify-center lg:after:mr-[18rem] xl:min-w-[575px]">
+            <div className="flex h-full w-full flex-wrap content-start justify-center overflow-y-auto  md:after:justify-center lg:after:mr-[17.7rem] xl:min-w-[575px]">
               {neighborhoodsState.map((sector) =>
                 sector.listingLocations.map((location) => {
                   return location.listings.map((listing) => (

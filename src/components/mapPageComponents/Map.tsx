@@ -62,6 +62,7 @@ type MapProps = {
     zoom: number;
   };
   setOpen: Dispatch<SetStateAction<boolean>>;
+  open: boolean;
   mapRef: RefObject<MapRef>;
   neighborhoods: (Neighborhood & {
     listingLocations: (ListingLocation & {
@@ -151,6 +152,7 @@ const Map = ({
   mapRef,
   initialViewport,
   setOpen,
+  open,
 }: MapProps) => {
   const setGlobalShowTrue = useGlobalShow((state) => state.setGlobalShowTrue);
 
@@ -246,7 +248,7 @@ const Map = ({
       data.listingLocations.map((listingLocation) => {
         listings.push(listingLocation);
       });
-      console.log("listings from getNeighborhood", listings);
+      // console.log("listings from getNeighborhood", listings);
       setListings(listings);
     },
   });
@@ -303,13 +305,14 @@ const Map = ({
         });
       }
     }
-    console.log("listingLocations from Drag", listingsLocations);
+    // console.log("listingLocations from Drag", listingsLocations);
     const flattened = listingsLocations.flat();
     setListings(flattened);
   };
 
   const onClickMap = (event: MapLayerMouseEvent) => {
     event.originalEvent.stopPropagation();
+    event.preventDefault();
     if (!mapRef.current) return;
     const queryRenderedFeatures = mapRef.current.queryRenderedFeatures(
       event.point,
@@ -334,13 +337,13 @@ const Map = ({
           return turf.booleanPointInPolygon(point, poly);
         })
       ) {
-        setListing(null);
+        if (!open) setListing(null);
         setSelectedListings([]);
         return;
       } else {
       }
       setSelectedListings([]);
-      setListing(null);
+      if (!open) setListing(null);
 
       // const test = mapRef.current.getCenter();
       // mapRef.current.flyTo({
@@ -415,7 +418,7 @@ const Map = ({
           // mapStyle="mapbox://styles/mapbox/streets-v11"
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
           onZoomEnd={(e) => {
-            console.log("e end", e.viewState.zoom);
+            // console.log("e end", e.viewState.zoom);
             setCurZoom(e.viewState.zoom);
           }}
         >
@@ -618,10 +621,10 @@ const Map = ({
                       setDirection("right");
                       // if(listingLocation.listings[0].listingDetail.)
                       setListing(listingLocation.listings[0]);
-                      console.log(
-                        "listing from neighborhoodState",
-                        listingLocation.listings[0]
-                      );
+                      // console.log(
+                      //   "listing from neighborhoodState",
+                      //   listingLocation.listings[0]
+                      // );
                       if (notMobile) setOpen(true);
                       setSelectedListings([]);
                       setNeighborhood(
