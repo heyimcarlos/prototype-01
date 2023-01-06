@@ -156,7 +156,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
                         beds={listing.bedrooms}
                         fullBaths={listing.fullBathrooms}
                         halfBaths={listing.halfBathrooms}
-                        meters={listing.squareFeet}
+                        meters={listing.meters}
                         neighborhood={sector.name}
                       />
                     </div>
@@ -182,7 +182,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
                         beds={listing.bedrooms}
                         fullBaths={listing.fullBathrooms}
                         halfBaths={listing.halfBathrooms}
-                        meters={listing.squareFeet}
+                        meters={listing.meters}
                       />
                     </div>
                   ));

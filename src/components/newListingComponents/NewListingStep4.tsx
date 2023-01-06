@@ -33,18 +33,22 @@ const NewListingStep4 = ({ setStep }: StepType) => {
   const newListing = useNewListing((state) => state);
   const [openPhotos, setOpenPhotos] = useState(false);
   const router = useRouter();
+
   const mutation = trpc.listing.create.useMutation({
     onSuccess() {
       router.push("/dashboard");
     },
   });
+
   const handleSubmit = (listingState: NewListingState) => {
     mutation.mutate({
-      name: listingState.name,
+      name: listingState.recordName,
       bio: "bio",
-      propertyType: "HOUSE",
-      squareFeet: listingState.meters,
+      meters: listingState.meters,
+      condition: listingState.condition,
+      maintenance: listingState.maintenance,
       listingType: "RENT",
+      propertyType: listingState.propertyType,
       halfBathrooms: listingState.halfBathrooms,
       bedrooms: listingState.bedrooms,
       price: listingState.price,
@@ -52,9 +56,9 @@ const NewListingStep4 = ({ setStep }: StepType) => {
       currency: "DOP",
       neighborhoodSlug: slugify(listingState.sector),
       listingDetail: {
-        buildingAmenities: listingState.buildingAmenities,
-        exteriorAmenities: listingState.exteriorAmenities,
-        interiorAmenities: listingState.interiorAmenities,
+        buildingAmenities: listingState.selectedBuildingAmenities,
+        exteriorAmenities: listingState.selectedExteriorAmenities,
+        interiorAmenities: listingState.selectedInteriorAmenities,
         lotSquareFeet: 0,
         yearBuilt: 2018,
         yearRemodeled: 2021,
@@ -65,7 +69,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
         country: "Republica Dominicana",
         lat: String(listingState.lat),
         lng: String(listingState.lng),
-        name: "Edificio 1",
+        name: listingState.name,
         state: "Distrito Nacional",
         formattedAddress: listingState.fullAddress,
       },

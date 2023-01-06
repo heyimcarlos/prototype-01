@@ -2,14 +2,15 @@ import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useNewListing } from "@/stores/useNewListing";
+import { type PropertyType } from "@prisma/client";
 
 const propertyTypes = [
-  { id: 0, name: "Type of Property" },
-  { id: 1, name: "Apartment" },
-  { id: 3, name: "House" },
-  { id: 2, name: "Townhome" },
-  { id: 4, name: "Land Lot" },
-  { id: 5, name: "Commercial" },
+  { id: 1, name: "APARTMENT" },
+  { id: 3, name: "HOUSE" },
+  { id: 2, name: "TOWNHOME" },
+  { id: 4, name: "LAND" },
+  { id: 5, name: "COMMERCIAL" },
+  { id: 6, name: "OTHER" },
 ];
 
 function classNames(...classes: string[]) {
@@ -17,7 +18,7 @@ function classNames(...classes: string[]) {
 }
 
 export default function PropertyTypeSelect() {
-  const [selected, setSelected] = useState(propertyTypes[0]);
+  const [selected, setSelected] = useState("Type of property");
   const setPropertyType = useNewListing((state) => state.setPropertyType);
   const propertyType = useNewListing((state) => state.propertyType);
 
@@ -29,15 +30,19 @@ export default function PropertyTypeSelect() {
             <Listbox.Label className="text-sm font-medium text-gray-700 md:text-xl">
               Type
             </Listbox.Label>
-            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 md:py-3 pl-3 pr-10 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
-              {propertyType === "" && (
+            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 pl-3 pr-10 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl">
+              {propertyType ===
+                ("Type of property" as unknown as PropertyType) && (
                 <span className="block truncate text-gray-500">
-                  {selected?.name}
+                  Type of property
                 </span>
               )}
-              {propertyType !== "" && (
+              {propertyType !==
+                ("Type of property" as unknown as PropertyType) && (
                 <span className="block truncate">{propertyType}</span>
               )}
+
+              {/* <span className="block truncate">{propertyType}</span> */}
 
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon
@@ -54,19 +59,19 @@ export default function PropertyTypeSelect() {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute z-10 mt-1 max-h-[9.9rem] w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm md:text-xl">
+              <Listbox.Options className="absolute z-10 mt-1 max-h-[9.9rem] w-full overflow-auto rounded-md bg-white py-1 text-base text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:text-xl">
                 {propertyTypes.map((type) => (
                   <Listbox.Option
                     key={type.id}
                     className={({ active }) =>
                       classNames(
-                        active ? "text-white bg-indigo-600" : "text-gray-900",
+                        active ? "bg-indigo-600 text-white" : "text-gray-900",
                         "relative cursor-default select-none py-2 pl-8 pr-4"
                       )
                     }
                     value={type}
                     onClick={() => {
-                      setPropertyType(type.name);
+                      setPropertyType(type.name as PropertyType);
                     }}
                   >
                     {({ selected, active }) => (
