@@ -10,8 +10,6 @@ import React, { useEffect, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { type NextPageWithLayout } from "../_app";
-// import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
-// import "react-phone-number-input/style.css";
 
 type AvatarSectionProps = {
   imageSrc: string;
@@ -296,18 +294,9 @@ const SettingsPage: NextPageWithLayout = () => {
           </form>
         </div>
       </section>
-      <ImagesUploader />
     </div>
   );
 };
-// <FormProvider {...formMethods}>
-//   <form onSubmit={handleSubmit(onSubmit)}>
-//     <div className="flex items-center"></div>
-//     <button disabled={isDisabled} className="mt-8" type="submit">
-//       Update
-//     </button>
-//   </form>
-// </FormProvider>
 
 SettingsPage.layout = DashboardLayout;
 
