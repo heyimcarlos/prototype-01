@@ -13,7 +13,7 @@ import {
   type MapPreferenceKeys,
   mapPreferenceKeysArray,
 } from "@/lib/types/mapPreferences";
-import FlyoutMenu from "./FlyoutMenu";
+import Popover from "./Popover";
 
 type FormKeysSchema = {
   [key in Exclude<MapPreferenceKeys, "work">]: z.ZodOptional<z.ZodString>;
@@ -94,7 +94,7 @@ const PreferenceForm = () => {
   };
 
   return (
-    <FlyoutMenu>
+    <Popover triggerText="preferences">
       <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -124,7 +124,7 @@ const PreferenceForm = () => {
                         deactivatePreference(preference);
                       }}
                     >
-                      <XMarkIcon className="text-gray-500 mt-6 h-8 w-8 group-hover:text-gray-500" />
+                      <XMarkIcon className="mt-6 h-8 w-8 text-gray-500 group-hover:text-gray-500" />
                     </div>
                   </>
                 ) : (
@@ -149,7 +149,7 @@ const PreferenceForm = () => {
                           deactivatePreference(preference);
                           unregister(preference.key as FormKeys);
                         }}
-                        className="text-gray-500  h-8 w-8 group-hover:text-gray-500"
+                        className="h-8  w-8 text-gray-500 group-hover:text-gray-500"
                       />
                     </div>
                   </div>
@@ -158,7 +158,7 @@ const PreferenceForm = () => {
             ))}
 
           {canSubmit && (
-            <div className="w-full flex justify-end">
+            <div className="flex w-full justify-end">
               <Button type="submit" disabled={isDisabled}>
                 Save
               </Button>
@@ -185,7 +185,7 @@ const PreferenceForm = () => {
           </div>
         </form>
       </div>
-    </FlyoutMenu>
+    </Popover>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
@@ -7,17 +7,17 @@ import classNames from "@/lib/classNames";
 type Props = {
   children: React.ReactNode;
 } & (
-    | {
+  | {
       triggerIcon: JSX.Element;
       triggerText?: never;
     }
-    | {
+  | {
       triggerIcon?: never;
       triggerText: string;
     }
-  );
+);
 
-const FlyoutMenu = ({ children, triggerIcon, triggerText }: Props) => {
+const Propover = ({ children, triggerIcon, triggerText }: Props) => {
   const [open, setOpen] = useState(false);
   const handleOpen = (open: boolean) => setOpen(open);
 
@@ -36,9 +36,11 @@ const FlyoutMenu = ({ children, triggerIcon, triggerText }: Props) => {
 
   return (
     <Popover.Root open={open} onOpenChange={handleOpen}>
-      <Popover.Trigger asChild className="cursor-pointer">{trigger}</Popover.Trigger>
+      <Popover.Trigger asChild className="cursor-pointer">
+        {trigger}
+      </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content className="z-10 m-2 w-32 origin-top-right overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Popover.Content className="z-10 m-2 origin-top-right overflow-hidden rounded-md bg-white p-8 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           {children}
         </Popover.Content>
       </Popover.Portal>
@@ -46,4 +48,4 @@ const FlyoutMenu = ({ children, triggerIcon, triggerText }: Props) => {
   );
 };
 
-export default FlyoutMenu;
+export default Propover;

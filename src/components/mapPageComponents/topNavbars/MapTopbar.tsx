@@ -3,91 +3,110 @@ import SectorsSelected from "./SectorsSelected";
 import FiltersFlyoutMenu from "./FiltersFlyoutMenu";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import FlyoutMenu from "@/components/FlyoutMenu";
+import Popover from "@/components/Popover";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/20/solid";
 import { ListingType, PropertyType } from "@prisma/client";
+import {
+  Form,
+  NumberWithButtonsField,
+  TextField,
+} from "@/components/form/fields";
 
 const FormSchema = z.object({
-  name: z.string().min(1, "required"),
-  minPrice: z.number().min(0),
-  maxPrice: z.number().max(30000000),
+  // minPrice: z.string().min(0),
+  // maxPrice: z.number().max(30000000),
   bedrooms: z.number(),
-  bathrooms: z.number(),
+  fullBathrooms: z.number(),
   halfBathrooms: z.number(),
-  listingType: z.nativeEnum(ListingType),
-  propertyType: z.nativeEnum(PropertyType)
+  // listingType: z.nativeEnum(ListingType),
+  // propertyType: z.nativeEnum(PropertyType),
 });
 type FormValues = z.infer<typeof FormSchema>;
 
 const MapFiltersForm = () => {
-  const {
-    register,
-    handleSubmit,
-  } = useForm<FormValues>({
+  const formMethods = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      // minPrice: "",
+      // maxPrice: 30000000,
+      bedrooms: 0,
+      fullBathrooms: 0,
+      halfBathrooms: 0,
+      // listingType: "RENT",
+      // propertyType: "HOUSE",
+    },
   });
 
+  const {
+    formState: { isSubmitting, isDirty },
+  } = formMethods;
+
   const onSubmit = (data: FormValues) => {
-    console.log('data', data)
-  }
+    console.log("data", data);
+  };
 
-  const { query } = useRouter();
-
-  const [minPrice, setMinPrice] = useState(
-    query.minPrice ? parseInt(query.minPrice as string) : 0
-  );
-  const [maxPrice, setMaxPrice] = useState(
-    query.maxPrice ? parseInt(query.maxPrice as string) : 30000000
-  );
-  const [bedrooms, setBedrooms] = useState(
-    query.bedrooms ? parseInt(query.bedrooms as string) : 0
-  );
-  const [fullBathrooms, setFullBathrooms] = useState(
-    query.fullBathrooms ? parseInt(query.fullBathrooms as string) : 0
-  );
-  const [halfBathrooms, setHalfBathrooms] = useState(
-    query.halfBathrooms ? parseInt(query.halfBathrooms as string) : 0
-  );
-  const [listingType, setListingType] = useState(
-    query.listingType ? query.listingType : "For Sale & Rent"
-  );
+  // const [minPrice, setMinPrice] = useState(
+  //   query.minPrice ? parseInt(query.minPrice as string) : 0
+  // );
+  // const [maxPrice, setMaxPrice] = useState(
+  //   query.maxPrice ? parseInt(query.maxPrice as string) : 30000000
+  // );
+  // const [bedrooms, setBedrooms] = useState(
+  //   query.bedrooms ? parseInt(query.bedrooms as string) : 0
+  // );
+  // const [fullBathrooms, setFullBathrooms] = useState(
+  //   query.fullBathrooms ? parseInt(query.fullBathrooms as string) : 0
+  // );
+  // const [halfBathrooms, setHalfBathrooms] = useState(
+  //   query.halfBathrooms ? parseInt(query.halfBathrooms as string) : 0
+  // );
+  // const [listingType, setListingType] = useState(
+  //   query.listingType ? query.listingType : "For Sale & Rent"
+  // );
 
   return (
     <>
-      <FlyoutMenu triggerIcon={<AdjustmentsHorizontalIcon className="h-6 w-6" />}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-
-          <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-            >
-              Name
-            </label>
-            <div className="mt-1 sm:col-span-2 sm:mt-0">
-              <input
-                {...register("name")}
-                type="text"
-                placeholder="Maria"
-                name="name"
-                id="name"
-                autoComplete="given-name"
-                className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm"
-              />
-              {/*
-                      {errors.name?.message && (
-                        <ErrorMessage message={errors.name.message} />
-                      )}
-                      */}
-            </div>
-          </div>
-          <button type="submit">apply</button>
-        </form>
-      </FlyoutMenu>
-      <FiltersFlyoutMenu
+      <Popover triggerIcon={<AdjustmentsHorizontalIcon className="h-6 w-6" />}>
+        <div>
+          <Form
+            form={formMethods}
+            handleSubmit={(values) => {
+              console.log("firing", values);
+            }}
+          >
+            <NumberWithButtonsField
+              type="number"
+              label="Bedrooms"
+              labelProps={{ className: "mb-1" }}
+              {...formMethods.register("bedrooms", {
+                valueAsNumber: true,
+              })}
+            />
+            <NumberWithButtonsField
+              type="number"
+              label="Full Bathrooms"
+              labelProps={{ className: "mb-1" }}
+              {...formMethods.register("fullBathrooms", {
+                valueAsNumber: true,
+              })}
+            />
+            <NumberWithButtonsField
+              type="number"
+              label="Half Bathrooms"
+              labelProps={{ className: "mb-1" }}
+              {...formMethods.register("halfBathrooms", {
+                valueAsNumber: true,
+              })}
+            />
+            {/* <TextField label="Name" {...formMethods.register("name")} /> */}
+            <button type="submit">submit</button>
+          </Form>
+        </div>
+      </Popover>
+      {/* <FiltersFlyoutMenu
         minPrice={minPrice}
         setMinPrice={setMinPrice}
         maxPrice={maxPrice}
@@ -100,7 +119,7 @@ const MapFiltersForm = () => {
         setHalfBathrooms={setHalfBathrooms}
         listingType={listingType as string}
         setListingType={setListingType as Dispatch<SetStateAction<string>>}
-      />
+      /> */}
     </>
   );
 };

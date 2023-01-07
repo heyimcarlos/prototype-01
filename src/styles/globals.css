@@ -24,6 +24,17 @@ body {
   overflow-wrap: break-word;
 }
 
+ {
+  /* @Info: remove input type number arrows */
+}
+@layer utilities {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    @apply appearance-none;
+    @apply m-0;
+  }
+}
+
 .swiper-pagination-fraction.swiper-pagination.swiper-pagination-horizontal {
   width: 2.9rem !important;
   height: auto !important;
