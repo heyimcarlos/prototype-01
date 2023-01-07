@@ -570,7 +570,7 @@ const Map = ({
           {/* INFO: NEIGHBORHOODS MARKERS FOR THE MAIN CLUSTERS */}
           {/* INFO: SHOWING ONLY THE ONES THAT HAVE LISTING LOCATIONS INSIDE */}
 
-          {neighborhoods?.map((neighborhood) => {
+          {/* {neighborhoods?.map((neighborhood) => {
             if (neighborhood.listingLocations.length > 0) {
               return (
                 <CustomMarker
@@ -585,11 +585,11 @@ const Map = ({
                 />
               );
             }
-          })}
+          })} */}
 
           {/* INFO: SHOWING ALL THE NEIGHBORHOODS EVEN IF THEY DONT HAVE LISTING LOCATIONS INSIDE */}
 
-          {/* {neighborhoods?.map((neighborhood) => (
+          {neighborhoods?.map((neighborhood) => (
             <CustomMarker
               key={`marker-${neighborhood.id}`}
               neighborhood={neighborhood}
@@ -600,7 +600,7 @@ const Map = ({
               names={names}
               curZoom={curZoom}
             />
-          ))} */}
+          ))}
 
           {/* @INFO: LISTINGLOCATIONS MARKERS WITHIN NEIGHBORHOOD BOUNDS */}
 
