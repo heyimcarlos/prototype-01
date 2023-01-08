@@ -31,16 +31,16 @@ const NewListingStep2 = ({ setStep }: StepType) => {
 
   return (
     <>
-      <div className="h-[calc(100vh-55.59px)] md:h-[calc(100vh-80.59px)] w-full flex flex-col pt-2">
-        <div className="flex h-full w-full xl:px-[18rem] flex-col justify-evenly xl:flex-row xl:justify-start xl:items-center xl:flex-wrap xl:after:justify-start xl:ml-3">
-          <div className="w-full xl:w-[49%] flex flex-col justify-center items-center">
+      <div className="flex h-[calc(100vh-55.59px)] w-full flex-col pt-2 md:h-[calc(100vh-80.59px)]">
+        <div className="flex h-full w-full flex-col justify-evenly xl:ml-3 xl:flex-row xl:flex-wrap xl:items-center xl:justify-start xl:px-[18rem] xl:after:justify-start">
+          <div className="flex w-full flex-col items-center justify-center xl:w-[49%]">
             <div className="w-[80%]">
               <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 md:text-xl"
               >
                 Name
-                <span className="text-xs text-gray-400 ml-3 md:text-lg">
+                <span className="ml-3 text-xs text-gray-400 md:text-lg">
                   *For your records only
                 </span>
               </label>
@@ -57,20 +57,20 @@ const NewListingStep2 = ({ setStep }: StepType) => {
                 }}
                 placeholder={"Name of listing"}
                 value={recordName ? recordName : undefined}
-                className="relative cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 pl-3 pr-10 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
+                className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 pl-3 pr-10 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl"
               />
             </div>
           </div>
 
-          <div className="w-full xl:w-[49%] flex justify-center items-center ">
+          <div className="flex w-full items-center justify-center xl:w-[49%] ">
             <PropertyTypeSelect />
           </div>
 
-          <div className="w-full xl:w-[49%] flex justify-center items-center ">
+          <div className="flex w-full items-center justify-center xl:w-[49%] ">
             <PropertyConditionSelect />
           </div>
 
-          <div className="w-full xl:w-[49%] flex justify-center">
+          <div className="flex w-full justify-center xl:w-[49%]">
             <div className="relative w-[80%]">
               <label
                 htmlFor="name"
@@ -95,12 +95,12 @@ const NewListingStep2 = ({ setStep }: StepType) => {
                 }}
                 value={price.toLocaleString()}
                 placeholder="0"
-                className=" relative inline cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
+                className=" relative inline w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl"
               />
             </div>
           </div>
 
-          <div className="w-full xl:w-[49%] flex justify-center">
+          <div className="flex w-full justify-center xl:w-[49%]">
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
@@ -127,12 +127,12 @@ const NewListingStep2 = ({ setStep }: StepType) => {
                 }}
                 value={maintenance.toLocaleString()}
                 placeholder="0"
-                className=" relative inline cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
+                className=" relative inline w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl"
               />
             </div>
           </div>
 
-          <div className="w-full xl:w-[49%] flex justify-center">
+          <div className="flex w-full justify-center xl:w-[49%]">
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
@@ -157,12 +157,12 @@ const NewListingStep2 = ({ setStep }: StepType) => {
                 }}
                 value={meters.toLocaleString()}
                 placeholder="0"
-                className=" relative inline cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl"
+                className=" relative inline w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl"
               />
             </div>
           </div>
 
-          <div className="w-full xl:w-[49%] flex justify-center">
+          <div className="flex w-full justify-center xl:w-[49%]">
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
@@ -170,9 +170,9 @@ const NewListingStep2 = ({ setStep }: StepType) => {
               >
                 Bedrooms
               </label>
-              <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
+              <div className=" relative inline flex w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl">
                 <button
-                  className="w-[33%] flex justify-center items-center border-r border-gray-300"
+                  className="flex w-[33%] items-center justify-center border-r border-gray-300"
                   onClick={() => {
                     if (bedrooms >= 1) {
                       setBedrooms(bedrooms - 1);
@@ -181,9 +181,9 @@ const NewListingStep2 = ({ setStep }: StepType) => {
                 >
                   -
                 </button>
-                <div className="w-[33%] flex justify-center">{bedrooms}</div>
+                <div className="flex w-[33%] justify-center">{bedrooms}</div>
                 <button
-                  className="w-[33%] flex justify-center items-center border-l border-gray-300"
+                  className="flex w-[33%] items-center justify-center border-l border-gray-300"
                   onClick={() => setBedrooms(bedrooms + 1)}
                 >
                   +
@@ -192,7 +192,7 @@ const NewListingStep2 = ({ setStep }: StepType) => {
             </div>
           </div>
 
-          <div className="w-full xl:w-[49%] flex justify-center">
+          <div className="flex w-full justify-center xl:w-[49%]">
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
@@ -200,9 +200,9 @@ const NewListingStep2 = ({ setStep }: StepType) => {
               >
                 Full Bathrooms
               </label>
-              <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
+              <div className=" relative inline flex w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl">
                 <button
-                  className="w-[33%] flex justify-center items-center border-r border-gray-300"
+                  className="flex w-[33%] items-center justify-center border-r border-gray-300"
                   onClick={() => {
                     if (fullBathrooms >= 1) {
                       setFullBathrooms(fullBathrooms - 1);
@@ -211,11 +211,11 @@ const NewListingStep2 = ({ setStep }: StepType) => {
                 >
                   -
                 </button>
-                <div className="w-[33%] flex justify-center">
+                <div className="flex w-[33%] justify-center">
                   {fullBathrooms}
                 </div>
                 <button
-                  className="w-[33%] flex justify-center items-center border-l border-gray-300"
+                  className="flex w-[33%] items-center justify-center border-l border-gray-300"
                   onClick={() => setFullBathrooms(fullBathrooms + 1)}
                 >
                   +
@@ -224,7 +224,7 @@ const NewListingStep2 = ({ setStep }: StepType) => {
             </div>
           </div>
 
-          <div className="w-full xl:w-[49%] flex justify-center">
+          <div className="flex w-full justify-center xl:w-[49%]">
             <div className="relative w-[80%] ">
               <label
                 htmlFor="name"
@@ -232,9 +232,9 @@ const NewListingStep2 = ({ setStep }: StepType) => {
               >
                 Half Bathrooms
               </label>
-              <div className=" relative inline flex cursor-default w-full rounded-md border border-gray-300 bg-white py-0.5 md:py-3 text-left shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm md:text-xl">
+              <div className=" relative inline flex w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl">
                 <button
-                  className="w-[33%] flex justify-center items-center border-r border-gray-300"
+                  className="flex w-[33%] items-center justify-center border-r border-gray-300"
                   onClick={() => {
                     if (halfBathrooms >= 1) {
                       setHalfBathrooms(halfBathrooms - 1);
@@ -243,11 +243,11 @@ const NewListingStep2 = ({ setStep }: StepType) => {
                 >
                   -
                 </button>
-                <div className="w-[33%] flex justify-center">
+                <div className="flex w-[33%] justify-center">
                   {halfBathrooms}
                 </div>
                 <button
-                  className="w-[33%] flex justify-center items-center border-l border-gray-300"
+                  className="flex w-[33%] items-center justify-center border-l border-gray-300"
                   onClick={() => setHalfBathrooms(halfBathrooms + 1)}
                 >
                   +
@@ -256,18 +256,18 @@ const NewListingStep2 = ({ setStep }: StepType) => {
             </div>
           </div>
         </div>
-        <div className="h-auto w-full flex justify-center items-center space-x-6 mb-3 md:mb-6 md:text-2xl">
+        <div className="text-md mb-3 flex h-auto w-full items-center justify-center space-x-6 md:mb-3 md:text-xl">
           {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
             Save & Exit
           </div> */}
           <button
-            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+            className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-xl md:py-2 md:px-4"
             onClick={() => setStep("step 1")}
           >
             Back
           </button>
           <button
-            className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+            className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-xl md:py-2 md:px-4"
             onClick={() => setStep("step 2.5")}
           >
             Continue

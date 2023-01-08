@@ -40,7 +40,7 @@ export default function ListingTypeSelect({
             <Listbox.Label className="text-sm font-medium text-gray-700 md:text-xl">
               Type
             </Listbox.Label>
-            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl lg:py-2">
+            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-2 md:text-xl lg:py-2">
               {listingType === ("Type of listing" as unknown) && (
                 <span className="block truncate text-gray-500">
                   Type of listing

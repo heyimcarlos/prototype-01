@@ -84,7 +84,7 @@ function classNames(...classes: string[]) {
 }
 
 export default function SectorSelect() {
-  const [selected, setSelected] = useState(sectors[0]);
+  const [selected, setSelected] = useState();
   const setSector = useNewListing((state) => state.setSector);
   const sector = useNewListing((state) => state.sector);
 
@@ -98,7 +98,7 @@ export default function SectorSelect() {
             Sector
           </Listbox.Label>
           <div className="relative ">
-            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl lg:py-2">
+            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-2 md:text-xl lg:py-2">
               {sector === "" && (
                 <span className="block truncate text-gray-500">
                   Select a sector

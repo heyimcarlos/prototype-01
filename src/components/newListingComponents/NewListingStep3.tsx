@@ -71,7 +71,7 @@ const NewListingStep3 = ({ setStep }: StepType) => {
           />
         </div>
       </div>
-      <div className="absolute bottom-0 mb-3 flex w-full justify-center space-x-6 md:mb-6 md:text-2xl">
+      <div className="absolute bottom-0 mb-3 flex w-full justify-center space-x-6 md:mb-3 md:text-xl">
         {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
           Save & Exit
         </div> */}

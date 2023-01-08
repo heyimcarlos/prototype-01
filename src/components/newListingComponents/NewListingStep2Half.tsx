@@ -103,14 +103,14 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
 
   return (
     <div
-      className="w-full h-[calc(100vh-68px)] md:h-[calc(100vh-80.59px)] xl:px-[18rem]"
+      className="h-[calc(100vh-55.59px)] w-full md:h-[calc(100vh-80.59px)] xl:px-[18rem]"
       draggable={false}
     >
-      <div className="w-full h-9 flex justify-around items-center pt-[3rem]">
+      <div className="flex h-9 w-full items-center justify-around pt-[3rem]">
         <span className="isolate inline-flex rounded-md shadow-sm">
           <button
             type="button"
-            className={`shadow-md relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm md:text-xl font-medium text-gray-700 hover:bg-gray-50 ${
+            className={`relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-md hover:bg-gray-50 md:text-xl ${
               selectedDetail === "Property"
                 ? "z-10 border-indigo-500 outline-none ring-1 ring-indigo-600"
                 : ""
@@ -123,7 +123,7 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
           </button>
           <button
             type="button"
-            className={`shadow-md relative -ml-px inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm md:text-xl font-medium text-gray-700 hover:bg-gray-50 ${
+            className={`relative -ml-px inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-md hover:bg-gray-50 md:text-xl ${
               selectedDetail === "Interior"
                 ? "z-10 border-indigo-500 outline-none ring-1 ring-indigo-600"
                 : ""
@@ -136,7 +136,7 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
           </button>
           <button
             type="button"
-            className={`shadow-md relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm md:text-xl font-medium text-gray-700 hover:bg-gray-50 ${
+            className={`relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-md hover:bg-gray-50 md:text-xl ${
               selectedDetail === "Exterior"
                 ? "z-10 border-indigo-500 outline-none ring-1 ring-indigo-600"
                 : ""
@@ -153,9 +153,9 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
       {/* <div>Building Custom ADD</div> */}
 
       {selectedDetail === "Property" && (
-        <div className="w-full flex mt-9">
+        <div className="mt-9 flex w-full">
           <input
-            className="w-full mx-2 rounded-md border-black border-[1px] shadow-md md:p-3 md:text-xl"
+            className="mx-2 w-full rounded-md border-[1px] border-black shadow-md md:p-3 md:text-xl"
             type="text"
             placeholder="Amenidad personalizada"
             onChange={(e) => setCustomInput(e.target.value)}
@@ -172,7 +172,7 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
             }}
           />
           <button
-            className="border-[1px] mr-2 border-black p-2 rounded-md shadow-md md:p-3 md:px-6 md:text-xl"
+            className="mr-2 rounded-md border-[1px] border-black p-2 shadow-md md:p-3 md:px-6 md:text-xl"
             onClick={() => {
               setSelectedBuildingAmenities([
                 ...selectedBuildingAmenities,
@@ -189,9 +189,9 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
       {/* <div>Interior Custom ADD</div> */}
 
       {selectedDetail === "Interior" && (
-        <div className="w-full flex mt-9">
+        <div className="mt-9 flex w-full">
           <input
-            className="w-full mx-2 rounded-md border-black border-[1px] md:p-3 md:text-xl shadow-md"
+            className="mx-2 w-full rounded-md border-[1px] border-black shadow-md md:p-3 md:text-xl"
             type="text"
             placeholder="Amenidad personalizada"
             onChange={(e) => setCustomInput(e.target.value)}
@@ -208,7 +208,7 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
             }}
           />
           <button
-            className="border-[1px] mr-2 border-black p-2 rounded-md shadow-md md:p-3 md:px-6 md:text-xl"
+            className="mr-2 rounded-md border-[1px] border-black p-2 shadow-md md:p-3 md:px-6 md:text-xl"
             onClick={() => {
               setSelectedInteriorAmenities([
                 ...selectedInteriorAmenities,
@@ -225,9 +225,9 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
       {/* <div>Exterior Custom ADD</div> */}
 
       {selectedDetail === "Exterior" && (
-        <div className="w-full flex mt-9">
+        <div className="mt-9 flex w-full">
           <input
-            className="w-full mx-2 rounded-md border-black border-[1px] md:p-3 md:text-xl shadow-md"
+            className="mx-2 w-full rounded-md border-[1px] border-black shadow-md md:p-3 md:text-xl"
             type="text"
             placeholder="Amenidad personalizada"
             onChange={(e) => setCustomInput(e.target.value)}
@@ -244,7 +244,7 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
             }}
           />
           <button
-            className="border-[1px] mr-2 border-black p-2 rounded-md shadow-md md:p-3 md:px-6 md:text-xl"
+            className="mr-2 rounded-md border-[1px] border-black p-2 shadow-md md:p-3 md:px-6 md:text-xl"
             onClick={() => {
               setSelectedExteriorAmenities([
                 ...selectedExteriorAmenities,
@@ -262,14 +262,14 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
 
       {selectedDetail === "Property" && (
         <div
-          className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg xl:border-2 xl:border-black/20 xl:shadow-none xl:drop-shadow-xl"
+          className="mx-1 mt-2 flex overflow-hidden rounded-md shadow-lg xl:border-2 xl:border-black/20 xl:shadow-none xl:drop-shadow-xl"
           draggable={false}
         >
-          <div className="w-[40%] h-[calc(100vh-275px)] md:h-[calc(100vh-345px)] bg-gray-200 flex flex-col overflow-auto space-y-1 p-1 ">
+          <div className="flex h-[calc(100vh-275px)] w-[40%] flex-col space-y-1 overflow-auto bg-gray-200 p-1 md:h-[calc(100vh-345px)] ">
             {buildingAmenities.map((amen) => (
               <div
                 key={amen}
-                className="p-1 md:p-2 border-[1px] border-black bg-white rounded-md text-sm md:text-xl"
+                className="rounded-md border-[1px] border-black bg-white p-1 text-sm md:p-2 md:text-xl"
                 onClick={() => {
                   setBuildingAmenities(
                     buildingAmenities.filter((buildAmen) => amen !== buildAmen)
@@ -286,7 +286,7 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
           </div>
           <div
             draggable={false}
-            className="w-[60%] max-w-[60%] h-[calc(100vh-275px)] md:h-[calc(100vh-345px)] bg-indigo-400 flex flex-col overflow-auto space-y-1 p-1"
+            className="flex h-[calc(100vh-275px)] w-[60%] max-w-[60%] flex-col space-y-1 overflow-auto bg-indigo-400 p-1 md:h-[calc(100vh-345px)]"
           >
             <DndContext
               collisionDetection={closestCenter}
@@ -318,14 +318,14 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
 
       {selectedDetail === "Interior" && (
         <div
-          className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg xl:border-2 xl:border-black/20 xl:shadow-none xl:drop-shadow-xl"
+          className="mx-1 mt-2 flex overflow-hidden rounded-md shadow-lg xl:border-2 xl:border-black/20 xl:shadow-none xl:drop-shadow-xl"
           draggable={false}
         >
-          <div className="w-[40%] h-[calc(100vh-300px)] md:h-[calc(100vh-345px)] bg-gray-200 flex flex-col overflow-auto space-y-1 p-1 ">
+          <div className="flex h-[calc(100vh-300px)] w-[40%] flex-col space-y-1 overflow-auto bg-gray-200 p-1 md:h-[calc(100vh-345px)] ">
             {interiorAmenities.map((amen) => (
               <div
                 key={amen}
-                className="p-1 md:p-2 border-[1px] border-black bg-white rounded-md text-sm md:text-xl"
+                className="rounded-md border-[1px] border-black bg-white p-1 text-sm md:p-2 md:text-xl"
                 onClick={() => {
                   setInteriorAmenities(
                     interiorAmenities.filter((inteAmen) => amen !== inteAmen)
@@ -342,7 +342,7 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
           </div>
           <div
             draggable={false}
-            className="w-[60%] h-[calc(100vh-300px)] md:h-[calc(100vh-345px)] bg-indigo-400 flex flex-col overflow-auto space-y-1 p-1"
+            className="flex h-[calc(100vh-300px)] w-[60%] flex-col space-y-1 overflow-auto bg-indigo-400 p-1 md:h-[calc(100vh-345px)]"
           >
             <DndContext
               collisionDetection={closestCenter}
@@ -373,14 +373,14 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
 
       {selectedDetail === "Exterior" && (
         <div
-          className="mt-2 mx-1 flex rounded-md overflow-hidden shadow-lg xl:border-2 xl:border-black/20 xl:shadow-none xl:drop-shadow-xl"
+          className="mx-1 mt-2 flex overflow-hidden rounded-md shadow-lg xl:border-2 xl:border-black/20 xl:shadow-none xl:drop-shadow-xl"
           draggable={false}
         >
-          <div className="w-[40%] h-[calc(100vh-300px)] md:h-[calc(100vh-345px)] bg-gray-200 flex flex-col overflow-auto space-y-1 p-1 ">
+          <div className="flex h-[calc(100vh-300px)] w-[40%] flex-col space-y-1 overflow-auto bg-gray-200 p-1 md:h-[calc(100vh-345px)] ">
             {exteriorAmenities.map((amen) => (
               <div
                 key={amen}
-                className="p-1 md:p-2 border-[1px] border-black bg-white rounded-md text-sm md:text-xl"
+                className="rounded-md border-[1px] border-black bg-white p-1 text-sm md:p-2 md:text-xl"
                 onClick={() => {
                   setExteriorAmenities(
                     exteriorAmenities.filter((inteAmen) => amen !== inteAmen)
@@ -397,7 +397,7 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
           </div>
           <div
             draggable={false}
-            className="w-[60%] h-[calc(100vh-300px)] md:h-[calc(100vh-345px)] bg-indigo-400 flex flex-col overflow-auto space-y-1 p-1"
+            className="flex h-[calc(100vh-300px)] w-[60%] flex-col space-y-1 overflow-auto bg-indigo-400 p-1 md:h-[calc(100vh-345px)]"
           >
             <DndContext
               collisionDetection={closestCenter}
@@ -423,21 +423,21 @@ const NewListingStep2Half = ({ setStep }: StepType) => {
           </div>
         </div>
       )}
-      <div className="w-full h-3 flex justify-center text-sm md:text-xl pr-2">
+      <div className="flex h-3 w-full justify-center pr-2 text-sm md:text-xl">
         *Contenido selecionado es editable.
       </div>
-      <div className="w-full flex justify-center space-x-6 bottom-0 absolute xl:relative mb-3 xl:mb-0 xl:mt-[1.9rem] md:mb-6 md:text-2xl">
+      <div className="absolute bottom-0 mb-3 flex h-auto w-full justify-center space-x-6 md:mb-3 md:text-xl xl:mb-0 xl:mt-[2.9rem]">
         {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
           Save & Exit
         </div> */}
         <button
-          className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+          className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-xl md:py-2 md:px-4"
           onClick={() => setStep("step 2")}
         >
           Back
         </button>
         <button
-          className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+          className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-xl md:py-2 md:px-4"
           onClick={() => setStep("step 3")}
         >
           Continue
