@@ -84,9 +84,9 @@ function classNames(...classes: string[]) {
 }
 
 export default function SectorSelect() {
-  const [selected, setSelected] = useState();
   const setSector = useNewListing((state) => state.setSector);
   const sector = useNewListing((state) => state.sector);
+  const [selected, setSelected] = useState(sector);
 
   // console.log("sector from newListing", sector);
 

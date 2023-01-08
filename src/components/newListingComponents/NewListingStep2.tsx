@@ -56,7 +56,7 @@ const NewListingStep2 = ({ setStep }: StepType) => {
                   setRecordName(e.target.value);
                 }}
                 placeholder={"Name of listing"}
-                value={recordName ? recordName : undefined}
+                value={recordName}
                 className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-0.5 pl-3 pr-10 text-left text-sm shadow-md focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl"
               />
             </div>
@@ -256,7 +256,7 @@ const NewListingStep2 = ({ setStep }: StepType) => {
             </div>
           </div>
         </div>
-        <div className="text-md mb-3 flex h-auto w-full items-center justify-center space-x-6 md:mb-3 md:text-xl">
+        <div className="text-md mb-3 flex h-auto w-full items-center justify-center space-x-6 md:text-xl">
           {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
             Save & Exit
           </div> */}

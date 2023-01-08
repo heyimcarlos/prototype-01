@@ -178,9 +178,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                       pagination={{ type: "fraction" }}
                       spaceBetween={0}
                       slidesPerView={1}
-                      // allowTouchMove={false}
                       navigation={true}
-                      // onNavigationNext={}
                       modules={[Pagination, Navigation]}
                     >
                       <div className="border-1 absolute top-0 z-[50] ml-3 mt-3 h-auto w-auto rounded-lg bg-black bg-opacity-60 px-3 pb-0.5 pt-0.5 font-bold text-white">
@@ -270,7 +268,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                                 ${listing.price.toLocaleString()}
                               </h3>
 
-                              <h3 className="mt-1 flex text-sm md:text-[16px]">
+                              <h3 className="mt-1 flex text-sm md:text-lg">
                                 <b>{listing.bedrooms}</b>bd |{" "}
                                 <b className="ml-1">{listing.fullBathrooms}</b>
                                 fba |
@@ -290,11 +288,15 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                           </div>
 
                           <div className="flex">
-                            <p className="block text-base text-gray-500 md:text-xl">
-                              {neighborhood} -{" "}
+                            <p className="text-md block text-gray-500 md:text-xl">
+                              {neighborhood}
                               {listing.visibility === "HIDDEN"
                                 ? "Dirección no disponible"
-                                : listingAddress}
+                                : ` - ${
+                                    listingAddress
+                                      ? listingAddress
+                                      : "Dirección no disponible"
+                                  }`}
                             </p>
                             <span className="absolute right-0 mr-3 mt-0.5">
                               mant.

@@ -188,7 +188,7 @@ const NewListingStep1 = ({ setStep }: StepType) => {
             <HideAddressCheckbox />
           </div>
         </div>
-        <div className="mb-3 flex h-auto w-full justify-center space-x-6 md:mb-3 md:text-xl xl:mt-3">
+        <div className="mb-3 flex h-auto w-full justify-center space-x-6 md:text-xl xl:mt-3">
           {/* <div className="rounded-xl py-1 px-2 bg-indigo-600 text-white shadow-xl">
             Save & Exit
           </div> */}

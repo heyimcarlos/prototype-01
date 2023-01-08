@@ -5,7 +5,7 @@ import { type NewListingState, useNewListing } from "@/stores/useNewListing";
 import Divider from "./formComponents/Divider";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-import SwiperCore, { Pagination } from "swiper";
+import SwiperCore, { Navigation, Pagination } from "swiper";
 import image0 from "../../../public/assets/images/preview/0.jpg";
 import image1 from "../../../public/assets/images/preview/1.jpg";
 import image2 from "../../../public/assets/images/preview/2.jpg";
@@ -131,7 +131,13 @@ const NewListingStep4 = ({ setStep }: StepType) => {
           pagination={{ type: "fraction" }}
           spaceBetween={0}
           slidesPerView={1}
+          navigation={true}
+          modules={[Pagination, Navigation]}
         >
+          <div className="border-1 absolute top-0 z-[50] ml-3 mt-3 h-auto w-auto rounded-lg bg-black bg-opacity-60 px-3 pb-0.5 pt-0.5 font-bold text-white">
+            {newListingState.listingType[0] +
+              newListingState.listingType.slice(1).toLocaleLowerCase()}
+          </div>
           {previewImages.map((image, idx) => (
             <SwiperSlide
               key={idx}
@@ -143,7 +149,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
               }}
             >
               <Image
-                className="max-h-[15.5rem] object-cover md:max-h-[25.5rem]"
+                className="max-h-[15.5rem] select-none object-cover md:max-h-[25.5rem]"
                 src={image}
                 alt={idx.toString()}
               />
@@ -179,11 +185,20 @@ const NewListingStep4 = ({ setStep }: StepType) => {
               </div>
 
               <p className="text-md mt-1 block text-gray-500 md:text-xl">
-                {newListingState.sector} -{" "}
+                {newListingState.sector}
                 {newListingState.hide
-                  ? "Dirección no disponible"
-                  : newListingState.name}
-                <span className="ml-2">{}</span>
+                  ? " - Dirección no disponible"
+                  : ` - ${
+                      newListingState.name
+                        ? newListingState.name
+                        : "Dirección no disponible"
+                    }`}
+                <span className="absolute right-0 mr-3 mt-0.5">
+                  mant.
+                  <span className="ml-2 font-bold">
+                    {newListingState.maintenance.toLocaleString()}
+                  </span>
+                </span>
               </p>
             </div>
           </div>
@@ -206,7 +221,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
           </a>
           <a
             href="#Descripción"
-            className={`inline   ${
+            className={`inline pb-2 md:pb-3  ${
               selected === "Descripción"
                 ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
                 : ""
@@ -217,7 +232,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
           </a>
           <a
             href="#Propiedad"
-            className={`inline   ${
+            className={`inline pb-2 md:pb-3  ${
               selected === "Propiedad"
                 ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
                 : ""
@@ -228,7 +243,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
           </a>
           <a
             href="#Interior"
-            className={`inline   ${
+            className={`inline pb-2 md:pb-3  ${
               selected === "Interior"
                 ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
                 : ""
@@ -239,7 +254,7 @@ const NewListingStep4 = ({ setStep }: StepType) => {
           </a>
           <a
             href="#start"
-            className={`inline ${
+            className={`inline pb-2 md:pb-3 ${
               selected === "start"
                 ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
                 : ""
@@ -308,10 +323,17 @@ const NewListingStep4 = ({ setStep }: StepType) => {
                 Descripción
               </dt>
               <dd className="col-span-2 mt-1 mt-0 ml-6 text-sm text-gray-900 md:text-lg">
-                <p>
+                <div className="mt-2 text-[16px] font-semibold">
+                  {newListingState.propertyType[0] +
+                    newListingState.propertyType
+                      .slice(1)
+                      .toLocaleLowerCase()}{" "}
+                  - {newListingState.condition}
+                </div>
+                <p className="mt-2 text-[16px]">
                   {newListingState.bio
                     ? newListingState.bio
-                    : "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor autem eum, eaque enim alias, laudantium totam sed quam similique omnis quidem provident in doloribus optio labore esse consequatur magni? Voluptas."}
+                    : "Lorem ipsum dolor sit amet consectetur adipisicingelit. Dolor autem eum, eaque enim alias, laudantium totam sed quam similique omnis quidem provident doloribus optio labore esse consequatur magni? Voluptas."}
                 </p>
               </dd>
             </div>
