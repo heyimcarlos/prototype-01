@@ -167,7 +167,7 @@ export const NumberWithButtonsField = forwardRef<
           {label}
         </Label>
       )}
-      <div className="focus-within:ring-offset-10 relative mb-1 flex items-center justify-center rounded-md border border-gray-300 shadow-md focus-within:outline-none focus-within:ring-2 focus-within:ring-neutral-800">
+      <div className="focus-within:ring-offset-10 relative mb-1 flex max-w-[135px] items-center justify-center rounded-md border border-gray-300 shadow-md focus-within:outline-none focus-within:ring-2 focus-within:ring-neutral-800">
         <button className="border-r p-2 outline-none" onClick={handleDecrement}>
           <MinusIcon className="h-6 w-6" />
         </button>

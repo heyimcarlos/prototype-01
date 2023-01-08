@@ -1,8 +1,5 @@
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import SectorsSelected from "./SectorsSelected";
-import FiltersFlyoutMenu from "./FiltersFlyoutMenu";
-import { type Dispatch, type SetStateAction, useState } from "react";
-import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,13 +8,15 @@ import { AdjustmentsHorizontalIcon } from "@heroicons/react/20/solid";
 import { ListingType, PropertyType } from "@prisma/client";
 import {
   Form,
+  Label,
   NumberWithButtonsField,
   TextField,
 } from "@/components/form/fields";
+import Slider from "@/components/Slider";
 
 const FormSchema = z.object({
-  // minPrice: z.string().min(0),
-  // maxPrice: z.number().max(30000000),
+  minPrice: z.string(),
+  maxPrice: z.string(),
   bedrooms: z.number(),
   fullBathrooms: z.number(),
   halfBathrooms: z.number(),
@@ -26,12 +25,18 @@ const FormSchema = z.object({
 });
 type FormValues = z.infer<typeof FormSchema>;
 
+const sliderRange = [1, 3000000] as const;
+
+const currencyStrAsNum = (str: string) => {
+  return parseFloat(str.replace(/,/g, ""));
+};
+
 const MapFiltersForm = () => {
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      // minPrice: "",
-      // maxPrice: 30000000,
+      minPrice: sliderRange[0].toLocaleString(),
+      maxPrice: sliderRange[1].toLocaleString(),
       bedrooms: 0,
       fullBathrooms: 0,
       halfBathrooms: 0,
@@ -48,25 +53,6 @@ const MapFiltersForm = () => {
     console.log("data", data);
   };
 
-  // const [minPrice, setMinPrice] = useState(
-  //   query.minPrice ? parseInt(query.minPrice as string) : 0
-  // );
-  // const [maxPrice, setMaxPrice] = useState(
-  //   query.maxPrice ? parseInt(query.maxPrice as string) : 30000000
-  // );
-  // const [bedrooms, setBedrooms] = useState(
-  //   query.bedrooms ? parseInt(query.bedrooms as string) : 0
-  // );
-  // const [fullBathrooms, setFullBathrooms] = useState(
-  //   query.fullBathrooms ? parseInt(query.fullBathrooms as string) : 0
-  // );
-  // const [halfBathrooms, setHalfBathrooms] = useState(
-  //   query.halfBathrooms ? parseInt(query.halfBathrooms as string) : 0
-  // );
-  // const [listingType, setListingType] = useState(
-  //   query.listingType ? query.listingType : "For Sale & Rent"
-  // );
-
   return (
     <>
       <Popover triggerIcon={<AdjustmentsHorizontalIcon className="h-6 w-6" />}>
@@ -77,6 +63,50 @@ const MapFiltersForm = () => {
               console.log("firing", values);
             }}
           >
+            <>
+              <div className="mb-2 flex w-full items-center justify-center">
+                <TextField
+                  className="w-32"
+                  label="Min"
+                  {...formMethods.register("minPrice")}
+                />
+                <span className="mx-2" />
+                <TextField
+                  className="w-32"
+                  label="Max"
+                  {...formMethods.register("maxPrice")}
+                />
+              </div>
+              <Label>Price Range</Label>
+              <Slider
+                onValueChange={(value) => {
+                  const [min, max] = value;
+                  if (min) {
+                    const minPrice = (min - 1).toLocaleString();
+                    formMethods.setValue("minPrice", minPrice);
+                  }
+                  if (max) {
+                    const maxPrice = (max - 1).toLocaleString();
+                    formMethods.setValue("maxPrice", maxPrice);
+                  }
+                  if (max === sliderRange[1])
+                    formMethods.setValue(
+                      "maxPrice",
+                      sliderRange[1].toLocaleString()
+                    );
+                }}
+                defaultValue={[
+                  currencyStrAsNum(formMethods.getValues("minPrice")),
+                  currencyStrAsNum(formMethods.getValues("maxPrice")),
+                ]}
+                label="label"
+                minStepsBetweenThumbs={1}
+                step={10000}
+                min={sliderRange[0]}
+                max={sliderRange[1]}
+              />
+            </>
+
             <NumberWithButtonsField
               type="number"
               label="Bedrooms"
@@ -101,25 +131,10 @@ const MapFiltersForm = () => {
                 valueAsNumber: true,
               })}
             />
-            {/* <TextField label="Name" {...formMethods.register("name")} /> */}
             <button type="submit">submit</button>
           </Form>
         </div>
       </Popover>
-      {/* <FiltersFlyoutMenu
-        minPrice={minPrice}
-        setMinPrice={setMinPrice}
-        maxPrice={maxPrice}
-        setMaxPrice={setMaxPrice}
-        bedrooms={bedrooms}
-        setBedrooms={setBedrooms}
-        fullBathrooms={fullBathrooms}
-        setFullBathrooms={setFullBathrooms}
-        halfBathrooms={halfBathrooms}
-        setHalfBathrooms={setHalfBathrooms}
-        listingType={listingType as string}
-        setListingType={setListingType as Dispatch<SetStateAction<string>>}
-      /> */}
     </>
   );
 };
