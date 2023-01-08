@@ -6,7 +6,7 @@ import type { inferSSRProps } from "@/lib/types/inferSSRProps";
 import { useRef, useState } from "react";
 import type { MapRef } from "react-map-gl";
 import type { NextPageWithLayout } from "./_app";
-import MapLayout from "@/components/layouts/MapLayout";
+import MapLayout from "@/components/layouts/map";
 import { useSidebar } from "@/stores/useSidebar";
 import ListingCard from "@/components/mapPageComponents/sidebars/ListingCard";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";

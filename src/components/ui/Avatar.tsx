@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import classNames from "@/lib/classNames";
 import { signOut } from "next-auth/react";
-import LogoutIcon from "./icons/logout";
+import LogoutIcon from "../icons/logout";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import * as Popover from "@radix-ui/react-popover";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";

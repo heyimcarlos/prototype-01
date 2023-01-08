@@ -4,7 +4,7 @@ import { CogIcon, HomeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Logo from "@/components/Logo";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { UserDropdown, UserPopover } from "@/components/Avatar";
+import { UserDropdown, UserPopover } from "@/components/ui/Avatar";
 import { useSession } from "next-auth/react";
 import { ArrowSmallLeftIcon, Bars3Icon } from "@heroicons/react/20/solid";
 

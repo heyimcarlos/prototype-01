@@ -12,7 +12,7 @@ import {
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import randomImage from "../../../public/assets/images/house1.jpeg";
-import { Avatar } from "@/components/Avatar";
+import { Avatar } from "@/components/ui/Avatar";
 import useMeQuery from "@/hooks/useMeQuery";
 import { type UserMeOutput } from "@/server/trpc/router/user";
 import { trpc } from "@/utils/trpc";

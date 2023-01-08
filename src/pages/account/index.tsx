@@ -1,4 +1,4 @@
-import { Avatar } from "@/components/Avatar";
+import { Avatar } from "@/components/ui/Avatar";
 import { ImagesUploader } from "@/components/newListingComponents/formComponents/ImagesUploader";
 import ImageUploader from "@/components/ImageUploader";
 import DashboardLayout from "@/components/layouts/dashboard";
@@ -18,7 +18,7 @@ type AvatarSectionProps = {
 
 const AvatarSection = ({ imageSrc, onSave }: AvatarSectionProps) => {
   return (
-    <section className="bg-white border rounded-md sm:rounded-lg mb-8">
+    <section className="mb-8 rounded-md border bg-white sm:rounded-lg">
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div>
@@ -35,8 +35,8 @@ const AvatarSection = ({ imageSrc, onSave }: AvatarSectionProps) => {
           </div>
         </div>
       </div>
-      <div className="bg-indigo-100 text-center border-t p-6 md:flex md:justify-between md:items-center">
-        <div className="text-sm text-gray-500 mb-2 md:mb-0">
+      <div className="border-t bg-indigo-100 p-6 text-center md:flex md:items-center md:justify-between">
+        <div className="mb-2 text-sm text-gray-500 md:mb-0">
           <p>An avatar is optional but strongly recommended.</p>
         </div>
 
@@ -59,7 +59,7 @@ const ForwardedPhoneInput = React.forwardRef<HTMLInputElement>((props, ref) => (
     name="phone"
     type="tel"
     autoComplete="phone"
-    className="border-gray-300 rounded w-full focus:border-indigo-500 focus:ring-indigo-500"
+    className="w-full rounded border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
   />
 ));
 
@@ -128,11 +128,11 @@ const SettingsPage: NextPageWithLayout = () => {
   const isDisabled = isSubmitting || !isDirty;
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="mx-auto max-w-3xl">
       <header className="mx-auto block justify-between sm:flex sm:pt-8">
         <div className="mb-8 flex w-full items-center border-b border-gray-200 pb-8">
           <div>
-            <h3 className="text-xl font-bold mb-1 leading-6 text-black tracking-wide">
+            <h3 className="mb-1 text-xl font-bold leading-6 tracking-wide text-black">
               {_.capitalize(router.pathname.replace("/", ""))}
             </h3>
             <p className="max-w-2xl text-sm text-gray-500">
@@ -146,7 +146,7 @@ const SettingsPage: NextPageWithLayout = () => {
         imageSrc={user.avatar}
         onSave={(newAvatar) => mutation.mutate({ avatar: newAvatar })}
       />
-      <section className="bg-white border rounded-md sm:rounded-lg">
+      <section className="rounded-md border bg-white sm:rounded-lg">
         <div className="p-6">
           <div>
             <h3 className="text-lg font-medium leading-6 text-gray-900">

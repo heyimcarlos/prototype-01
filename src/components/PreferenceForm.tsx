@@ -7,7 +7,7 @@ import { useMapPreferences } from "@/stores/useMapPreferences";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import PreferenceInput from "./PreferenceInput";
-import Button from "./Button";
+import Button from "./ui/Button";
 import Divider from "./newListingComponents/formComponents/Divider";
 import {
   type MapPreferenceKeys,

@@ -7,7 +7,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Logo from "@/components/Logo";
 import Divider from "@/components/newListingComponents/formComponents/Divider";
-import { Avatar, UserPopover } from "../Avatar";
+import { Avatar, UserPopover } from "../ui/Avatar";
 import { trpc } from "@/utils/trpc";
 
 const navigation = [
@@ -32,7 +32,7 @@ export default function Navbar() {
     router.push(`/auth/sign-in?callbackUrl=${router.asPath}`);
 
   return (
-    <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 ">
+    <div className="mx-auto max-w-7xl py-4 px-4 sm:px-6 lg:px-8 ">
       <Popover as="header" className="relative">
         <div className="">
           <nav
@@ -43,7 +43,7 @@ export default function Navbar() {
               <div className="flex w-full items-center justify-between md:w-auto">
                 <Logo className="text-custom-white" />
                 <div className="-mr-2 flex items-center md:hidden">
-                  <Popover.Button className="inline-flex justify-center text-custom-white border rounded-md border-custom-white px-2 py-2 text-sm font-medium shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100 transition-all">
+                  <Popover.Button className="inline-flex justify-center rounded-md border border-custom-white px-2 py-2 text-sm font-medium text-custom-white shadow-sm transition-all hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
                     <span className="sr-only">Open main menu</span>
                     <Bars3Icon
                       strokeWidth={2}
@@ -59,7 +59,7 @@ export default function Navbar() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="text-base font-medium text-white px-3 py-2 hover:text-indigo-600 hover:bg-white hover:rounded-md"
+                    className="px-3 py-2 text-base font-medium text-white hover:rounded-md hover:bg-white hover:text-indigo-600"
                   >
                     {item.name}
                   </Link>
@@ -73,7 +73,7 @@ export default function Navbar() {
                   <>
                     <Link
                       href={"/dashboard"}
-                      className="text-base font-medium text-white px-3 py-2 hover:text-indigo-600 hover:bg-white hover:rounded-md"
+                      className="px-3 py-2 text-base font-medium text-white hover:rounded-md hover:bg-white hover:text-indigo-600"
                     >
                       Dashboard
                     </Link>
@@ -81,7 +81,7 @@ export default function Navbar() {
                   </>
                 ) : (
                   <button
-                    className="text-base font-semibold leading-none p-3 border rounded-2xl hover:rounded-md transition-all duration-300 text-indigo-600 bg-white"
+                    className="rounded-2xl border bg-white p-3 text-base font-semibold leading-none text-indigo-600 transition-all duration-300 hover:rounded-md"
                     onClick={handleSignIn}
                   >
                     Sign in
@@ -104,16 +104,16 @@ export default function Navbar() {
         >
           <Popover.Panel
             focus
-            className="absolute inset-x-0 top-0 z-10 origin-top transition md:hidden opacity-100 scale-100"
+            className="absolute inset-x-0 top-0 z-10 origin-top scale-100 opacity-100 transition md:hidden"
           >
-            <div className="bg-custom-white rounded-md border border-zinc-300 shadow">
+            <div className="rounded-md border border-zinc-300 bg-custom-white shadow">
               <div className="flex items-center justify-between px-5 pt-4">
                 {/*
                  */}
                 <div>
                   <Link href="/">
                     <span className="sr-only">ntornos</span>
-                    <h2 className="font-['Libre_Baskerville'] font-semibold tracking-tighter p-2 lg:pl-0 text-2xl sm:text-3xl">
+                    <h2 className="p-2 font-['Libre_Baskerville'] text-2xl font-semibold tracking-tighter sm:text-3xl lg:pl-0">
                       <span className="text-indigo-700">n</span>
                       <span>tornos</span>
                     </h2>
@@ -152,7 +152,7 @@ export default function Navbar() {
                 */}
                   {session ? (
                     <div>
-                      <div className="flex items-end justify-between flex-wrap">
+                      <div className="flex flex-wrap items-end justify-between">
                         {data ? (
                           <div className="inline-flex items-center">
                             <div className="flex-shrink-0">
@@ -174,14 +174,14 @@ export default function Navbar() {
                         ) : null}
                         <Link
                           href={"/dashboard"}
-                          className="text-base mt-4 font-medium relative px-4 py-2 rounded-md hover:text-indigo-600 shadow-sm bg-custom-white hover:bg-white hover:rounded-md border border-gray-700"
+                          className="relative mt-4 rounded-md border border-gray-700 bg-custom-white px-4 py-2 text-base font-medium shadow-sm hover:rounded-md hover:bg-white hover:text-indigo-600"
                         >
                           Dashboard
                         </Link>
                       </div>
                       <button
                         onClick={handleSignOut}
-                        className="block mt-4 text-start rounded-md pr-3 py-2 text-base font-medium text-gray-900 hover:text-indigo-500"
+                        className="mt-4 block rounded-md py-2 pr-3 text-start text-base font-medium text-gray-900 hover:text-indigo-500"
                       >
                         Sign out
                       </button>
@@ -190,7 +190,7 @@ export default function Navbar() {
                     <p className="text-center text-base font-medium text-gray-400">
                       Existing customer?{" "}
                       <button
-                        className="text-base font-semibold hover:rounded-md transition-all duration-300 text-indigo-600"
+                        className="text-base font-semibold text-indigo-600 transition-all duration-300 hover:rounded-md"
                         onClick={handleSignIn}
                       >
                         Sign in

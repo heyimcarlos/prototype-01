@@ -11,8 +11,8 @@ import {
   Label,
   NumberWithButtonsField,
   TextField,
-} from "@/components/form/fields";
-import Slider from "@/components/Slider";
+} from "@/components/ui/form/fields";
+import Slider from "@/components/ui/Slider";
 
 const FormSchema = z.object({
   minPrice: z.string(),

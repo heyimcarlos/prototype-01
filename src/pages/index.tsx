@@ -2,7 +2,7 @@
 import Head from "next/head";
 import type { NextPageWithLayout } from "@/pages/_app";
 import Section1 from "@/components/home/section-1";
-import AppLayout from "@/components/layouts/AppLayout";
+import AppLayout from "@/components/layouts/app-layout";
 
 const Home: NextPageWithLayout = () => {
   return (
