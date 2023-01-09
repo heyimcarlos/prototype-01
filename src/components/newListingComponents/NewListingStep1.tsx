@@ -105,7 +105,6 @@ const NewListingStep1 = ({ setStep }: StepType) => {
   return (
     <>
       <div className="flex h-[calc(100vh-55.59px)] w-full flex-col items-center md:h-[calc(100vh-80.59px)] ">
-        {/* <div>MAP for searching address</div> */}
         <div className="mt-0.5 flex h-[15rem] max-h-[25rem] w-full flex-1 flex-col md:max-h-[35rem] xl:mt-3 xl:max-w-[55rem] xl:overflow-hidden xl:rounded-tr-md xl:rounded-tl-md  xl:border-t-2 xl:border-l-2 xl:border-r-2 xl:border-black/20 xl:drop-shadow-2xl">
           <MapboxMap
             id="mapa"
@@ -125,6 +124,7 @@ const NewListingStep1 = ({ setStep }: StepType) => {
                 anchor="bottom"
                 draggable={true}
                 color="rgb(79,70,229)"
+                //Need to add reverse geolocation functionality onDragend so users can find their location moving the marker on the map.
                 // onDragEnd={(e) => {
                 //   console.log("event", e);
                 // }}
@@ -132,8 +132,6 @@ const NewListingStep1 = ({ setStep }: StepType) => {
             )}
           </MapboxMap>
         </div>
-
-        {/* -------------------------------------------------------------------------------------------------------------------------------------------------- */}
 
         <div className="flex h-full w-full flex-1 flex-col items-center justify-evenly bg-white pt-6 xl:max-w-[55rem] xl:rounded-br-md xl:rounded-bl-md xl:border-l-2 xl:border-r-2 xl:border-b-2 xl:border-black/20 xl:pb-3 xl:drop-shadow-xl">
           <div className="mx-[1rem] -mt-5 flex w-[95%] shadow-lg xl:shadow-none">
@@ -167,7 +165,6 @@ const NewListingStep1 = ({ setStep }: StepType) => {
                   }}
                   placeholder={"Enter property address"}
                   value={fullAddress}
-                  // value={fullAddress ? fullAddress : undefined}
                   className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-1 pl-3 pr-10 text-left text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 md:py-3 md:text-xl xl:py-2 xl:shadow-md"
                 />
               </Autocomplete>
@@ -188,10 +185,7 @@ const NewListingStep1 = ({ setStep }: StepType) => {
             <HideAddressCheckbox />
           </div>
         </div>
-        <div className="mb-3 flex h-auto w-full justify-center space-x-6 md:text-xl xl:mt-3">
-          {/* <div className="rounded-xl py-1 px-2 bg-indigo-600 text-white shadow-xl">
-            Save & Exit
-          </div> */}
+        <div className="text-md mb-3 flex w-full justify-center space-x-6 md:mb-6 md:text-2xl xl:mt-3">
           <Link
             href="/dashboard"
             className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-lg md:py-2 md:px-4"
