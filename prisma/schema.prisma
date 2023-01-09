@@ -163,6 +163,7 @@ enum PropertyType {
 }
 
 enum ListingType {
+  SALEANDRENT
   RENT
   SALE
 }

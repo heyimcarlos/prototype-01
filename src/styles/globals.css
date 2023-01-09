@@ -22,6 +22,16 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-wrap: break-word;
+
+  overflow-x: hidden;
+}
+
+.swiper-button-prev {
+  color: black !important;
+}
+
+.swiper-button-next {
+  color: black !important;
 }
 
 .swiper-pagination-fraction.swiper-pagination.swiper-pagination-horizontal {
@@ -30,7 +40,7 @@ body {
   position: absolute !important;
   left: unset !important;
   right: 0 !important;
-  margin-right: 1rem;
+  margin-right: 0.75rem;
   background-color: rgb(0, 0, 0, 0.6);
   color: white;
   border-radius: 10%;

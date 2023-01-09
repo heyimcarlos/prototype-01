@@ -33,7 +33,7 @@ const MultiMobilePreviewListing = ({
             setOpen(true);
           }, 100);
         }}
-        className="fixed bottom-0 z-[50] mb-8 flex h-[8rem] overflow-hidden rounded-xl bg-white shadow-lg"
+        className="fixed bottom-0 z-[50] mb-8 flex h-[8rem] overflow-hidden rounded-xl bg-white shadow-md"
       >
         <div className="flex h-[8.5rem] w-[40%]">
           <Image src={house} alt="" />

@@ -1,3 +1,4 @@
+import { useNewListing } from "@/stores/useNewListing";
 import { type Dispatch, type SetStateAction } from "react";
 
 type StepType = {
@@ -5,17 +6,20 @@ type StepType = {
 };
 
 const NewListingStep3 = ({ setStep }: StepType) => {
+  const bio = useNewListing((state) => state.bio);
+  const setBio = useNewListing((state) => state.setBio);
+
   return (
-    <div className="w-full h-[calc(100vh-68px)]">
+    <div className="h-[calc(100vh-68px)] w-full">
       <div className="h-[45rem] w-full">
-        <div className="gap-4 pt-5 mt-10 px-2 flex flex-col justify-center items-center">
+        <div className="mt-10 flex flex-col items-center justify-center gap-4 px-2 pt-5">
           <label
             htmlFor="cover-photo"
             className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
           >
             Photos
           </label>
-          <div className="mt-1 col-span-2 mt-0">
+          <div className="col-span-2 mt-1 mt-0">
             <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
               <div className="space-y-1 text-center">
                 <svg
@@ -55,29 +59,30 @@ const NewListingStep3 = ({ setStep }: StepType) => {
           </div>
         </div>
 
-        <div className="w-auto h-auto flex flex-col items-center justify-center mt-14">
+        <div className="mt-14 flex h-auto w-auto flex-col items-center justify-center">
           <label htmlFor="description" className="w-1/3">
             Description
           </label>
           <textarea
             id="description"
-            // type="text"
-            className="w-1/3 h-[10rem] rounded-md"
+            onChange={(e) => setBio(e.target.value)}
+            className="h-[10rem] w-1/3 rounded-md"
+            value={bio}
           />
         </div>
       </div>
-      <div className="w-full flex justify-center space-x-6 absolute bottom-0 mb-3 md:mb-6 md:text-2xl">
+      <div className="absolute bottom-0 mb-3 flex w-full justify-center space-x-6 md:mb-6 md:text-2xl">
         {/* <div className="rounded-lg py-1 px-2 bg-indigo-600 text-white shadow-xl">
           Save & Exit
         </div> */}
         <button
-          className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+          className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-xl md:py-2 md:px-4"
           onClick={() => setStep("step 2.5")}
         >
           Back
         </button>
         <button
-          className="rounded-lg py-1 md:py-2 px-2 md:px-4 bg-indigo-600 text-white shadow-xl"
+          className="rounded-lg bg-indigo-600 py-1 px-2 text-white shadow-xl md:py-2 md:px-4"
           onClick={() => setStep("step 4")}
         >
           Continue

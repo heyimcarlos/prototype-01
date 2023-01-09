@@ -1,14 +1,14 @@
+//left for reference to the shelved functionality of the preferences.
 // import PreferenceForm from "./PreferenceForm";
 import { useNeighborhoods } from "@/stores/useNeighborhoods";
 import SectorsSelected from "./SectorsSelected";
-// import useWindowSize from "@/hooks/useWindowSize";
 import FiltersFlyoutMenu from "./FiltersFlyoutMenu";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { useRouter } from "next/router";
+import { type ListingType } from "@prisma/client";
 
 const MapTopbar = () => {
   const neighborhoods = useNeighborhoods((state) => state.neighborhoods);
-  // const width = useWindowSize();
 
   const { query } = useRouter();
 
@@ -27,21 +27,9 @@ const MapTopbar = () => {
   const [halfBathrooms, setHalfBathrooms] = useState(
     query.halfBathrooms ? parseInt(query.halfBathrooms as string) : 0
   );
-  const [listingType, setListingType] = useState(
-    query.listingType ? query.listingType : "For Sale & Rent"
+  const [listingType, setListingType] = useState<ListingType>(
+    query.listingType ? (query.listingType as ListingType) : "SALEANDRENT"
   );
-
-  // const neighborhoods = await prisma.neighborhood.findMany({
-  //   include: {
-  //     listingLocations: { include: { listings: {}, neighborhood: {} } },
-  //   },
-  // });
-
-  // const getFilteredListings = async () => {
-  //   const getFilteredListings = await prisma?.listing.findMany({
-  //     where: { price: { gte: minValue, lte: maxValue } },
-  //   });
-  // };
 
   return (
     <div className="h-[2.1rem] w-full bg-indigo-600">
@@ -61,7 +49,7 @@ const MapTopbar = () => {
           setFullBathrooms={setFullBathrooms}
           halfBathrooms={halfBathrooms}
           setHalfBathrooms={setHalfBathrooms}
-          listingType={listingType as string}
+          listingType={listingType}
           setListingType={setListingType as Dispatch<SetStateAction<string>>}
         />
       </div>

@@ -15,6 +15,7 @@ import {
 } from "@heroicons/react/20/solid";
 import router from "next/router";
 import ListingTypeSelect from "@/components/newListingComponents/formComponents/ListingTypeSelect";
+import { type ListingType } from "@prisma/client";
 
 type FiltersFlyoutMenuTypes = {
   minPrice: number;
@@ -206,7 +207,7 @@ export default function FiltersFlyoutMenu({
                           Listing Type
                         </label>
                         <ListingTypeSelect
-                          listingType={listingType}
+                          listingType={listingType as ListingType}
                           setListingType={setListingType}
                         />
                       </div>

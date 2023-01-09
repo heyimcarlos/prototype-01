@@ -1,5 +1,5 @@
 import create from "zustand";
-import { type PropertyType } from "@prisma/client";
+import { type PropertyType, type ListingType } from "@prisma/client";
 
 export type NewListingState = {
   name: string;
@@ -16,8 +16,9 @@ export type NewListingState = {
   fullBathrooms: number;
   halfBathrooms: number;
   meters: number;
+  listingType: ListingType;
   propertyType: PropertyType;
-
+  bio: string;
   selectedBuildingAmenities: string[];
   selectedInteriorAmenities: string[];
   selectedExteriorAmenities: string[];
@@ -39,7 +40,9 @@ export type NewListingState = {
   setFullBathrooms: (param: number) => void;
   setHalfBathrooms: (param: number) => void;
   setMeters: (param: number) => void;
+  setListingType: (param: ListingType) => void;
   setPropertyType: (param: PropertyType) => void;
+  setBio: (param: string) => void;
   setSelectedBuildingAmenities: (param: string[]) => void;
   setSelectedInteriorAmenities: (param: string[]) => void;
   setSelectedExteriorAmenities: (param: string[]) => void;
@@ -70,7 +73,9 @@ export const useNewListing = create<NewListingState>((set) => ({
   fullBathrooms: 0,
   halfBathrooms: 0,
   meters: 0,
+  listingType: "Type of listing" as unknown as ListingType,
   propertyType: "Type of property" as unknown as PropertyType,
+  bio: "",
   selectedBuildingAmenities: [],
   selectedInteriorAmenities: [],
   selectedExteriorAmenities: [],
@@ -89,8 +94,10 @@ export const useNewListing = create<NewListingState>((set) => ({
   setFullBathrooms: (param) => set(() => ({ fullBathrooms: param })),
   setHalfBathrooms: (param) => set(() => ({ halfBathrooms: param })),
   setMeters: (param) => set(() => ({ meters: param })),
+  setListingType: (param) => set(() => ({ listingType: param })),
   setPropertyType: (param: PropertyType) =>
     set(() => ({ propertyType: param })),
+  setBio: (param) => set(() => ({ bio: param })),
   setSelectedBuildingAmenities: (param) =>
     set(() => ({ selectedBuildingAmenities: param })),
   setSelectedInteriorAmenities: (param) =>

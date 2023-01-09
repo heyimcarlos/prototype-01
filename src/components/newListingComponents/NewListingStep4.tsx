@@ -43,11 +43,11 @@ const NewListingStep4 = ({ setStep }: StepType) => {
   const handleSubmit = (listingState: NewListingState) => {
     mutation.mutate({
       name: listingState.recordName,
-      bio: "bio",
+      bio: listingState.bio,
       meters: listingState.meters,
       condition: listingState.condition,
       maintenance: listingState.maintenance,
-      listingType: "RENT",
+      listingType: listingState.listingType,
       propertyType: listingState.propertyType,
       halfBathrooms: listingState.halfBathrooms,
       bedrooms: listingState.bedrooms,
@@ -64,14 +64,14 @@ const NewListingStep4 = ({ setStep }: StepType) => {
         yearRemodeled: 2021,
       },
       listingLocation: {
-        googlePlaceId: listingState.placeId,
+        name: listingState.name,
         city: "Santo Domingo",
+        state: "Distrito Nacional",
         country: "Republica Dominicana",
         lat: String(listingState.lat),
         lng: String(listingState.lng),
-        name: listingState.name,
-        state: "Distrito Nacional",
         formattedAddress: listingState.fullAddress,
+        googlePlaceId: listingState.placeId,
       },
     });
   };
@@ -309,10 +309,9 @@ const NewListingStep4 = ({ setStep }: StepType) => {
               </dt>
               <dd className="col-span-2 mt-1 mt-0 ml-6 text-sm text-gray-900 md:text-lg">
                 <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor
-                  autem eum, eaque enim alias, laudantium totam sed quam
-                  similique omnis quidem provident in doloribus optio labore
-                  esse consequatur magni? Voluptas.
+                  {newListingState.bio
+                    ? newListingState.bio
+                    : "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor autem eum, eaque enim alias, laudantium totam sed quam similique omnis quidem provident in doloribus optio labore esse consequatur magni? Voluptas."}
                 </p>
               </dd>
             </div>

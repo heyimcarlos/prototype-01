@@ -1,5 +1,6 @@
 import React, {
   Fragment,
+  useEffect,
   useMemo,
   type Dispatch,
   type SetStateAction,
@@ -12,7 +13,7 @@ import { useState } from "react";
 import Divider from "../newListingComponents/formComponents/Divider";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-import SwiperCore, { Pagination } from "swiper";
+import SwiperCore, { Navigation, Pagination } from "swiper";
 import image0 from "../../../public/assets/images/preview/0.jpg";
 import image1 from "../../../public/assets/images/preview/1.jpg";
 import image2 from "../../../public/assets/images/preview/2.jpg";
@@ -29,6 +30,7 @@ import { useSelectedListing } from "@/stores/useSelectedListing";
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { type GetNeighborhoodOutput } from "@/server/trpc/router/map";
+import useWindowSize from "@/hooks/useWindowSize";
 
 type Props = {
   open: boolean;
@@ -56,7 +58,8 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
   const direction = useSelectedListing((state) => state.direction);
   const router = useRouter();
 
-  console.log("LISTING:", listing);
+  // console.log("LISTING:", listing);
+  const [innerOpen, setInnerOpen] = useState(false);
 
   const onClose = () => {
     router.push(router.pathname, undefined, { shallow: true });
@@ -87,9 +90,28 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
     return [intFirstHalf, intSecondHalf];
   }, [listing.listingDetail?.interiorAmenities]);
 
+  const width = useWindowSize();
+
+  let is2xl;
+  if (width) is2xl = width > 1536;
+
+  const showCarousel =
+    direction === "right" || (!is2xl && direction === "left");
+
+  useEffect(() => {
+    if (open === true) {
+      setInnerOpen(true);
+    }
+    if (open === false) {
+      setInnerOpen(false);
+    }
+  }, [open]);
+
+  // console.log("open", open);
+
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+    <Transition.Root show={innerOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={() => null}>
         <div
           className={`pointer-events-none fixed inset-y-0 ${
             direction === "left" ? "left-0" : "right-0"
@@ -99,7 +121,7 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
             as={Fragment}
             enter="transform transition ease-in-out duration-500 sm:duration-700"
             enterFrom={
-              direction === "left" ? "-translate-x-full" : "translate-x-full"
+              direction === "left" ? "-translate-x-full " : "translate-x-full "
             }
             enterTo="translate-x-0"
             leave="transform transition ease-in-out duration-500 sm:duration-700"
@@ -108,25 +130,21 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
               direction === "left" ? "-translate-x-full" : "translate-x-full"
             }
           >
-            <Dialog.Panel className="pointer-events-auto mt-[4.98rem] w-screen max-w-[82.5rem] md:max-w-[calc(100vw-299px)] lg:max-w-[calc(100vw-574px)]">
+            <Dialog.Panel
+              className={`pointer-events-auto mt-[5.1rem] w-screen ${
+                direction === "left"
+                  ? "lg:max-w-[calc(100vw-588px)]"
+                  : "lg:max-w-[calc(588px)]"
+              } xl:mt-[5.1rem] `}
+            >
               <div
-                id="start"
-                className="mt-[1px] h-[calc(100vh-55.59px)] w-full scroll-mt-[22rem] overflow-auto scroll-smooth md:mt-[2px] md:h-[calc(100vh-82.59px)] md:scroll-mt-[32rem]"
+                id="Start"
+                className={`h-[calc(100vh-48px-35.19px)] w-full scroll-mt-[100rem] overflow-auto scroll-smooth bg-white md:scroll-mt-[32rem] ${
+                  direction === "left"
+                    ? "2xl:flex 2xl:h-[calc(100vh-48px-33.19px)]"
+                    : ""
+                }`}
               >
-                <div className="fixed right-0 z-10 mt-3 mr-3 flex h-7 items-center">
-                  {/* <div className="fixed z-10 left-0 mt-3 ml-3 flex h-7 items-center"> */}
-                  <button
-                    type="button"
-                    className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
-                    onClick={() => {
-                      onClose();
-                      setOpen(false);
-                    }}
-                  >
-                    <span className="sr-only">Close panel</span>
-                    <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
-                </div>
                 {openPhotos && (
                   <PhotosModal
                     openPhotos={openPhotos}
@@ -135,266 +153,374 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                   />
                 )}
 
-                <div id="imagesAndTopElement" className="w-full ">
-                  <Swiper
-                    pagination={{ type: "fraction" }}
-                    spaceBetween={0}
-                    slidesPerView={1}
-                    // allowTouchMove={false}
-                    // navigation={true}
+                {showCarousel && (
+                  <div className="absolute right-0 z-10 mt-3 mr-3 flex h-7 items-center">
+                    <button
+                      type="button"
+                      className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
+                      onClick={() => {
+                        // onClose();
+                        setOpen(false);
+                      }}
+                    >
+                      <span className="sr-only">Close panel</span>
+                      <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                    </button>
+                  </div>
+                )}
+
+                {showCarousel && (
+                  <div
+                    id="imagesAndTopElement"
+                    className="w-full bg-black bg-opacity-10"
                   >
-                    {previewImages.map((image, idx) => (
-                      <SwiperSlide
-                        key={idx}
-                        // draggable={false}
-                        className="max-h-[16rem] w-full md:max-h-[25.5rem]"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenPhotos(true);
-                        }}
-                      >
+                    <Swiper
+                      pagination={{ type: "fraction" }}
+                      spaceBetween={0}
+                      slidesPerView={1}
+                      // allowTouchMove={false}
+                      navigation={true}
+                      // onNavigationNext={}
+                      modules={[Pagination, Navigation]}
+                    >
+                      <div className="border-1 absolute top-0 z-[50] ml-3 mt-3 h-auto w-auto rounded-lg bg-black bg-opacity-60 px-3 pb-0.5 pt-0.5 font-bold text-white">
+                        {listing.listingType[0] +
+                          listing.listingType.slice(1).toLocaleLowerCase()}
+                      </div>
+                      {previewImages.map((image, idx) => (
+                        <SwiperSlide
+                          key={idx}
+                          // draggable={false}
+                          className="max-h-[16rem] w-full md:max-h-[25.5rem]"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenPhotos(true);
+                          }}
+                        >
+                          <Image
+                            className={`${
+                              direction === "left"
+                                ? "md:max-h-[25.5rem]"
+                                : "md:max-h-[18rem]"
+                            } max-h-[15.5rem] select-none object-cover`}
+                            src={image}
+                            alt={idx.toString()}
+                          />
+                        </SwiperSlide>
+                      ))}
+                    </Swiper>
+                  </div>
+                )}
+
+                {is2xl && direction === "left" && (
+                  <div
+                    className="w-full overflow-y-auto bg-white 2xl:h-[calc(100vh-33.59px-50px)] 2xl:overflow-y-auto"
+                    onClick={() => {
+                      setOpenPhotos(true);
+                    }}
+                  >
+                    {previewImages &&
+                      previewImages.map((image, idx) => (
                         <Image
-                          className="max-h-[15.5rem] object-cover md:max-h-[25.5rem]"
+                          className="mb-2"
+                          key={idx}
                           src={image}
                           alt={idx.toString()}
                         />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                </div>
+                      ))}
+                  </div>
+                )}
 
-                <div
-                  id="firstInfoAndNavBar"
-                  className="sticky top-0 z-30 -mt-[6px] bg-white md:py-2 xl:border-l-2 xl:border-r-2 xl:border-black/20"
-                >
-                  <div className="flex flow-root items-end px-4">
-                    <div className="flex-1">
-                      <div>
-                        <div className="flex justify-end">
-                          <div className="flex w-full justify-between">
-                            <h3 className="mt-[0.15rem] text-xl font-bold text-gray-900 md:text-2xl">
-                              ${listing.price.toLocaleString()}
-                            </h3>
-
-                            <h3 className="flex text-sm md:text-[16px]">
-                              <b>{listing.bedrooms}</b>bd |{" "}
-                              <b className="ml-1">{listing.fullBathrooms}</b>fba
-                              |
-                              {listing.halfBathrooms > 0 && (
-                                <span>
-                                  <b className="ml-1">
-                                    {listing.halfBathrooms}
-                                  </b>
-                                  hba |
-                                </span>
-                              )}
-                              <b className="mx-1">{listing.meters}</b>
-                              metros
-                              <sup className="mt-2.5">2</sup>
-                            </h3>
-                          </div>
+                <div>
+                  {is2xl && direction === "left" && (
+                    <div className="z-40 flex h-[3rem] w-full  pt-3 pb-10">
+                      <div className="ml-3 flex w-[50%] justify-start">
+                        <div className=" border-1 z-[40] h-7 rounded-lg bg-black bg-opacity-60 px-3 pb-0.5 pt-0.5 font-bold text-white">
+                          {listing.listingType[0] +
+                            listing.listingType.slice(1).toLocaleLowerCase()}
                         </div>
-
-                        <p className="text-md mt-1 block text-gray-500 md:text-xl">
-                          {neighborhood} -{" "}
-                          {listing.visibility
-                            ? "Dirección no disponible"
-                            : listingAddress}
-                          <span className="ml-2">{}</span>
-                        </p>
+                      </div>
+                      <div className="mr-3 flex w-[50%] justify-end">
+                        <button
+                          type="button"
+                          className="h-7 rounded-md border-2 bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-black"
+                          onClick={() => {
+                            onClose();
+                            setOpen(false);
+                          }}
+                        >
+                          <span className="sr-only">Close panel</span>
+                          <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                        </button>
                       </div>
                     </div>
-                  </div>
-                  <Divider />
+                  )}
                   <div
-                    id="Navbar"
-                    className="flex justify-evenly bg-white pt-2 text-sm md:pt-3 md:text-xl"
+                    id="firstInfoAndNavBar"
+                    className={`sticky top-0 z-30 -mt-[6px] bg-white md:py-2 ${
+                      direction === "left" ? "2xl:py-0" : ""
+                    }`}
                   >
-                    <a
-                      href="#Contacto"
-                      className={`inline pb-2 md:pb-3 ${
-                        selected === "Contacto"
-                          ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
-                          : ""
-                      }`}
-                      onClick={() => setSelected("Contacto")}
-                    >
-                      Contacto
-                    </a>
-                    <a
-                      href="#Descripción"
-                      className={`inline   ${
-                        selected === "Descripción"
-                          ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
-                          : ""
-                      }`}
-                      onClick={() => setSelected("Descripción")}
-                    >
-                      Descripción
-                    </a>
-                    <a
-                      href="#Propiedad"
-                      className={`inline   ${
-                        selected === "Propiedad"
-                          ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
-                          : ""
-                      }`}
-                      onClick={() => setSelected("Propiedad")}
-                    >
-                      Propiedad
-                    </a>
-                    <a
-                      href="#Interior"
-                      className={`inline   ${
-                        selected === "Interior"
-                          ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
-                          : ""
-                      }`}
-                      onClick={() => setSelected("Interior")}
-                    >
-                      Interior
-                    </a>
-                    <a
-                      href="#start"
-                      className={`inline ${
-                        selected === "start"
-                          ? "border-b-2 border-indigo-600 font-medium text-indigo-500"
-                          : ""
-                      }`}
-                      onClick={() => setSelected("start")}
-                    >
-                      Start
-                    </a>
-                  </div>
-                  <Divider />
-                </div>
-
-                <div
-                  id="detailsContainer"
-                  className="h-[calc(100vh-38px-54.39px-55.59px)] w-full overflow-auto scroll-smooth bg-white md:h-[calc(100vh-58px-94.59px-55.59px)] xl:border-l-2 xl:border-r-2 xl:border-black/20"
-                >
-                  <div className="px-4 py-1">
-                    <div
-                      id="Contacto"
-                      className="mb-3 flex scroll-mt-[30rem] flex-col md:flex-row"
-                    >
-                      <div className="flex h-auto w-[30rem]">
-                        <div className="mt-0.5 inline-flex h-full max-w-[10rem] overflow-hidden rounded-full border-4 border-white md:mt-1 md:w-[7rem]">
-                          {/* <div className="inline-flex overflow-hidden rounded-full border-4 border-white w-[5rem] h-full md:w-[7rem]"> */}
-                          <Image
-                            className="h-[5rem] w-[5rem] md:h-[6.5rem] md:w-[6.5rem]"
-                            // className="w-[6.5rem] h-[6.5rem]"
-                            src={ProfilePlaceholder}
-                            alt="profile"
-                            // width={100}
-                            // height={100}
-                          />
-                        </div>
-
-                        <div className="mt-1 flex-1 md:ml-3 md:mt-4">
-                          <div className="mt-3">
-                            <div className="-mb-1 flex items-center">
-                              <h3 className="text-xl text-lg font-bold text-gray-900 md:text-xl">
-                                Ashley Porter
+                    <div className="flex flow-root items-end px-3">
+                      <div className="flex-1">
+                        <div>
+                          <div className="flex justify-end">
+                            <div className="flex w-full justify-between">
+                              <h3 className=" text-xl font-bold text-gray-900 md:text-2xl">
+                                ${listing.price.toLocaleString()}
                               </h3>
-                              <span className="ml-2.5 inline-block h-2 w-2 flex-shrink-0 rounded-full bg-green-400">
-                                <span className="sr-only">Online</span>
-                              </span>
+
+                              <h3 className="mt-1 flex text-sm md:text-[16px]">
+                                <b>{listing.bedrooms}</b>bd |{" "}
+                                <b className="ml-1">{listing.fullBathrooms}</b>
+                                fba |
+                                {listing.halfBathrooms > 0 && (
+                                  <span>
+                                    <b className="ml-1">
+                                      {listing.halfBathrooms}
+                                    </b>
+                                    hba |
+                                  </span>
+                                )}
+                                <b className="mx-1">{listing.meters}</b>
+                                metros
+                                <sup className="mt-2.5">2</sup>
+                              </h3>
                             </div>
-                            <p className="inline text-sm text-gray-500 md:text-lg">
-                              @ashleyporter
+                          </div>
+
+                          <div className="flex">
+                            <p className="block text-base text-gray-500 md:text-xl">
+                              {neighborhood} -{" "}
+                              {listing.visibility === "HIDDEN"
+                                ? "Dirección no disponible"
+                                : listingAddress}
                             </p>
+                            <span className="absolute right-0 mr-3 mt-0.5">
+                              mant.
+                              <span className="ml-2 font-bold">
+                                {listing.maintenance.toLocaleString()}
+                              </span>
+                            </span>
                           </div>
                         </div>
-                      </div>
-                      <div className="mt-2 flex w-full flex-col flex-wrap space-y-1 text-sm md:space-y-2 md:text-lg">
-                        <button
-                          type="button"
-                          className="inline-flex w-full flex-shrink-0 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2  font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:flex-1"
-                        >
-                          Request a tour
-                        </button>
-                        <button
-                          type="button"
-                          className="inline-flex w-full flex-1 items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2  font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        >
-                          407-913-2390
-                        </button>
                       </div>
                     </div>
+                    <Divider />
+                    <div
+                      id="Navbar"
+                      className={`flex justify-evenly bg-white pt-2 text-sm md:pt-3 ${
+                        direction === "left" ? "md:text-xl" : "md:text-lg"
+                      }`}
+                    >
+                      <a
+                        href="#Contacto"
+                        className={`inline pb-2 md:pb-3 ${
+                          selected === "Contacto"
+                            ? "border-b-2 border-indigo-600 text-indigo-500"
+                            : ""
+                        }`}
+                        onClick={() => setSelected("Contacto")}
+                      >
+                        Contacto
+                      </a>
+                      <a
+                        href="#Descripción"
+                        className={`inline pb-2 md:pb-3 ${
+                          selected === "Descripción"
+                            ? "border-b-2 border-indigo-600 text-indigo-500"
+                            : ""
+                        }`}
+                        onClick={() => setSelected("Descripción")}
+                      >
+                        Descripción
+                      </a>
+                      <a
+                        href="#Propiedad"
+                        className={`inline pb-2 md:pb-3 ${
+                          selected === "Propiedad"
+                            ? "border-b-2 border-indigo-600 text-indigo-500"
+                            : ""
+                        }`}
+                        onClick={() => setSelected("Propiedad")}
+                      >
+                        Propiedad
+                      </a>
+                      <a
+                        href="#Interior"
+                        className={`inline pb-2 md:pb-3 ${
+                          selected === "Interior"
+                            ? "border-b-2 border-indigo-600 text-indigo-500"
+                            : ""
+                        }`}
+                        onClick={() => setSelected("Interior")}
+                      >
+                        Interior
+                      </a>
+                      {showCarousel && (
+                        <a
+                          href="#Start"
+                          className={`inline pb-2 md:pb-3 ${
+                            selected === "Start"
+                              ? "border-b-2 border-indigo-600 text-indigo-500"
+                              : ""
+                          }`}
+                          onClick={() => setSelected("Start")}
+                        >
+                          Start
+                        </a>
+                      )}
+                    </div>
+                    <Divider />
+                  </div>
 
-                    <dl id="Descripción" className="space-y-8">
-                      <div className="flex flex-col">
-                        <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
-                          Descripción
-                        </dt>
-                        <dd className="col-span-2 mt-1 mt-0 ml-6 text-sm text-gray-900 md:text-lg">
-                          <p>
-                            {listing.bio
-                              ? listing.bio
-                              : "Lorem ipsum dolor sit amet consectetur adipisicingelit. Dolor autem eum, eaque enim alias, laudantium totam sed quam similique omnis quidem provident doloribus optio labore esse consequatur magni? Voluptas."}
-                          </p>
-                        </dd>
-                      </div>
-
-                      <Divider />
-                      <div id="Propiedad">
-                        <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
-                          Property Amenities
-                        </dt>
-                        <div className="mt-2 flex w-full ">
-                          <div className="text-md flex w-[50%] flex-col md:text-lg">
-                            {buildingAmenities[0]?.map((amen) => (
-                              <div
-                                key={amen}
-                                className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1 px-2"
-                              >
-                                {amen}
-                              </div>
-                            ))}
+                  <div
+                    id="detailsContainer"
+                    className={`h-[calc(100vh-48px-35.19px-52px-32px)] w-full overflow-auto scroll-smooth bg-white md:h-[calc(100vh-58px-94.59px-55.59px)] ${
+                      direction === "left"
+                        ? "2xl:h-[calc(100vh-60px-54px-33.59px-48px-52px)] 2xl:overflow-y-auto"
+                        : ""
+                    }`}
+                  >
+                    <div className="px-4 py-1">
+                      <div
+                        id="Contacto"
+                        className={`mb-3 flex scroll-mt-[100rem] flex-col ${
+                          direction === "left" ? "md:flex-row" : "md:flex-col"
+                        }`}
+                      >
+                        <div className="flex h-auto w-[30rem] lg:w-[20rem] xl:w-[30rem]">
+                          <div className="mt-0.5 inline-flex h-full max-w-[10rem] overflow-hidden rounded-full border-4 border-white md:mt-1 md:w-[7rem]">
+                            {/* <div className="inline-flex overflow-hidden rounded-full border-4 border-white w-[5rem] h-full md:w-[7rem]"> */}
+                            <Image
+                              className="h-[5rem] w-[5rem] md:h-[6.5rem] md:w-[6.5rem]"
+                              // className="w-[6.5rem] h-[6.5rem]"
+                              src={ProfilePlaceholder}
+                              alt="profile"
+                              // width={100}
+                              // height={100}
+                            />
                           </div>
-                          <div className="text-md ml-1 flex w-[50%] flex-col md:text-lg">
-                            {buildingAmenities[1]?.map((amen) => (
-                              <div
-                                key={amen}
-                                className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1  px-2"
-                              >
-                                {amen}
+
+                          <div className="mt-2 max-w-[10rem] flex-1 md:ml-3 md:mt-4">
+                            <div className="mt-3">
+                              <div className="-mb-1 flex items-center">
+                                <h3 className="text-xl text-lg font-bold text-gray-900 md:text-xl">
+                                  Ashley Porter
+                                </h3>
+                                <span className="ml-2.5 inline-block h-2 w-2 flex-shrink-0 rounded-full bg-green-400">
+                                  <span className="sr-only">Online</span>
+                                </span>
                               </div>
-                            ))}
+                              <p className="inline text-sm text-gray-500 md:text-lg">
+                                @ashleyporter
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <Divider />
-                      <div id="Interior">
-                        <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
-                          Interior Amenities
-                        </dt>
-                        <div className="mt-2 flex w-full ">
-                          <div className="text-md flex w-[50%] flex-col md:text-lg">
-                            {interiorAmenities[0]?.map((amen) => (
-                              <div
-                                key={amen}
-                                className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1 px-2"
-                              >
-                                {amen}
-                              </div>
-                            ))}
-                          </div>
-                          <div className="text-md ml-1 flex w-[50%] flex-col md:text-lg">
-                            {interiorAmenities[1]?.map((amen) => (
-                              <div
-                                key={amen}
-                                className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1  px-2"
-                              >
-                                {amen}
-                              </div>
-                            ))}
-                          </div>
+                        <div
+                          className={`mt-2 flex w-full flex-col flex-wrap space-y-1 text-sm md:space-y-2 md:text-lg ${
+                            direction === "left"
+                              ? "lg:max-w-[13rem] lg:items-center"
+                              : ""
+                          } xl:max-w-none ${
+                            !showCarousel ? "2xl:max-w-[18rem]" : ""
+                          }`}
+                        >
+                          <button
+                            type="button"
+                            className="inline-flex w-full flex-shrink-0 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2  font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:flex-1"
+                          >
+                            Request a tour
+                          </button>
+                          <button
+                            type="button"
+                            className="inline-flex w-full flex-1 items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2  font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                          >
+                            407-913-2390
+                          </button>
                         </div>
                       </div>
-                      <Divider />
-                      {/* <div id="Exterior">
+
+                      <dl id="Descripción" className="space-y-8">
+                        <div className="flex flex-col">
+                          <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
+                            Descripción
+                          </dt>
+                          <dd className="col-span-2 mt-1 mt-0 text-sm text-gray-900 md:text-lg">
+                            <div className="mt-2 text-[16px] font-semibold">
+                              {listing.propertyType[0] +
+                                listing.propertyType
+                                  .slice(1)
+                                  .toLocaleLowerCase()}{" "}
+                              - {listing.condition}
+                            </div>
+                            <p className="mt-2 text-[16px]">
+                              {listing.bio
+                                ? listing.bio
+                                : "Lorem ipsum dolor sit amet consectetur adipisicingelit. Dolor autem eum, eaque enim alias, laudantium totam sed quam similique omnis quidem provident doloribus optio labore esse consequatur magni? Voluptas."}
+                            </p>
+                          </dd>
+                        </div>
+
+                        <Divider />
+                        <div id="Propiedad">
+                          <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
+                            Property Amenities
+                          </dt>
+                          <div className="mt-2 flex w-full ">
+                            <div className="text-md flex w-[50%] flex-col md:text-lg">
+                              {buildingAmenities[0]?.map((amen) => (
+                                <div
+                                  key={amen}
+                                  className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1 px-2"
+                                >
+                                  {amen}
+                                </div>
+                              ))}
+                            </div>
+                            <div className="text-md ml-1 flex w-[50%] flex-col md:text-lg">
+                              {buildingAmenities[1]?.map((amen) => (
+                                <div
+                                  key={amen}
+                                  className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1  px-2"
+                                >
+                                  {amen}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <Divider />
+                        <div id="Interior">
+                          <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
+                            Interior Amenities
+                          </dt>
+                          <div className="mt-2 flex w-full ">
+                            <div className="text-md flex w-[50%] flex-col md:text-lg">
+                              {interiorAmenities[0]?.map((amen) => (
+                                <div
+                                  key={amen}
+                                  className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1 px-2"
+                                >
+                                  {amen}
+                                </div>
+                              ))}
+                            </div>
+                            <div className="text-md ml-1 flex w-[50%] flex-col md:text-lg">
+                              {interiorAmenities[1]?.map((amen) => (
+                                <div
+                                  key={amen}
+                                  className="mt-1 w-fit max-w-[100%] rounded-md border-[1px] border-indigo-600 py-1  px-2"
+                                >
+                                  {amen}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <Divider />
+                        {/* <div id="Exterior">
                         <dt className="w-40 flex-shrink-0 pt-3 text-sm font-medium text-gray-500 md:text-lg">
                           Exterior Amenities
                         </dt>
@@ -409,10 +535,11 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
                           ))}
                         </div>
                       </div> */}
-                    </dl>
-                  </div>
-                  <div className="flex h-full items-center justify-center">
-                    Legal info about ntornos
+                      </dl>
+                    </div>
+                    <div className="flex h-full items-center justify-center">
+                      Legal info about ntornos
+                    </div>
                   </div>
                 </div>
               </div>

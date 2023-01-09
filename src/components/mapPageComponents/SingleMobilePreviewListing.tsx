@@ -31,7 +31,7 @@ const SingleMobilePreviewListing = ({
           setListing(listing);
           setOpen(true);
         }}
-        className="fixed bottom-0 mb-[5rem] flex h-[8rem] w-[90%] overflow-hidden rounded-xl bg-white shadow-lg"
+        className="fixed bottom-0 mb-[5rem] flex h-[8rem] w-[90%] max-w-[28rem] overflow-hidden rounded-xl bg-white shadow-md"
       >
         <div className="flex h-[8.5rem] w-[40%]">
           <Image src={house} alt="" />

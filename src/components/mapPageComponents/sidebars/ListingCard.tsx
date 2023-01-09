@@ -21,7 +21,7 @@ const ListingCard = ({
   neighborhood,
 }: ListingCardTypes) => {
   return (
-    <div className="card w-[17.5rem] h-auto shadow-md rounded mb-2 border-black/[.1] border-[1px] ">
+    <div className="card mb-2 h-auto w-[17.5rem] rounded border-[1px] border-black/[.1] bg-white shadow-md">
       {/* <div className="card w-[17.5rem] h-[14.5rem] shadow-md rounded mb-2 border-black/[.1] border-[1px] "> */}
       <div className="">
         <Image
@@ -35,7 +35,7 @@ const ListingCard = ({
         <h2 className="text-lg font-semibold text-black">
           {transformIntToMoney(price)}
         </h2>
-        <h3 className="text-sm flex md:text-[16px]">
+        <h3 className="flex text-sm md:text-[16px]">
           <b>{beds}</b>bd | <b className="ml-1">{fullBaths}</b>fba |
           {halfBaths > 0 && (
             <span>
