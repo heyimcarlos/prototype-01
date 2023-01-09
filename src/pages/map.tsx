@@ -3,7 +3,7 @@ import Map from "@/components/mapPageComponents/Map";
 import type { GetServerSidePropsContext } from "next";
 import { prisma } from "@/server/db/client";
 import type { inferSSRProps } from "@/lib/types/inferSSRProps";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MapRef } from "react-map-gl";
 import type { NextPageWithLayout } from "./_app";
 import MapLayout from "@/components/layouts/MapLayout";
@@ -24,6 +24,8 @@ import useWindowSize from "@/hooks/useWindowSize";
 // import { useJsApiLoader } from "@react-google-maps/api";
 // import { GOOGLE_MAP_LIBRARIES } from "@/lib/google";
 
+// let doesFit: boolean;
+
 const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   neighborhoods,
   initialViewport,
@@ -32,8 +34,6 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   //   googleMapsApiKey: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   //   libraries: GOOGLE_MAP_LIBRARIES,
   // });
-
-  // console.log("neighborhoods", neighborhoods)
 
   const mapRef = useRef<MapRef>(null);
 
@@ -72,10 +72,16 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
     }
   };
 
-  let doesFit;
   const width = useWindowSize();
+  let doesFit;
   if (width) doesFit = width > 1024;
 
+  // useEffect(() => {
+  //   if (width) doesFit = width > 1024;
+  // }, [width]);
+
+  console.log(doesFit);
+  //old code not sure if still relevant?
   // if (!isLoaded) return <div>Loading...</div>;
 
   return (
@@ -169,6 +175,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
                 listingLocations.map((location) => {
                   return location.listings.map((listing) => (
                     <div
+                      className="mx-0.5"
                       key={listing.id}
                       onClick={() => {
                         setDirection("left");
