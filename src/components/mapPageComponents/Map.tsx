@@ -4,6 +4,7 @@ import React, {
   type SetStateAction,
   useEffect,
   useState,
+  useRef,
 } from "react";
 import MapboxMap, {
   Source,
@@ -46,7 +47,7 @@ import { ArrowPathIcon, ListBulletIcon } from "@heroicons/react/20/solid";
 import MobileListingsSlideOver from "@/components/mapPageComponents/sidebars/MobileListingsSlideOver";
 
 import useWindowSize from "@/hooks/useWindowSize";
-
+//ToolTip components and navigation controls pinned for future development.
 // import { NavigationControl } from "react-map-gl";
 // import Head from "next/head.js";
 // import Image from "next/image.js";
@@ -85,8 +86,7 @@ const CustomMarker = ({
   neighborhood,
   onClick,
   names,
-}: // curZoom,
-CustomMarkerPropsTypes) => {
+}: CustomMarkerPropsTypes) => {
   const [show, setShow] = useState(true);
   const globalShow = useGlobalShow((state) => state.globalShow);
   const globalHide = useGlobalHide((state) => state.globalHide);
@@ -147,7 +147,6 @@ CustomMarkerPropsTypes) => {
 };
 
 const Map = ({
-  // listingLocations,
   neighborhoods,
   mapRef,
   initialViewport,
@@ -160,6 +159,7 @@ const Map = ({
 
   const setListings = useSidebar((state) => state.setListings);
 
+  //Pinned for future development.
   // const deleteAllSectors = useSectors((state) => state.deleteAllSectors);
   const addNeighborhood = useNeighborhoods((state) => state.addNeighborhood);
   const neighborhoodsState = useNeighborhoods((state) => state.neighborhoods);
@@ -199,59 +199,7 @@ const Map = ({
   const [listSlide, setListSlide] = useState(false);
 
   const width = useWindowSize();
-  let notMobile: boolean;
-  if (width) {
-    notMobile = width > 1024;
-  }
-
-  // ------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-  const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
-    if (!mapRef.current) return;
-
-    if (neighborhoodsState.length < 1) {
-      const [minLng, minLat, maxLng, maxLat] = bbox(feature);
-      mapRef.current.fitBounds(
-        [
-          [minLng, minLat],
-          [maxLng, maxLat],
-        ],
-        {
-          padding: { left: 20, top: 10, right: 20, bottom: 100 },
-          animate: true,
-          duration: 1400,
-          essential: true,
-        }
-      );
-    }
-  };
-
-  const neighborhoodMutation = trpc.map.public.getNeighborhood.useMutation({
-    onSuccess: (data) => {
-      if (!names.includes(data.name)) {
-        addNeighborhood({
-          name: data.name,
-          bounds: data.bounds as Position[],
-          listingLocations: data.listingLocations,
-        });
-      }
-      // if (!names.includes(data.name)) {
-      //   addNeighborhood(data);
-      // }
-
-      const neighborhoodAsFeature = transformPlaceToFeature(data);
-      if (neighborhoodAsFeature) fitBounds(neighborhoodAsFeature);
-
-      const listings: (ListingLocation & {
-        listings: ListingWithListingDetail[];
-      })[] = [];
-      data.listingLocations.map((listingLocation) => {
-        listings.push(listingLocation);
-      });
-      // console.log("listings from getNeighborhood", listings);
-      setListings(listings);
-    },
-  });
+  const notMobile = useRef(width ? width > 1024 : null);
 
   useEffect(() => {
     if (neighborhoodsState.length > 1) {
@@ -282,33 +230,6 @@ const Map = ({
       );
     }
   }, [neighborhoodsState, mapRef]);
-
-  const showVisibleMarkers = () => {
-    if (!mapRef.current) return;
-    const map = mapRef.current.getMap();
-    const bounds = map.getBounds();
-    const listingsLocations: (ListingLocation & {
-      listings: ListingWithListingDetail[];
-    })[] = [];
-    for (const neighborhood of neighborhoods) {
-      if (
-        bounds.contains({
-          lat: parseFloat(neighborhood.lat),
-          lng: parseFloat(neighborhood.lng),
-        })
-      ) {
-        neighborhood.listingLocations.forEach((listingLocation) => {
-          // property.listings.map((listing) => {
-          //   listings.push(listing);
-          // });
-          listingsLocations.push(listingLocation);
-        });
-      }
-    }
-    // console.log("listingLocations from Drag", listingsLocations);
-    const flattened = listingsLocations.flat();
-    setListings(flattened);
-  };
 
   const onClickMap = (event: MapLayerMouseEvent) => {
     event.originalEvent.stopPropagation();
@@ -345,6 +266,7 @@ const Map = ({
       setSelectedListings([]);
       if (!open) setListing(null);
 
+      //Should map function do something when not clicking on placeName or listingMarker?
       // const test = mapRef.current.getCenter();
       // mapRef.current.flyTo({
       //   center: [test.lng, test.lat],
@@ -354,10 +276,78 @@ const Map = ({
       //   easing: (t) => t,
       // });
 
+      //Pinned functionality to be placed somewhere else.
       // deleteAllSectors();
     }
     setGlobalShowTrue();
-    // @INFO: Below goes the following code, when a feature source layer is not a place and the feature does not have a name.
+  };
+
+  const neighborhoodMutation = trpc.map.public.getNeighborhood.useMutation({
+    onSuccess: (data) => {
+      if (!names.includes(data.name)) {
+        addNeighborhood({
+          name: data.name,
+          bounds: data.bounds as Position[],
+          listingLocations: data.listingLocations,
+        });
+      }
+
+      const neighborhoodAsFeature = transformPlaceToFeature(data);
+      if (neighborhoodAsFeature) fitBounds(neighborhoodAsFeature);
+
+      const listings: (ListingLocation & {
+        listings: ListingWithListingDetail[];
+      })[] = [];
+      data.listingLocations.map((listingLocation) => {
+        listings.push(listingLocation);
+      });
+
+      setListings(listings);
+    },
+  });
+
+  const fitBounds = (feature: Feature<Geometry, GeoJsonProperties>) => {
+    if (!mapRef.current) return;
+
+    if (neighborhoodsState.length < 1) {
+      const [minLng, minLat, maxLng, maxLat] = bbox(feature);
+      mapRef.current.fitBounds(
+        [
+          [minLng, minLat],
+          [maxLng, maxLat],
+        ],
+        {
+          padding: { left: 20, top: 10, right: 20, bottom: 100 },
+          animate: true,
+          duration: 1400,
+          essential: true,
+        }
+      );
+    }
+  };
+
+  const showVisibleMarkers = () => {
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+    const bounds = map.getBounds();
+    const listingsLocations: (ListingLocation & {
+      listings: ListingWithListingDetail[];
+    })[] = [];
+    for (const neighborhood of neighborhoods) {
+      if (
+        bounds.contains({
+          lat: parseFloat(neighborhood.lat),
+          lng: parseFloat(neighborhood.lng),
+        })
+      ) {
+        neighborhood.listingLocations.forEach((listingLocation) => {
+          listingsLocations.push(listingLocation);
+        });
+      }
+    }
+
+    const flattened = listingsLocations.flat();
+    setListings(flattened);
   };
 
   const showVisibleCustomPolygonMarkers = () => {
@@ -414,11 +404,11 @@ const Map = ({
             onClickMap(e);
           }}
           mapStyle="mapbox://styles/mtjosue/clc0hc5yf001s14kcpm22q0m6"
+          //Trying out different styles, not 100% set on this ^ one
           // mapStyle="mapbox://styles/mtjosue/clbsexim8000d15pc7hlcg6f1"
           // mapStyle="mapbox://styles/mapbox/streets-v11"
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_TOKEN}
           onZoomEnd={(e) => {
-            // console.log("e end", e.viewState.zoom);
             setCurZoom(e.viewState.zoom);
           }}
         >
@@ -498,7 +488,6 @@ const Map = ({
 
             <div
               className="z-19 absolute bottom-0 m-2 rounded-lg border-2 border-black bg-[#ffffff] p-2 px-3 text-xs text-black"
-              // className="bg-white w-full h-10 absolute bottom-0 z-10 rounded-tr-2xl rounded-tl-2xl flex justify-center items-center"
               onClick={() => {
                 setListSlide(true);
               }}
@@ -619,12 +608,7 @@ const Map = ({
                     if (!listingLocation.listings[0]) return;
                     if (listingLocation.listings.length < 2) {
                       setDirection("right");
-                      // if(listingLocation.listings[0].listingDetail.)
                       setListing(listingLocation.listings[0]);
-                      // console.log(
-                      //   "listing from neighborhoodState",
-                      //   listingLocation.listings[0]
-                      // );
                       if (notMobile) setOpen(true);
                       setSelectedListings([]);
                       setNeighborhood(
