@@ -20,6 +20,10 @@ export type SelectedListingState = {
   setListingAddress: (param: string) => void;
   direction: string;
   setDirection: (param: string) => void;
+  previewAddress: string;
+  setPreviewAddress: (param: string) => void;
+  previewNeighborhood: string;
+  setPreviewNeighborhood: (neighborhood: string) => void;
 };
 
 export const useSelectedListing = create<SelectedListingState>((set) => ({
@@ -33,4 +37,9 @@ export const useSelectedListing = create<SelectedListingState>((set) => ({
   setListingAddress: (param) => set(() => ({ listingAddress: param })),
   direction: "",
   setDirection: (param) => set(() => ({ direction: param })),
+  previewAddress: "",
+  setPreviewAddress: (param) => set(() => ({ previewAddress: param })),
+  previewNeighborhood: "",
+  setPreviewNeighborhood: (param) =>
+    set(() => ({ previewNeighborhood: param })),
 }));

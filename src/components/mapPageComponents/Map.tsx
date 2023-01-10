@@ -4,7 +4,6 @@ import React, {
   type SetStateAction,
   useEffect,
   useState,
-  useRef,
 } from "react";
 import MapboxMap, {
   Source,
@@ -18,7 +17,6 @@ import { trpc } from "@/utils/trpc";
 import type { Feature, Geometry, GeoJsonProperties, Position } from "geojson";
 import bbox from "@turf/bbox";
 import * as turf from "@turf/turf";
-
 import {
   type ListingDetail,
   type Neighborhood,
@@ -27,7 +25,6 @@ import {
 } from "@prisma/client";
 import { transformPlaceToFeature } from "@/lib/transformPlace";
 import slugify from "@/lib/slugify";
-
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useSidebar } from "@/stores/useSidebar";
 import { useNeighborhoods } from "../../stores/useNeighborhoods";
@@ -45,8 +42,10 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { ArrowPathIcon, ListBulletIcon } from "@heroicons/react/20/solid";
 import MobileListingsSlideOver from "@/components/mapPageComponents/sidebars/MobileListingsSlideOver";
-
 import useWindowSize from "@/hooks/useWindowSize";
+import { useMemo } from "react";
+import ListingMarker from "@/components/mapPageComponents/ListingMarker";
+
 //ToolTip components and navigation controls pinned for future development.
 // import { NavigationControl } from "react-map-gl";
 // import Head from "next/head.js";
@@ -54,7 +53,6 @@ import useWindowSize from "@/hooks/useWindowSize";
 // import toolTip from "../../public/assets/images/tooltip.png";
 // import polyGif from "../../public/assets/images/ezgif.com-gif-maker (1).gif";
 // import { BackspaceIcon } from "@heroicons/react/24/outline";
-import { useMemo } from "react";
 
 type MapProps = {
   initialViewport: {
@@ -188,18 +186,10 @@ const Map = ({
   const setSearchFalse = useDrawControls((state) => state.setSearchFalse);
 
   const setListing = useSelectedListing((state) => state.setListing);
-  const setDirection = useSelectedListing((state) => state.setDirection);
-  const setNeighborhood = useSelectedListing((state) => state.setNeighborhood);
 
   const setSelectedListings = useSelectedListing((state) => state.setListings);
-  const setListingAddress = useSelectedListing(
-    (state) => state.setListingAddress
-  );
 
   const [listSlide, setListSlide] = useState(false);
-
-  const width = useWindowSize();
-  const notMobile = useRef(width ? width > 1024 : null);
 
   useEffect(() => {
     if (neighborhoodsState.length > 1) {
@@ -388,6 +378,14 @@ const Map = ({
   };
 
   const [curZoom, setCurZoom] = useState<number | undefined>(0);
+
+  //  const [showPopUp, setShowPopUp] = useState(false);
+
+  const width = useWindowSize();
+
+  let notMobile: boolean;
+
+  if (width) notMobile = width > 1024;
 
   return (
     <>
@@ -602,59 +600,17 @@ const Map = ({
               if (!neighborhoodName) return;
 
               return (
-                <Marker
-                  onClick={(e) => {
-                    e.originalEvent.stopPropagation();
-                    if (!listingLocation.listings[0]) return;
-                    if (listingLocation.listings.length < 2) {
-                      setDirection("right");
-                      setListing(listingLocation.listings[0]);
-                      if (notMobile) setOpen(true);
-                      setSelectedListings([]);
-                      setNeighborhood(
-                        neighborhood.name === "Custom Boundary"
-                          ? neighborhoodName
-                          : neighborhood.name
-                      );
-                      setListingAddress(listingLocation.name);
-                    } else {
-                      setListing(null);
-                      setSelectedListings(listingLocation.listings);
-                      setNeighborhood(
-                        neighborhood.name === "Custom Boundary"
-                          ? neighborhoodName
-                          : neighborhood.name
-                      );
-                      setListingAddress(listingLocation.name);
-                    }
-                  }}
-                  latitude={parseFloat(listingLocation.lat)}
-                  longitude={parseFloat(listingLocation.lng)}
+                <ListingMarker
                   key={`listing-${listingLocation.id}`}
-                >
-                  <div
-                    className={`flex cursor-pointer items-center justify-center rounded-full border-[0.05rem] border-black bg-green-500 py-1 px-2`}
-                    style={{
-                      opacity: curListingId
-                        ? Number(curListingId) === listingLocation.id
-                          ? 1
-                          : 0.4
-                        : 1,
-                    }}
-                  >
-                    <span className="text-sm">
-                      {listingLocation.listings.length > 1
-                        ? `${listingLocation.listings.length} Listings`
-                        : listingLocation.listings[0]?.price
-                        ? `$${new Intl.NumberFormat("en-US", {
-                            maximumFractionDigits: 1,
-                            notation: "compact",
-                            compactDisplay: "short",
-                          }).format(listingLocation.listings[0]?.price)}`
-                        : null}
-                    </span>
-                  </div>
-                </Marker>
+                  listingLocation={listingLocation}
+                  notMobile={notMobile}
+                  curListingId={curListingId}
+                  setListing={setListing}
+                  setOpen={setOpen}
+                  setSelectedListings={setSelectedListings}
+                  neighborhood={neighborhood}
+                  neighborhoodName={neighborhoodName}
+                />
               );
             })
           )}

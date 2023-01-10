@@ -111,7 +111,14 @@ const SlideOver = ({ open, setOpen, listing }: Props) => {
 
   return (
     <Transition.Root show={innerOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={() => null}>
+      <Dialog
+        as="div"
+        className="relative z-10"
+        onClose={() => {
+          setSelected("");
+          return null;
+        }}
+      >
         <div
           className={`pointer-events-none fixed inset-y-0 ${
             direction === "left" ? "left-0" : "right-0"

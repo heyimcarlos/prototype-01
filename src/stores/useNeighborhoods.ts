@@ -5,7 +5,7 @@ import { type Position } from "@turf/turf";
 import type { JSONValue } from "superjson/dist/types";
 import create from "zustand";
 
-type CustomNeighborhoodType = {
+export type CustomNeighborhoodType = {
   name: string;
   bounds: Position[];
   listingLocations: GetNeighborhoodOutput["listingLocations"];
