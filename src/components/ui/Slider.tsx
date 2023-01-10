@@ -3,7 +3,7 @@ import { type ElementRef, forwardRef } from "react";
 
 type SliderProps = React.ComponentPropsWithoutRef<
   typeof SliderPrimitive["Root"]
-> & { label: string; value?: number[] };
+> & { label: string };
 
 const Slider = forwardRef<
   ElementRef<typeof SliderPrimitive["Root"]>,

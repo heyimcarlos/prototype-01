@@ -13,6 +13,10 @@ import {
   TextField,
 } from "@/components/ui/form/fields";
 import Slider from "@/components/ui/Slider";
+import MultiSelectCheckboxes from "@/components/ui/form/MultiSelectCheckboxes";
+import { useMemo } from "react";
+import Button from "@/components/ui/Button";
+import _ from "lodash";
 
 const FormSchema = z.object({
   minPrice: z.string(),
@@ -20,8 +24,8 @@ const FormSchema = z.object({
   bedrooms: z.number(),
   fullBathrooms: z.number(),
   halfBathrooms: z.number(),
-  // listingType: z.nativeEnum(ListingType),
-  // propertyType: z.nativeEnum(PropertyType),
+  listingType: z.array(z.object({ label: z.string(), value: z.string() })),
+  propertyType: z.array(z.nativeEnum(PropertyType)),
 });
 type FormValues = z.infer<typeof FormSchema>;
 
@@ -40,10 +44,17 @@ const MapFiltersForm = () => {
       bedrooms: 0,
       fullBathrooms: 0,
       halfBathrooms: 0,
-      // listingType: "RENT",
-      // propertyType: "HOUSE",
+      listingType: [],
+      propertyType: [],
     },
   });
+
+  const listingTypes = useMemo(() => {
+    return Object.keys(ListingType).map((key) => ({
+      value: key,
+      label: _.capitalize(key),
+    }));
+  }, []);
 
   const {
     formState: { isSubmitting, isDirty },
@@ -106,7 +117,6 @@ const MapFiltersForm = () => {
                 max={sliderRange[1]}
               />
             </>
-
             <NumberWithButtonsField
               type="number"
               label="Bedrooms"
@@ -131,7 +141,24 @@ const MapFiltersForm = () => {
                 valueAsNumber: true,
               })}
             />
-            <button type="submit">submit</button>
+            <Controller
+              name="listingType"
+              control={formMethods.control}
+              render={({ field: { value } }) => {
+                return (
+                  <MultiSelectCheckboxes
+                    className="my-4 w-32"
+                    placeholder="Type"
+                    options={listingTypes}
+                    selected={value}
+                    setValue={(value) => {
+                      formMethods.setValue("listingType", value);
+                    }}
+                  />
+                );
+              }}
+            />
+            <Button type="submit">submit</Button>
           </Form>
         </div>
       </Popover>

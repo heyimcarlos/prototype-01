@@ -34,13 +34,14 @@ const Popover = ({ children, triggerIcon, triggerText }: Props) => {
     </button>
   );
 
+  // @INFO: overflow-hidden was removed from the content component
   return (
     <RadixPopover.Root open={open} onOpenChange={handleOpen}>
       <RadixPopover.Trigger asChild className="cursor-pointer">
         {trigger}
       </RadixPopover.Trigger>
       <RadixPopover.Portal>
-        <RadixPopover.Content className="z-10 m-2 origin-top-right overflow-hidden rounded-md bg-white p-8 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <RadixPopover.Content className="m-2 origin-top-right rounded-md bg-white p-8 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           {children}
         </RadixPopover.Content>
       </RadixPopover.Portal>
