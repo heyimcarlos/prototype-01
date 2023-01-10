@@ -50,6 +50,10 @@ function Select<
         },
       })}
       styles={{
+        placeholder: (provided) => ({
+          ...provided,
+          color: "var(--brand-text-color)",
+        }),
         multiValue: (provided) => ({
           ...provided,
           backgroundColor: "var(--brand-color)",

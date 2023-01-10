@@ -7,7 +7,6 @@ import {
   type Props,
 } from "react-select";
 import Select from "@/components/ui/form/ReactSelect";
-import { useFormContext } from "react-hook-form";
 
 export type Option = {
   value: string;
@@ -60,16 +59,6 @@ type MultiSelectionCheckboxesProps = {
   setValue: (s: Option[]) => unknown;
 };
 
-const MultiValue = ({
-  index,
-  getValue,
-}: {
-  index: number;
-  getValue: () => any;
-}) => {
-  return <>{!index && <div>{getValue().length}</div>}</>;
-};
-
 export default function MultiSelectCheckboxes({
   options,
   isLoading,
@@ -77,26 +66,29 @@ export default function MultiSelectCheckboxes({
   setSelected,
   setValue,
   className,
+  placeholder,
+  ...props
 }: Omit<Props, "options"> & MultiSelectionCheckboxesProps) {
-  const additonalComponents = { MultiValue };
-
+  const additionalComponents = { ...props.components };
   return (
     <Select
+      placeholder={placeholder}
       value={selected}
-      onChange={(s: Option[]) => {
-        if (setSelected) setSelected(s);
-        setValue(s);
+      onChange={(s) => {
+        const value = s as Option[];
+        if (setSelected) setSelected(value);
+        setValue(value);
       }}
       options={options}
       isMulti
       className={classNames(className ? className : "w-64 text-sm")}
       isSearchable={false}
-      controlShouldRenderValue
       closeMenuOnSelect={false}
       hideSelectedOptions={false}
+      isClearable={false}
       isLoading={isLoading}
       components={{
-        ...additonalComponents,
+        ...additionalComponents,
         Option: InputOption,
       }}
     />

@@ -24,10 +24,20 @@ const FormSchema = z.object({
   bedrooms: z.number(),
   fullBathrooms: z.number(),
   halfBathrooms: z.number(),
-  listingType: z.array(z.object({ label: z.string(), value: z.string() })),
+  listingType: z.array(z.nativeEnum(ListingType)),
   propertyType: z.array(z.nativeEnum(PropertyType)),
 });
 type FormValues = z.infer<typeof FormSchema>;
+
+export const MultiValue = ({
+  index,
+  getValue,
+}: {
+  index: number;
+  getValue: any;
+}) => {
+  return <>{!index && <div>Type ({getValue().length})</div>}</>;
+};
 
 const sliderRange = [1, 3000000] as const;
 
@@ -62,6 +72,10 @@ const MapFiltersForm = () => {
 
   const onSubmit = (data: FormValues) => {
     console.log("data", data);
+
+    // if (data.listingType.length > 0) {
+    //   data.listingType = data.listingType.map((item) => item.value);
+    // }
   };
 
   return (
@@ -71,7 +85,7 @@ const MapFiltersForm = () => {
           <Form
             form={formMethods}
             handleSubmit={(values) => {
-              console.log("firing", values);
+              onSubmit(values);
             }}
           >
             <>
@@ -147,12 +161,19 @@ const MapFiltersForm = () => {
               render={({ field: { value } }) => {
                 return (
                   <MultiSelectCheckboxes
-                    className="my-4 w-32"
+                    className="my-4 w-fit min-w-[7.185rem]"
                     placeholder="Type"
                     options={listingTypes}
-                    selected={value}
+                    components={{ MultiValue }}
+                    selected={value.map((item) => ({
+                      value: item,
+                      label: _.capitalize(item),
+                    }))}
                     setValue={(value) => {
-                      formMethods.setValue("listingType", value);
+                      formMethods.setValue(
+                        "listingType",
+                        value.map((item) => item.value) as ListingType[]
+                      );
                     }}
                   />
                 );
