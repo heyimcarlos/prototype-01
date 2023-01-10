@@ -3,10 +3,10 @@ import { useSelectedListing } from "@/stores/useSelectedListing";
 import { ArrowsUpDownIcon } from "@heroicons/react/20/solid";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import type { Listing, ListingDetail, ListingLocation } from "@prisma/client";
-import mapboxgl, { Popup, type PointLike } from "mapbox-gl";
+import mapboxgl, { type PointLike } from "mapbox-gl";
 import Image from "next/image";
 import React, { useState } from "react";
-import { Marker } from "react-map-gl";
+import { MapRef, Marker, Popup } from "react-map-gl";
 import house from "../../../public/assets/images/house1.jpeg";
 
 type Props = {
@@ -32,6 +32,7 @@ type Props = {
   ) => void;
   neighborhood: CustomNeighborhoodType;
   neighborhoodName: string;
+  mapRef: React.RefObject<MapRef>;
 };
 
 const ListingMarker = ({
@@ -43,6 +44,7 @@ const ListingMarker = ({
   neighborhoodName,
   notMobile,
   setOpen,
+  mapRef,
 }: Props) => {
   const [showPopUp, setShowPopUp] = useState(false);
   const setDirection = useSelectedListing((state) => state.setDirection);
@@ -68,9 +70,19 @@ const ListingMarker = ({
     offset = [0.4, -153];
   }
 
+  const newPopup = new mapboxgl.Popup()
+    .setLngLat([
+      parseFloat(listingLocation.lat),
+      parseFloat(listingLocation.lng),
+    ])
+    .setHTML(`<div className="w-10 h-10 bg-black">HELLO FROM POPUP</div>`)
+    .on("onClick", () => {
+      console.log("HI");
+    });
+
   return (
     <>
-      {showPopUp && (
+      {/* {showPopUp && (
         <Marker
           latitude={parseFloat(listingLocation.lat)}
           longitude={parseFloat(listingLocation.lng)}
@@ -156,7 +168,7 @@ const ListingMarker = ({
             </div>
           )}
         </Marker>
-      )}
+      )} */}
 
       <Marker
         onClick={(e) => {
@@ -187,7 +199,94 @@ const ListingMarker = ({
         }}
         latitude={parseFloat(listingLocation.lat)}
         longitude={parseFloat(listingLocation.lng)}
+        popup={newPopup}
       >
+        {showPopUp && (
+          <Popup
+            latitude={parseFloat(listingLocation.lat)}
+            longitude={parseFloat(listingLocation.lng)}
+            closeButton={false}
+          >
+            {listingLocation.listings.length > 0 && (
+              <div
+                className={`${
+                  listingLocation.listings.length > 1
+                    ? "max-h-[18rem] min-h-[18rem]"
+                    : "max-h-[8rem] min-h-[8rem]"
+                } scrollbar w-[23rem] overflow-auto bg-white`}
+                onMouseOut={() => setShowPopUp(false)}
+                onMouseOver={() => setShowPopUp(true)}
+                onWheel={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                {listingLocation.listings.length > 1 && (
+                  <div className="sticky top-0 h-8 w-full bg-white text-[16px] text-white">
+                    <span className="flex h-full w-full items-center justify-center bg-black/70">
+                      {listingLocation.listings.length} Homes in this location
+                      <ArrowsUpDownIcon className="ml-3 h-5 w-5" />
+                    </span>
+                  </div>
+                )}
+                {listingLocation.listings.map((listing) => (
+                  <div
+                    key={listing.id}
+                    className="flex h-[8rem] w-full border-b-2 bg-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDirection("right");
+                      if (notMobile) setOpen(true);
+                      setListing(listing);
+                      setListingAddress(previewAddress);
+                      setNeighborhood(previewNeighborhood);
+                    }}
+                  >
+                    <div className="flex h-full w-[40%]">
+                      <Image src={house} alt={"alt"} />
+                    </div>
+                    <div className="h-full w-[60%] pl-2 pt-2 ">
+                      <div>
+                        <span className="flex w-full">
+                          <span className="w-full lg:text-[16px]">
+                            {neighborhood.name}
+                          </span>
+                          <HeartIcon className="mr-2 -mt-1 h-6 w-6" />
+                        </span>
+                        <span className="block h-14 pr-3 pt-1 text-xs lg:text-[14px]">
+                          {listingLocation.name}
+                        </span>
+                      </div>
+
+                      <div className="min-w-[3rem] text-[15px] leading-5 text-black">
+                        <span className="block">
+                          <b>{listing?.bedrooms}</b> bd |{" "}
+                          <b>
+                            {listing
+                              ? listing.fullBathrooms + listing.halfBathrooms
+                              : null}
+                          </b>{" "}
+                          ba | <b>{listing?.meters}</b> sqft
+                        </span>
+
+                        <span className="block flex">
+                          <span className="">
+                            ${listing?.price.toLocaleString()}
+                          </span>
+
+                          {listing.maintenance > 0 && (
+                            <span className="mr-2 flex w-full justify-end">
+                              mant. ${listing.maintenance}
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Popup>
+        )}
         <div
           onMouseOver={() => {
             setShowPopUp(true);

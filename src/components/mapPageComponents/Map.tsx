@@ -610,6 +610,7 @@ const Map = ({
                   setSelectedListings={setSelectedListings}
                   neighborhood={neighborhood}
                   neighborhoodName={neighborhoodName}
+                  mapRef={mapRef}
                 />
               );
             })

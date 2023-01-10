@@ -80,7 +80,7 @@ const MapPage: NextPageWithLayout<inferSSRProps<typeof getServerSideProps>> = ({
   //   if (width) doesFit = width > 1024;
   // }, [width]);
 
-  console.log(doesFit);
+  // console.log(doesFit);
   //old code not sure if still relevant?
   // if (!isLoaded) return <div>Loading...</div>;
 
